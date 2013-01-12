@@ -1,6 +1,6 @@
 require 'sinatra/base'
 
-class App
+class App < Sinatra::Base
 	get '/' do
 		"hello"
 	end
