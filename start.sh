@@ -5,4 +5,4 @@
 # I've set this up to install gems with bundler, and then start any rack app with a config.ru.
 cd /srv/http/otte.rs
 bundle install --deployment || exit 1
-exec thin start -p 39410 --pid /run/otters/otte.rs.pid
+exec bundle exec thin start -p 39410 --pid /run/otters/otte.rs.pid
