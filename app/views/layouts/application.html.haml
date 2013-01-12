@@ -1,0 +1,64 @@
+!!! 5
+%html
+    %head
+        - t = yield(:title)
+        %title
+            otte.rs
+            - unless t.blank?
+                |
+                = t
+        = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Serif|Stalemate"
+        = stylesheet_link_tag "application", :media => "all"
+        = javascript_include_tag "application"
+        = csrf_meta_tags
+        %meta{:charset => "utf-8"}
+    
+    - body_class = yield(:body_class)
+    - unless body_class.include? "home"
+        - if controller.action_name == "home"
+            - body_class << " home"
+        - else
+            - body_class << " away"
+    %body{:class => body_class.strip}
+        #floater
+            #head
+                %section#logo-stuff
+                    = link_to "go home", (body_class.include?("home") ? root_path : all_path), :id => "mustelid", :title => "back home"
+                    %span#title otte.rs
+                %h2 Functional and dysfunctional programming by a guy with a colorful head.
+                - unless controller.action_name == "home"
+                    %h2.subtitle
+                        - if params[:type] == "blog"
+                            %strong= link_to "blog", blog_path, :title => "blog posts"
+                        - else
+                            = link_to "blog", blog_path, :title => "blog posts"
+                        &middot;
+                        - if params[:type] == "design"
+                            %strong= link_to "design", design_path, :title => "design posts"
+                        - else
+                            = link_to "design", design_path, :title => "design posts"
+                        &middot;
+                        - if params[:type] == "code"
+                            %strong= link_to "code", code_path, :title => "code posts"
+                        - else
+                            = link_to "code", code_path, :title => "code posts"
+                        %br
+                        = link_to "github", "http://github.com/otters"
+                        &middot;
+                        = link_to "twitter", "http://twitter.com/joeldt"
+            
+            - if controller.action_name == "home"
+                #links
+                    %ul
+                        %li
+                            = link_to "code", code_path, :title => "my code"
+                            %span.surprise
+                                = "or"
+                                = link_to "github", "http://github.com/otters"
+                        %li
+                            = link_to "design", design_path, :title => "my design"
+                        %li
+                            = link_to "hire me", hire_me_path, :title => "what are you waiting for?", :remote => true, :id => "hire_me_link"
+                            = image_tag "ajax.gif", :id => "ajax"
+            
+            #main= yield

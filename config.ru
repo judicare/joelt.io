@@ -1,9 +1,4 @@
-require 'sinatra/base'
+# This file is used by Rack-based servers to start the application.
 
-class App < Sinatra::Base
-	get '/' do
-		"hello"
-	end
-end
-
-run App
+require ::File.expand_path('../config/environment',  __FILE__)
+run Otters::Application

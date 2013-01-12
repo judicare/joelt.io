@@ -1,0 +1,16 @@
+#about
+    = form_tag hired_me_path, :method => :put, :remote => true do
+        #mask
+        %p
+            = label_tag "email", "Email"
+            = email_field_tag "email"
+            %span#errors
+        %p
+            = label_tag "name", "Name"
+            = text_field_tag "name"
+        %p.last
+            = label_tag "project", "Explain the project:"
+            = text_area_tag "project"
+        = submit_tag "Send it off!", :class => "submit"
+        - unless defined?(no_close)
+            = content_tag :a, "close", :id => "no-hire", :href => "#"

@@ -1,0 +1,3 @@
+- title "the blog"
+- @entries.each do |e|
+    = render :partial => "single_#{e.entry_type}", :locals => { :entry => e }

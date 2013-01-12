@@ -1,0 +1,18 @@
+%article{:class => "blog#{defined?(single) ? " single" : ""}"}
+    %section
+        %h3
+            - if defined?(single)
+                = entry.title
+            - else
+                = link_to entry.title, slug_entries_path(entry.slug)
+        - if defined?(single)
+            - title entry.title
+            = markdown entry.content
+            %div.tags
+                Filed in
+                = tag_list(entry)
+                on
+                = entry.created_at.strftime("%b %d, %Y.")
+        - else
+            = markdown entry.preview
+            = link_to "more →", slug_entries_path(entry.slug)

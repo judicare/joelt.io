@@ -1,0 +1,345 @@
+// Place all the styles related to the Entries controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+html, body.away, #floater, #main {
+    height: 100%;
+}
+
+body {
+    background: url(bg.jpg) top center;
+    color: #4e4e4e;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 200;
+}
+
+#ajax {
+    display: none;
+}
+
+a {
+    color: #4e4e4e;
+  
+    &:hover {
+      color: maroon;
+    }
+}
+
+#floater {
+    width: 391px;
+    margin: 102px auto;
+}
+
+#head {
+    width: 220px;
+    padding-right: 30px;
+    float: left;
+    text-align: right;
+    border-right: 1px dotted gray;
+    padding-bottom: 15px;
+}
+
+#mustelid {
+    float: right;
+    height: 158px;
+    width: 158px;
+    margin-right: 5px;
+    display: block;
+    background-image: url(otter.png);
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+    text-align: left;
+    opacity: 0.8;
+    -webkit-transition: opacity 0.3s linear;
+    -moz-transition: opacity 0.3s linear;
+    -o-transition: opacity 0.3s linear;
+    transition: opacity 0.3s linear;
+  
+    &:hover {
+      opacity: 1;
+    }
+}
+
+#title {
+    float: right;
+    margin-top: -8px;
+    display: block;
+    font-family: "Droid Serif", Georgia, serif;
+    text-decoration: none;
+    font-size: 48px;
+    -webkit-font-smoothing: antialiased;
+}
+
+em {
+    font-style: normal;
+}
+
+h2 {
+    clear: both;
+    font-size: 14px;
+    font-weight: 300;
+    text-transform: lowercase;
+    padding-top: 12px;
+    color: #777;
+}
+
+#links {
+    width: 120px;
+    float: right;
+    padding-left: 20px;
+    font-size: 24px;
+    color: #666;
+    margin-top: 103px;
+    
+    li {
+        list-style: none;
+        margin-top: 19px;
+        white-space: nowrap;
+        
+        .surprise {
+            display: none;
+            font-size: 16px;
+  
+            a {
+              font-size: 24px;
+            }
+        }
+  
+        &:hover .surprise {
+          display: inline;
+        }
+    }
+  
+    a {
+      text-decoration: none;
+      -webkit-font-smoothing: antialiased;
+    }
+}
+
+article {
+    background: #e1e1e1;
+    box-shadow: 0 1px 1px #ccc;
+    margin-bottom: 32px;
+    
+    .tags {
+        font-size: 13px;
+        font-weight: bold;
+        margin: 14px 8px 8px;
+    }
+    
+    section {
+        padding: 30px 0 30px 35px;
+        
+        *:not(figure) {
+            max-width: 650px;
+        }
+    }
+    
+    a.img {
+        display: inline-block;
+        margin: 0 3px 17px;
+    }
+    
+    img {
+        display: block;
+        box-shadow: 0 1px 3px #ccc;
+        border-radius: 3px;
+        max-width: 600px;
+        height: auto;
+        
+        &.noshadow {
+            box-shadow: none;
+        }
+    }
+    
+    code, pre {
+        font-family: "CMU Typewriter Text", Menlo, monospace;
+    }
+    
+    pre {
+        color: #555;
+    
+        .cm {
+            color: #998;
+        }
+    
+        .kr, .k, .ow {
+            color: black;
+        }
+        
+        .o {
+            color: black;
+        }
+        
+        .kt {
+        	color: #445588;
+        }
+
+        .s {
+        	color: #d14;
+        }
+
+        .nf {
+        	color: #900;
+        }
+        
+        .nb {
+            color: #0086B3;
+        }
+        
+        .m {
+            color: #099;
+        }
+        
+        .nt {
+            color: #000080;
+        }
+    }
+    
+    figure {
+        overflow: auto;
+        background: #eee;
+        border-radius: 3px;
+        margin: 20px 0 20px 7px;
+            
+        table {
+            border-spacing: 0;
+                
+            .linenos {
+                background: #ddd;
+                padding: 6px 9px;
+            }
+            
+            .code {
+                padding: 0 10px;
+            }
+        }
+    }
+
+    &.design {
+        h3 {
+            text-indent: 4px;
+            font-size: 28px;
+        }
+        
+        figure {
+            background: #f2f2f2;
+            
+            .linenos {
+                background: #d2d2d2;
+            }
+        }
+    }
+    
+    &.blog {
+        background: #fafafa;
+        
+        h3 {
+            font-size: 26px;
+        }
+        
+        &.single h3 {
+            font-size: 32px;
+        }
+        
+        blockquote {
+            font-family: "Droid Serif", Georgia, Times, serif;
+            font-style: italic;
+            margin: 18px 15px;
+            font-size: 15px;
+            line-height: 1.5em;
+            
+            cite {
+                display: block;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-style: normal;
+                text-transform: uppercase;
+                font-size: 13px;
+                margin: 8px 0;
+                color: #777;
+            }
+        }
+    }
+    
+    &.code {
+        background: #fafafa;
+        
+        h3 {
+            font-size: 20px;
+            font-weight: normal;
+            
+            a {
+                font-size: 1.3em;
+                font-weight: bold;
+            }
+        }
+    }
+    
+    &.single {
+        margin-bottom: 0;
+        min-height: 100%;
+        
+        h3 {
+            font-size: 24px;
+            padding: 8px 0;
+        }
+    }
+    
+    h3 a {
+        text-decoration: none;
+        color: #0080aa;
+            
+        &.read_more {
+            font-weight: 200;
+            font-size: 14px;
+        }
+    }
+    
+    a:hover img {
+        opacity: 0.8;
+    }
+    
+    p {
+        line-height: 1.5em;
+        padding: 6px;
+    }
+}
+
+.away {
+    background-attachment: fixed;
+    
+    #floater {
+        overflow: visible;
+        width: 100%;
+        margin: 0;
+        height: 100%;
+    }
+    
+    #main {
+        margin-left: 270px;
+        
+        h1 {
+        	font-weight: 200;
+        	font-size: 14px;
+        	text-transform: uppercase;
+        	margin: -10px 0 10px;
+        }
+    }
+    
+    #head {
+        position: fixed;
+        margin-left: 20px;
+        top: 50px;
+        border-right: 0;
+    }
+    
+    #mustelid {
+        background-size: 138px;
+        height: 138px;
+        width: 138px;
+    }
+}
+
+hr {
+    visibility: hidden
+}
