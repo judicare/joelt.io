@@ -53,20 +53,17 @@
                 #links
                     %ul
                         %li
-                            = link_to "code", code_path, :title => "my code"
-                            %span.surprise
-                                or
-                                = link_to "github", "http://github.com/otters"
-                        %li
-                            = link_to "design", design_path, :title => "my design"
-                        %li
-                            = link_to "hire me", hire_me_path, :title => "what are you waiting for?", :remote => true, :id => "hire_me_link"
-                            = image_tag "ajax.gif", :id => "ajax"
-                        - if session[:user_id]
-                            %li
+                            - unless session[:user_id]
+                                = link_to "github", "http://github.com/otters", :title => "my code"
+                            - else
                                 = link_to "new post", new_entry_path
-                                %span.surprise
-                                    or
-                                    = link_to "logout", logout_path
+                        %li
+                            = link_to session[:user_id] ? "read blog" : "work", all_path, :title => "stuff I've made"
+                        %li
+                            - if session[:user_id]
+                                = link_to "logout", logout_path
+                            - else
+                                = link_to "hire me", hire_me_path, :title => "what are you waiting for?", :remote => true, :id => "hire_me_link"
+                                = image_tag "ajax.gif", :id => "ajax"
             
             #main= yield

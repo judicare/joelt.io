@@ -10,7 +10,7 @@ class UsersController < ApplicationController
       flash[:error] = "Invalid username or password."
       redirect_to :back
     else
-      cookies.signed[:user_id] = u.id
+      cookies.permanent.signed[:user_id] = u.id
       session[:user_id] = u.id
       redirect_to :root
     end

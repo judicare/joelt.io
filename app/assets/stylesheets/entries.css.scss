@@ -41,84 +41,10 @@ article {
             box-shadow: none;
         }
     }
-    
-    code, pre {
-        font-family: "CMU Typewriter Text", Menlo, monospace;
-    }
-    
-    figure {
-        overflow: auto;
-        background: #eee;
-        border-radius: 3px;
-        margin: 20px -35px 20px 7px;
-            
-        table {
-            border-spacing: 0;
-                
-            .linenos {
-                background: #ddd;
-                padding: 6px 9px;
-            }
-            
-            .code {
-                padding: 0 10px;
-            }
-            
-            pre {
-                color: #555;
-    
-                .cm {
-                    color: #998;
-                }
-    
-                .kr, .k, .ow {
-                    color: black;
-                }
-        
-                .o {
-                    color: black;
-                }
-        
-                .kt {
-                	color: #445588;
-                }
 
-                .s {
-                	color: #d14;
-                }
-
-                .nf {
-                	color: #900;
-                }
-        
-                .nb {
-                    color: #0086B3;
-                }
-        
-                .m {
-                    color: #099;
-                }
-        
-                .nt {
-                    color: #000080;
-                }
-            }
-        }
-    }
-
-    &.design {
-        h3 {
-            text-indent: 4px;
-            font-size: 28px;
-        }
-        
-        figure {
-            background: #f2f2f2;
-            
-            .linenos {
-                background: #d2d2d2;
-            }
-        }
+    &.design h3 {
+        text-indent: 4px;
+        font-size: 28px;
     }
     
     &.blog {
