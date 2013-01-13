@@ -10,7 +10,11 @@ GIT_WORK_TREE=/srv/http/otte.rs git checkout -f HEAD
 cd /srv/http/otte.rs
 bundle install --deployment || exit 1
 
-# Looks like we have to do a few special things for rails, like migrating the db etc.
-RAILS_ENV=production bundle exec rake assets:precompile db:migrate || exit 1
+# Looks like we have to do a few special things for rails
+RAILS_ENV=production bundle exec rake assets:precompile || exit 1
+# We only want to db:migrate if any db/migrate/ files changed, because it's slow
+if git diff HEAD HEAD~ | grep db/migrate/ &> /dev/null; then
+	RAILS_ENV=production bundle exec rake db:migrate || exit 1
+fi
 
 exec bundle exec thin start --port 39410 --env production --daemonize --pid /run/otters/otte.rs.pid
