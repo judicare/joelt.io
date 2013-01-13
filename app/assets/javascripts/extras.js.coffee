@@ -9,6 +9,7 @@ $(document).on "click", "#hire_me_link", (e) ->
 $(document).on "submit", "form", (e) ->
     e.preventDefault()
     $("#mask").show()
+    $(".error").html("")
 
 $(document).on "click", "#no-hire", (e) ->
     e.preventDefault()

@@ -73,12 +73,13 @@ body.home {
                 }
             }
         
-            #errors {
-                color: red;
+            .error {
+                text-transform: uppercase;
+                color: #ff4d46;
                 float: right;
-                font-size: 15px;
+                font-size: 13px;
                 width: 115px;
-                line-height: 1.1em;
+                line-height: 31px;
             }
         
             label {
@@ -92,6 +93,7 @@ body.home {
                 padding-bottom: 12px;
                 margin-bottom: 12px;
                 border-bottom: 1px dashed #bbb;
+                overflow: hidden;
             
                 input {
                     width: 230px;
@@ -118,7 +120,7 @@ body.home {
                     font-size: 13px;
                     line-height: 1.4em;
                     margin-top: 10px;
-                    width: 421px;
+                    width: 415px;
                     height: 120px;
                 }
             
@@ -153,21 +155,21 @@ body.home {
             }
         }
     }
-}
-
-body.box-shown {
-    #floater {
-        width: 870px;
-    }
     
-    #mustelid {
-        background-size: 138px;
-        height: 138px;
-        width: 138px;
-    }
+    &.box-shown {
+        #floater {
+            width: 870px;
+        }
     
-    #head {
-        border-right-color: #f3f3f3;
-        padding-right: 19px;
+        #mustelid {
+            background-size: 138px;
+            height: 138px;
+            width: 138px;
+        }
+    
+        #head {
+            border-right-color: #f3f3f3;
+            padding-right: 19px;
+        }
     }
 }

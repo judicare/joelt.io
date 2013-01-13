@@ -24,8 +24,9 @@
             #head
                 %section#logo-stuff
                     = link_to "go home", (body_class.include?("home") ? root_path : all_path), :id => "mustelid", :title => "back home"
-                    %span#title otte.rs
-                %h2 Functional and dysfunctional programming by a guy with a colorful head.
+                    %span#title
+                        = link_to "otte.rs", root_path
+                %h2.real-subtitle Functional and dysfunctional programming by a guy with a colorful head.
                 - unless controller.action_name == "home"
                     %h2.subtitle
                         - if params[:type] == "blog"

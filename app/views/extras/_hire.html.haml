@@ -4,13 +4,15 @@
         %p
             = label_tag "email", "Email"
             = email_field_tag "email"
-            %span#errors
+            %span.error.email
         %p
             = label_tag "name", "Name"
             = text_field_tag "name"
+            %span.error.name
         %p.last
             = label_tag "project", "Explain the project:"
             = text_area_tag "project"
+            %span.error.project
         = submit_tag "Send it off!", :class => "submit"
         - unless defined?(no_close)
             = content_tag :a, "close", :id => "no-hire", :href => "#"

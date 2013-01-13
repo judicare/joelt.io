@@ -1,5 +1,9 @@
-<% if flash[:error] %>
-    $("#errors").html("<%= flash[:error] %>");
+<% unless @msg.valid? %>
+    <% @msg.errors.messages.each do |field, err| %>
+        $(".error.<%= field %>").html("<%= escape_javascript err.first %>")
+    <% end %>
+    console.log("<%= escape_javascript @msg.inspect %>")
+    $("#mask").hide();
 <% else %>
     $("#mask").addClass("stopped");
     $("#about").animate({height: '0px'}, {duration: 600, complete: function() {

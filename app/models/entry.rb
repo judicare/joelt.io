@@ -2,6 +2,11 @@ class Entry < ActiveRecord::Base
   has_and_belongs_to_many :tags
   attr_accessible :title, :content
   
+  validates_presence_of :title, :content, :entry_type
+  validates_uniqueness_of :slug
+  validates_inclusion_of :entry_type, :in => %w(blog code design), :message => "must be one of blog, code, design"
+  validates_associated :tags
+  
   before_create :create_slug
   before_update :create_slug
   

@@ -1,0 +1,80 @@
+// global styles
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body.away, #floater, #main {
+    height: 100%;
+}
+
+body {
+    background: url(bg.jpg) top center;
+    color: #4e4e4e;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 200;
+}
+
+a {
+    color: #4e4e4e;
+  
+    &:hover {
+      color: maroon;
+    }
+}
+
+#floater {
+    width: 391px;
+    margin: 102px auto;
+}
+
+#head {
+    width: 220px;
+    padding-right: 30px;
+    float: left;
+    text-align: right;
+    border-right: 1px dotted gray;
+    padding-bottom: 15px;
+    
+    h2 {
+        clear: both;
+        font-size: 14px;
+        font-weight: 300;
+        text-transform: lowercase;
+        padding-top: 12px;
+        color: #777;
+    }
+}
+
+#mustelid {
+    float: right;
+    margin-right: 5px;
+    display: block;
+    background-image: url(otter.png);
+    background-repeat: no-repeat;
+    text-indent: -9999px;
+    text-align: left;
+    opacity: 0.8;
+    -webkit-transition: opacity 0.3s linear;
+    -moz-transition: opacity 0.3s linear;
+    -o-transition: opacity 0.3s linear;
+    transition: opacity 0.3s linear;
+  
+    &:hover {
+      opacity: 1;
+    }
+}
+
+#title {
+    float: right;
+    margin-top: -8px;
+    display: block;
+    font-family: "Droid Serif", Georgia, serif;
+    font-size: 48px;
+    -webkit-font-smoothing: antialiased;
+    
+    a {
+        text-decoration: none;
+    }
+}

@@ -7,14 +7,11 @@ class ExtrasController < ApplicationController
   end
   
   def email
-    if params[:email] =~ /^[^@]+@[^@]+$/
-      HireMailer.hire(params).deliver
-      flash[:notice] = "Done."
-    else
-      flash[:error] = "Enter a valid email."
-    end
+    @msg = Message.new *params.values_at(:email, :name, :project)
+    HireMailer.hire(params).deliver if @msg.valid?
+
     respond_to do |format|
-      format.html { redirect_to :root }
+      format.html { redirect_to hire_me_path }
       format.js
     end
   end
