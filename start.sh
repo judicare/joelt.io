@@ -13,7 +13,7 @@ bundle install --deployment || exit 1
 # Looks like we have to do a few special things for rails
 RAILS_ENV=production bundle exec rake assets:precompile || exit 1
 # We only want to db:migrate if any db/migrate/ files changed, because it's slow
-if git diff HEAD HEAD~ | grep db/migrate/ &> /dev/null; then
+if git diff-tree --no-commit-id --name-only -r HEAD | grep db/migrate/ &> /dev/null; then
 	RAILS_ENV=production bundle exec rake db:migrate || exit 1
 fi
 
