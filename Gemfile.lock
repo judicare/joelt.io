@@ -134,6 +134,7 @@ DEPENDENCIES
   pygments.rb
   rails
   redcarpet
+  sass
   sass-rails (~> 3.2.3)
   thin
   uglifier (>= 1.0.3)
