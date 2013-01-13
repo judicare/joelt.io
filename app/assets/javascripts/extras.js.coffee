@@ -7,7 +7,6 @@ $(document).on "click", "#hire_me_link", (e) ->
     $("#mask").show()
 
 $(document).on "submit", "form", (e) ->
-    e.preventDefault()
     $("#mask").show()
     $(".error").html("")
 

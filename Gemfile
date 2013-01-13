@@ -41,3 +41,4 @@ gem 'haml-rails', '>= 0.3.4', :group => :development
 gem 'redcarpet'
 gem 'pygments.rb'
 gem 'nokogiri'
+gem 'thin'

@@ -2,7 +2,7 @@
 %html
     %head
         - t = yield(:title)
-        %title
+        %title<
             otte.rs
             - unless t.blank?
                 |
@@ -13,13 +13,14 @@
         = csrf_meta_tags
         %meta{:charset => "utf-8"}
     
-    - body_class = yield(:body_class)
+    - body_class = yield(:body_class).split(" ")
+    - body_class << "admin" if session[:user_id]
     - unless body_class.include? "home"
         - if controller.action_name == "home"
-            - body_class << " home"
+            - body_class << "home"
         - else
-            - body_class << " away"
-    %body{:class => body_class.strip}
+            - body_class << "away"
+    %body{:class => body_class.join(" ")}
         #floater
             #head
                 %section#logo-stuff
@@ -54,12 +55,18 @@
                         %li
                             = link_to "code", code_path, :title => "my code"
                             %span.surprise
-                                = "or"
+                                or
                                 = link_to "github", "http://github.com/otters"
                         %li
                             = link_to "design", design_path, :title => "my design"
                         %li
                             = link_to "hire me", hire_me_path, :title => "what are you waiting for?", :remote => true, :id => "hire_me_link"
                             = image_tag "ajax.gif", :id => "ajax"
+                        - if session[:user_id]
+                            %li
+                                = link_to "new post", new_entry_path
+                                %span.surprise
+                                    or
+                                    = link_to "logout", logout_path
             
             #main= yield

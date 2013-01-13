@@ -12,6 +12,7 @@ Otters::Application.routes.draw do
 
   get '/login' => 'users#login'
   put '/login' => 'users#try_login'
+  get '/logout' => 'users#logout'
   
   resources :entries, :path => "entries", :only => [:create, :new, :update, :destroy] do
     collection do

@@ -1,9 +1,6 @@
 class UsersController < ApplicationController
   def login
-    if session[:user_id]
-      flash[:error] = "You are already logged in as #{User.find(session[:user_id]).username}."
-      redirect_to :root
-    end
+    redirect_to :root if session[:user_id]
   end
   
   def try_login
@@ -13,9 +10,15 @@ class UsersController < ApplicationController
       flash[:error] = "Invalid username or password."
       redirect_to :back
     else
+      cookies.signed[:user_id] = u.id
       session[:user_id] = u.id
-      flash[:notice] = "Logged in successfully."
       redirect_to :root
     end
+  end
+  
+  def logout
+    session.delete :user_id
+    cookies.delete :user_id
+    redirect_to :root
   end
 end
