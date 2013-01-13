@@ -9,4 +9,8 @@ GIT_WORK_TREE=/srv/http/otte.rs git checkout -f HEAD
 # I've set this up to install gems with bundler, and then start any rack app with a config.ru.
 cd /srv/http/otte.rs
 bundle install --deployment || exit 1
+
+# Looks like we have to do a few special things for rails, like migrating the db etc.
+RAILS_ENV=production bundle exec assets:precompile db:migrate || exit 1
+
 exec bundle exec thin start --port 39410 --env production --daemonize --pid /run/otters/otte.rs.pid
