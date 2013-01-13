@@ -38,6 +38,8 @@ gem 'bcrypt-ruby', '~> 3.0.0'
 
 gem 'haml-rails', '>= 0.3.4', :group => :development
 
+gem 'haml'
+
 gem 'redcarpet'
 gem 'pygments.rb'
 gem 'nokogiri'
