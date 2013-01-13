@@ -42,6 +42,6 @@ gem 'haml'
 gem 'sass'
 
 gem 'redcarpet'
-gem 'pygments.rb'
+gem 'pygments.rb', :git => "https://github.com/gitlabhq/pygments.rb.git", :ref => "2cada028da5054616634a1d9ca6941b65b3ce188"
 gem 'nokogiri'
 gem 'thin'
