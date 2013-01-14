@@ -61,6 +61,14 @@ module Otters
     
     config.action_mailer.raise_delivery_errors = true
     
-    config.action_mailer.delivery_method = :test
+    config.action_mailer.delivery_method = :smtp
+    
+    config.action_mailer.smtp_settings = {
+      :address => 'mail.otte.rs',
+      :port => 26,
+      :user_name => 'everyone-else+otte.rs',
+      :password => '4KRgBDMRtyno7p_zh-k2Iw',
+      :authentication => :login
+    }
   end
 end
