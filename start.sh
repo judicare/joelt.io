@@ -6,8 +6,14 @@
 cd /mnt/storage/otte.rs.git
 GIT_WORK_TREE=/srv/http/otte.rs git checkout -f HEAD
 
-# I've set this up to install gems with bundler, and then start any rack app with a config.ru.
 cd /srv/http/otte.rs
+
+# Make our python = python2 link.
+mkdir -p .bin
+ln -s /usr/bin/python2 .bin/python
+export PATH="/srv/http/otte.rs/.bin/:$PATH"
+
+# I've set this up to install gems with bundler, and then start any rack app with a config.ru.
 bundle install --deployment || exit 1
 
 # Looks like we have to do a few special things for rails
