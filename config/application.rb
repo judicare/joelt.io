@@ -52,18 +52,6 @@ module Otters
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
-    
-    config.action_mailer.raise_delivery_errors = true
-    
-    config.action_mailer.delivery_method = :smtp
-    
-    config.action_mailer.smtp_settings = {
-      :address => 'box874.bluehost.com',
-      :port => 465,
-      :user_name => 'everyone-else+otte.rs',
-      :password => '4KRgBDMRtyno7p_zh-k2Iw',
-      :authentication => :login
-    }
 
     # Enable the asset pipeline
     config.assets.enabled = true

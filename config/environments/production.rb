@@ -50,8 +50,18 @@ Otters::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = false
   
-  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+    
+  config.action_mailer.smtp_settings = {
+    :address => 'mail.otte.rs',
+    :port => 26,
+    :user_name => 'everyone-else+otte.rs',
+    :password => '4KRgBDMRtyno7p_zh-k2Iw',
+    :authentication => :login,
+    :openssl_verify_mode => 'none'
+  }
 
   # Enable threaded mode
   # config.threadsafe!
