@@ -58,7 +58,7 @@
                             - else
                                 = link_to "new post", new_entry_path
                         %li
-                            = link_to session[:user_id] ? "read blog" : "work", all_path, :title => "stuff I've made"
+                            = link_to session[:user_id] ? "read blog" : "stuff", all_path, :title => "stuff I've made"
                         %li
                             - if session[:user_id]
                                 = link_to "logout", logout_path
