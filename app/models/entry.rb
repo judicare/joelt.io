@@ -14,7 +14,7 @@ class Entry < ActiveRecord::Base
   before_update :create_slug
   
   def preview
-    self.content.split(/\n\n/)[0]
+    self.content.split(/(?:\r\n){2}/)[0]
   end
   
   private
