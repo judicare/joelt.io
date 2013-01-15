@@ -55,6 +55,7 @@ body.home {
             font-weight: 200;
             font-size: 17px;
             color: #777;
+            margin-bottom: 20px;
         }
         
         form {
@@ -94,6 +95,29 @@ body.home {
                 margin-bottom: 12px;
                 border-bottom: 1px dashed #bbb;
                 overflow: hidden;
+                
+                &.inline {
+                    span {
+                        width: 50%;
+                        display: inline-block;
+                        float: left;
+                    }
+                    
+                    label {
+                        width: auto;
+                        padding-right: 9px;
+                    }
+                    
+                    &:last-of-type input {
+                        width: 93% !important;
+                        font-size: 12px;
+                        padding: 3px;
+                    }
+                    
+                    & span:last-child input {
+                        float: right;
+                    }
+                }
             
                 input {
                     width: 230px;
@@ -129,6 +153,16 @@ body.home {
                     width: 200px;
                     font-size: 15px;
                 }
+                
+                .field_with_errors {
+                    label {
+                        color: #b51700;
+                    }
+                    
+                    input, textarea {
+                        border-color: red;
+                    }
+                }
             }
         
             #no-hire, .submit {
@@ -153,6 +187,16 @@ body.home {
             #no-hire {
                 float: right;
             }
+            
+            h3 {
+                font-size: 20px;
+            }
+            
+            ul {
+                font-size: 14px;
+                list-style-position: inside;
+                margin-bottom: 20px;
+            }
         }
     }
     
@@ -171,5 +215,15 @@ body.home {
             border-right-color: #f3f3f3;
             padding-right: 19px;
         }
+    }
+}
+
+.c_entries {
+    textarea {
+        height: 200px !important;
+    }
+    
+    input {
+        width: auto !important;
     }
 }

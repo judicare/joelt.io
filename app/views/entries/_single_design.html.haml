@@ -1,4 +1,6 @@
 %article{:class => "design#{defined?(single) ? " single" : ""}"}
+    - unless entry.published
+        .unpublished= link_to "Unpublished", edit_entry_path(entry)
     %section
         - if !entry.image.blank?
             - if entry.link.blank?
@@ -17,3 +19,5 @@
                 = tag_list(entry)
                 on
                 = entry.created_at.strftime("%b %d, %Y.")
+                - if session[:user_id]
+                    = link_to "Edit", edit_entry_path(entry)

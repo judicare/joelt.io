@@ -1,4 +1,6 @@
 %article{:class => "blog#{defined?(single) ? " single" : ""}"}
+    - unless entry.published
+        .unpublished= link_to "Unpublished", edit_entry_path(entry)
     %section
         %h3
             - if defined?(single)
@@ -13,6 +15,8 @@
                 = tag_list(entry)
                 on
                 = entry.created_at.strftime("%b %d, %Y.")
+                - if session[:user_id]
+                    = link_to "Edit", edit_entry_path(entry)
         - else
             = markdown entry.preview
             = link_to "more →", slug_entries_path(entry.slug)

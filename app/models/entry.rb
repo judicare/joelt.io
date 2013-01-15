@@ -1,6 +1,6 @@
 class Entry < ActiveRecord::Base
   has_and_belongs_to_many :tags
-  attr_accessible :title, :content
+  attr_accessible :title, :content, :published, :entry_type, :image, :link
   
   validates_presence_of :title, :content, :entry_type
   validates_uniqueness_of :slug

@@ -1,0 +1,27 @@
+= body_class "box-shown home"
+#form
+    = form_for @entry do |f|
+        %h3= form_title
+        - unless @entry.errors.empty?
+            %ul
+                - @entry.errors.full_messages.each do |m|
+                    %li= m + "."
+        %p
+            = f.label :title
+            = f.text_field :title
+        %p
+            = f.label :content
+            = f.text_area :content
+        %p.inline
+            %span
+                = f.label :published, "Publish"
+                = f.check_box :published
+            %span
+                = f.label :entry_type
+                = f.select :entry_type, options_for_select([%w[Blog blog], %w[Code code], %w[Design design]], @entry.entry_type)
+        %p.inline
+            %span
+                = f.text_field :image, :placeholder => "image"
+            %span
+                = f.text_field :link, :placeholder => "link"
+        = f.submit "Post it", :class => "submit"

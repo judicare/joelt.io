@@ -15,6 +15,8 @@
     
     - body_class = yield(:body_class).split(" ")
     - body_class << "admin" if session[:user_id]
+    - body_class << "c_#{controller.controller_name}"
+    - body_class << "a_#{controller.action_name}"
     - unless body_class.include? "home"
         - if controller.action_name == "home"
             - body_class << "home"

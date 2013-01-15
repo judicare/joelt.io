@@ -14,7 +14,7 @@ Otters::Application.routes.draw do
   put '/login' => 'users#try_login'
   get '/logout' => 'users#logout'
   
-  resources :entries, :only => [:create, :new, :update, :destroy]
+  resources :entries, :except => [:show]
   
   get 'all' => 'entries#index'
   get '/entries/:slug' => 'entries#by_slug', :slug => /[\w\-]+/, :as => :slug_entries
