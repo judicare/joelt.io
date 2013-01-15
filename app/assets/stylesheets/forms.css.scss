@@ -37,6 +37,20 @@ body.home {
     #head {
         @include trans(padding-right, border-right-color);
     }
+    
+    &.c_entries #form {
+        width: auto;
+        
+        input[type=text] {
+            width: 495px !important;
+        }
+        
+        textarea {
+            width: 560px;
+            font-family: Consolas;
+            font-size: 12px;
+        }
+    }
 
     #form {
     	background: white;
