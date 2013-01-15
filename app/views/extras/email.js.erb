@@ -6,7 +6,7 @@
     $("#mask").hide();
 <% else %>
     $("#mask").addClass("stopped");
-    $("#about").animate({height: '0px'}, {duration: 600, complete: function() {
+    $("#form").animate({height: '0px'}, {duration: 600, complete: function() {
         $(this).html("").delay(300).animate({height: '80px'}, {duration: 600, complete: function() {
             $(this).html("<h1 style='opacity: 0'>Message sent.</h1><h3 style='opacity: 0'>I'll get back to you ASAP.</h3>").children("*").animate({opacity: '1.0'}, {complete: function() {
                 setTimeout(function() {

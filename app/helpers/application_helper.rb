@@ -15,4 +15,8 @@ module ApplicationHelper
   def title t
     content_for(:title) { t }
   end
+  
+  def body_class t
+    content_for(:body_class) { t }
+  end
 end

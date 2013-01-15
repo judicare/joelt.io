@@ -7,7 +7,7 @@ class EntriesController < ApplicationController
   end
   
   def by_tag
-    @tag = Tag.find_by_slug(params[:tag])
+    @tag = Tag.find_by_slug(params[:tag]) || not_found
     @entries = @tag.entries.order("created_at DESC")
   end
   
@@ -16,6 +16,6 @@ class EntriesController < ApplicationController
   end
   
   def by_slug
-    @entry = Entry.find_by_slug params[:slug]
+    @entry = Entry.find_by_slug(params[:slug]) || not_found
   end
 end

@@ -14,13 +14,10 @@ Otters::Application.routes.draw do
   put '/login' => 'users#try_login'
   get '/logout' => 'users#logout'
   
-  resources :entries, :path => "entries", :only => [:create, :new, :update, :destroy] do
-    collection do
-      get ':slug' => 'entries#by_slug', :slug => /[\w\-]+/, :as => :slug
-    end
-  end
+  resources :entries, :only => [:create, :new, :update, :destroy]
   
   get 'all' => 'entries#index'
+  get '/entries/:slug' => 'entries#by_slug', :slug => /[\w\-]+/, :as => :slug_entries
   
   get '/tagged/:tag' => 'entries#by_tag', :as => :tagged
   get '/typed/:type' => 'entries#by_type', :as => :typed
