@@ -2,7 +2,7 @@ xml.instruct! :xml, :version => "1.0"
 xml.rss :version => "2.0" do
   xml.channel do
     xml.title "otte.rs"
-    xml.description "Functional prog"
+    xml.description "Functional programming by Joel Taylor"
     xml.link all_url
     
     @entries.each do |entry|
