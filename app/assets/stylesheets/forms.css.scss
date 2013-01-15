@@ -77,6 +77,10 @@ body.home {
         }
         
         form {
+            img {
+                float: right;
+            }
+            
             #mask {
                 background: rgba(255, 255, 255, 0.5) url(ajax-big.gif) center center no-repeat;
                 position: absolute;
@@ -126,14 +130,27 @@ body.home {
                         padding-right: 9px;
                     }
                     
-                    &:last-of-type input {
-                        width: 93% !important;
-                        font-size: 12px;
-                        padding: 3px;
+                    &:last-of-type {
+                        input {
+                            width: 93% !important;
+                            font-size: 12px;
+                            padding: 3px;
+                        }
+                        
+                        label {
+                            padding-bottom: 8px;
+                        }
                     }
                     
-                    & span:last-child input {
-                        float: right;
+                    &:last-of-type span:last-child {
+                        input {
+                            float: right;
+                        }
+                        
+                        label {
+                            width: 93%;
+                            float: right;
+                        }
                     }
                 }
             

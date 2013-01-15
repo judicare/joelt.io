@@ -1,6 +1,8 @@
 = body_class "box-shown home form"
 #form
-    = form_for @entry do |f|
+    = form_for @entry, :html => { :multipart => true } do |f|
+        - if @entry.image.exists?
+            = fancy_img @entry, :tiny
         %h3= form_title
         - unless @entry.errors.empty?
             %ul
@@ -21,7 +23,9 @@
                 = f.select :entry_type, options_for_select([%w[Blog blog], %w[Code code], %w[Design design]], @entry.entry_type)
         %p.inline
             %span
-                = f.text_field :image, :placeholder => "image"
+                = f.label :image
+                = f.file_field :image
             %span
+                = f.label :link
                 = f.text_field :link, :placeholder => "link"
         = f.submit "Post it", :class => "submit"

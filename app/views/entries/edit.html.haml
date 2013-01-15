@@ -1,1 +1,1 @@
-= render :partial => "form", :locals => { :form_title => "Editing ‘#{@entry.title.empty? ? "untitled" : @entry.title}’" }
+= render :partial => "form", :locals => { :form_title => "Editing ‘<a href='#{slug_entries_path(@entry.slug)}'>#{@entry.title.empty? ? "untitled" : @entry.title}</a>’".html_safe }

@@ -4,9 +4,9 @@
     %section
         - if !entry.image.blank?
             - if entry.link.blank?
-                = image_tag entry.image
+                = image_tag entry.image.url(:post)
             - else
-                = link_to (image_tag entry.image), entry.link, :class => "img"
+                = link_to (image_tag entry.image.url(:post)), entry.link, :class => "img"
         - if !defined?(single)
             %h3
                 = entry.title

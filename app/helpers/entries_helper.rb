@@ -10,4 +10,13 @@ module EntriesHelper
       content_tag :strong, (link_to tag.name, tagged_path(tag.slug))
     end.join(sep).html_safe
   end
+  
+  def fancy_img e, ty = :post
+    return if e.image.width(ty).nil?
+    if e.image.width(ty) >= e.image.width(:original)
+      image_tag(e.image.url ty)
+    else
+      link_to image_tag(e.image.url ty), e.image.url, :class => "fancy"
+    end
+  end
 end

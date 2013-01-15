@@ -11,18 +11,22 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130115050244) do
+ActiveRecord::Schema.define(:version => 20130115185117) do
 
   create_table "entries", :force => true do |t|
-    t.string   "title",                          :null => false
-    t.text     "content",                        :null => false
-    t.string   "entry_type", :default => "blog", :null => false
-    t.string   "slug",                           :null => false
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
-    t.string   "image"
+    t.string   "title",                                  :null => false
+    t.text     "content",                                :null => false
+    t.string   "entry_type",         :default => "blog", :null => false
+    t.string   "slug",                                   :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.string   "link"
-    t.boolean  "published",  :default => false,  :null => false
+    t.boolean  "published",          :default => false,  :null => false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
+    t.text     "image_meta"
   end
 
   create_table "entries_tags", :id => false, :force => true do |t|

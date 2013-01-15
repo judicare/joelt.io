@@ -8,7 +8,7 @@
                 = link_to "read about it →", slug_entries_path(entry.slug), :class => "read_more"
         - if defined?(single)
             - title entry.title
-            = image_tag entry.image, :class => "noshadow"
+            = image_tag entry.image.url(:post), :class => "noshadow"
             = markdown entry.content
             %div.tags
                 Filed in
