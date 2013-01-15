@@ -1,4 +1,6 @@
 class EntriesController < ApplicationController
+  before_filter :authorize, :only => [:new, :create, :edit, :update, :destroy]
+  
   def home
   end
   
@@ -6,21 +8,31 @@ class EntriesController < ApplicationController
     @entry = Entry.new
   end
   
+  def create
+    @entry = Entry.new params[:entry]
+    if @entry.save
+      redirect_to slug_entries_path(@entry.slug)
+    else
+      render :action => :new, :entry => @entry
+    end
+  end
+  
   def edit
-    redirect_to :root unless session[:user_id]
     @entry = Entry.find(params[:id])
   end
   
   def update
-    redirect_to :root unless session[:user_id]
     @entry = Entry.find(params[:id])
     if @entry.update_attributes params[:entry]
       redirect_to slug_entries_path(@entry.slug)
     else
-      flash[:error] = @entry.errors.full_messages
       render :action => :edit, :entry => @entry
-      # redirect_to :back
     end
+  end
+  
+  def destroy
+    Entry.destroy params[:id]
+    redirect_to all_path
   end
   
   def index
@@ -44,5 +56,9 @@ class EntriesController < ApplicationController
   private
   def need_publish
     session[:user_id] ? {} : { :published => true }
+  end
+  
+  def authorize
+    redirect_to :root unless session[:user_id]
   end
 end
