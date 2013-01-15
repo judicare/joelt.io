@@ -42,7 +42,7 @@ body.home {
         @include trans(padding-right, border-right-color);
     }
     
-    &.c_entries #form {
+    &.a_new #form, &.a_edit #form {
         width: auto;
         
         input[type=text] {
