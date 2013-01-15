@@ -37,6 +37,11 @@ class EntriesController < ApplicationController
   
   def index
     @entries = Entry.find :all, :conditions => need_publish, :order => "created_at DESC"
+    
+    respond_to do |format|
+      format.html
+      format.rss { render :layout => false }
+    end
   end
   
   def by_tag

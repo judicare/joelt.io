@@ -10,6 +10,7 @@
         = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Serif|Stalemate"
         = stylesheet_link_tag "application", :media => "all"
         = javascript_include_tag "application"
+        %link{:rel => "alternate", :type => "application/rss+xml", :title => "RSS", :href => all_path + ".rss"}
         = csrf_meta_tags
         %meta{:charset => "utf-8"}
     
