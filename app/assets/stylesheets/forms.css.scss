@@ -19,6 +19,10 @@ $ease-fn: ease-in-out;
     transition-timing-function: ease-in-out;
 }
 
+body.form #floater {
+    margin: 40px auto;
+}
+
 body.home {
     #floater {
         @include trans(width);
