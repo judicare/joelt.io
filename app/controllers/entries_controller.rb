@@ -7,7 +7,8 @@ class EntriesController < ApplicationController
   end
   
   def by_tag
-    @entries = Entry.all :joins => :tags, :conditions => ["tags.slug = ?", params[:tag]]
+    @tag = Tag.find_by_slug(params[:tag]) || not_found
+    @entries = @tag.entries.order("created_at DESC")
   end
   
   def by_type
