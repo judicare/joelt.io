@@ -45,7 +45,3 @@ gem 'redcarpet'
 gem 'pygments.rb'
 gem 'nokogiri'
 gem 'thin'
-
-# Just trying to make irb shut up
-# Not that much overhead
-gem 'wirble'
