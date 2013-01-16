@@ -78,3 +78,50 @@ a {
         text-decoration: none;
     }
 }
+
+@media only screen and (max-width: 580px) {
+    .home {
+        #floater {
+            margin: 20px auto !important;
+        }
+        
+        #links {
+            float: none !important;
+            margin: 0 auto !important;
+            width: 300px !important;
+            padding-left: 0 !important;
+            
+            li {
+                display: inline-block;
+                margin: 0 7px;
+                width: 80px;
+                text-align: center;
+            }
+        }
+        
+        #head {
+            float: none;
+            padding: 0;
+            border: 0;
+            text-align: center;
+            width: 100%;
+        }
+        
+        #mustelid {
+            margin: 0 auto;
+            float: none;
+        }
+        
+        h2 {
+            display: none;
+        }
+        
+        #title {
+            float: none;
+        }
+        
+        #logo-stuff {
+            overflow: hidden;
+        }
+    }
+}
