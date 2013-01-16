@@ -1,15 +1,1 @@
-Hello otters.
-
-You can put your shit in this git repo.
-
-Your assigned port range is 39410-39419, and you may use these for anything you want. At the moment, any ports from 39000-39999 should be publicly accessible and you can bind to anything, but don't assume that they always will be or that I won't implement some kind of user control feature in the future. If you want more ports, just ask me; I'm going to keep track of them in a list.
-
-Your HTTP server should use port 39410. If you want more processes, let me know, and I can bind to more ports. I can also set it up via UNIX socket, if you'd prefer, but proxying a public port allows you to do things like WebSockets, which nginx doesn't support and the user isn't going to see, so it doesn't matter if it's on an altport.
-
-You'll want to use Bundler for your gems. I think Rails uses this by default now, but I can't remember. Anyway, any time you change your Gemfile, you must 'bundle install' locally and then commit the resulting Gemfile.lock. You probably already know this. I don't know. The reason is that the start.sh script I included uses `bundle install --deployment`, which helps sandbox your stuff. In fact I bet it won't work otherwise.
-
-./start.sh and ./stop.sh should work with just about anything as they are, including Rails, as long as you delete the config.ru included and replace them with your own.
-
-Have fun.
---
-  ~devyn
+The source of otte.rs which is a custom Rails webapp.
