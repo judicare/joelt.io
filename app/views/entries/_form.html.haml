@@ -2,7 +2,7 @@
 #form
     = form_for @entry, :html => { :multipart => true } do |f|
         - if @entry.image.exists?
-            = fancy_img @entry
+            = fancy_img @entry, :tiny
         %h3= form_title
         - unless @entry.errors.empty?
             %ul
