@@ -11,12 +11,12 @@ module EntriesHelper
     end.join(sep).html_safe
   end
   
-  def fancy_img e, ty = :post
-    return if e.image.width(ty).nil?
-    if e.image.width(ty) >= e.image.width(:original)
-      image_tag(e.image.url ty)
+  def fancy_img e
+    return if e.image.width.nil?
+    if e.image.width(:post) >= e.image.width
+      image_tag(e.image.url, :class => "noshadow")
     else
-      link_to image_tag(e.image.url ty), e.image.url, :class => "fancy"
+      link_to image_tag(e.image.url, :class => "noshadow"), e.image.url, :class => "fancy", :style => "height: #{[e.image.height, 110].min}px"
     end
   end
 end
