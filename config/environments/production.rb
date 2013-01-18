@@ -60,7 +60,7 @@ Otters::Application.configure do
       :port => 26,
       :authentication => :login,
       :openssl_verify_mode => 'none'
-    }.merge(YAML.load(file.read))
+    }.merge(YAML.load(file.read).symbolize_keys)
   end
 
   # Enable threaded mode
