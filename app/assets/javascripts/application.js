@@ -12,9 +12,12 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require fancybox
+//= require shadowbox
 //= require_tree .
 
 $(document).ready(function() {
-    $("a.fancy").fancybox();
-})
+    Shadowbox.init({
+        overlayOpacity: 0.2,
+        fadeDuration: 0.25
+    });
+});

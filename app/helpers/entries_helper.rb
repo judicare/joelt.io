@@ -16,7 +16,7 @@ module EntriesHelper
     if e.image.width(:post) >= e.image.width
       image_tag(e.image.url, :class => "noshadow")
     else
-      link_to image_tag(e.image.url(ty == :tiny ? ty : :original), :class => "noshadow"), e.image.url, :class => "fancy", :style => "height: #{[e.image.height, 110].min}px"
+      link_to image_tag(e.image.url(ty == :tiny ? ty : :original), :class => "noshadow"), e.image.url, :class => "fancy", :rel => "shadowbox", :style => "height: #{[e.image.height, 110].min}px"
     end
   end
 end
