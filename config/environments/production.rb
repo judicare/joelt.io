@@ -54,14 +54,14 @@ Otters::Application.configure do
   
   config.action_mailer.delivery_method = :smtp
     
-  config.action_mailer.smtp_settings = {
-    :address => 'mail.otte.rs',
-    :port => 26,
-    :user_name => 'everyone-else+otte.rs',
-    :password => '4KRgBDMRtyno7p_zh-k2Iw',
-    :authentication => :login,
-    :openssl_verify_mode => 'none'
-  }
+  config.action_mailer.smtp_settings = open(File.expand_path("../../smtp_creds.yaml", __FILE__)) do |file|
+    {
+      :address => 'mail.otte.rs',
+      :port => 26,
+      :authentication => :login,
+      :openssl_verify_mode => 'none'
+    }.merge(YAML.load(file.read))
+  end
 
   # Enable threaded mode
   # config.threadsafe!
