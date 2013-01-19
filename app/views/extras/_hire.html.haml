@@ -1,5 +1,5 @@
 #form
-    = form_tag hired_me_path, :method => :put, :remote => true do
+    = form_tag hired_me_path, method: :put, remote: true do
         #mask
         %p
             = label_tag "email", "Email"
@@ -13,6 +13,6 @@
             = label_tag "project", "Explain the project:"
             = text_area_tag "project"
             %span.error.project
-        = submit_tag "Send it off!", :class => "submit"
+        = submit_tag "Send it off!", class: "submit"
         - unless defined?(no_close)
-            = content_tag :a, "close", :id => "no-hire", :href => "#"
+            = content_tag :a, "close", id: "no-hire", href: "#"

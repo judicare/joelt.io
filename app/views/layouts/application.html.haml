@@ -8,12 +8,12 @@
                 |
                 = t
         = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Droid+Serif"
-        = stylesheet_link_tag "application", :media => "all"
+        = stylesheet_link_tag "application", media: "all"
         = javascript_include_tag "application"
-        %link{:rel => "alternate", :type => "application/rss+xml", :title => "RSS", :href => all_path + ".rss"}
+        %link{rel: "alternate", type: "application/rss+xml", title: "RSS", href: all_path + ".rss"}
         = csrf_meta_tags
-        %meta{:charset => "utf-8"}
-        %meta{:name => "viewport", :content => "width=device-width,initial-scale=1,maximum-scale=1"}
+        %meta{charset: "utf-8"}
+        %meta{name: "viewport", content: "width=device-width,initial-scale=1,maximum-scale=1"}
     
     - body_class = yield(:body_class).split(" ")
     - body_class << "admin" if session[:user_id]
@@ -24,30 +24,30 @@
             - body_class << "home"
         - else
             - body_class << "away"
-    %body{:class => body_class.join(" ")}
+    %body{class: body_class.join(" ")}
         #floater
             #head
                 %section#logo-stuff
-                    = link_to "go home", (body_class.include?("home") ? root_path : all_path), :id => "mustelid", :title => "back home"
+                    = link_to "go home", (body_class.include?("home") ? root_path : all_path), id: "mustelid", title: "back home"
                     %span#title
                         = link_to "otte.rs", root_path
                 %h2.real-subtitle Functional and dysfunctional programming by a guy with a colorful head.
                 - unless controller.action_name == "home"
                     %h2.subtitle
                         - if params[:type] == "blog"
-                            %strong= link_to "blog", blog_path, :title => "blog posts"
+                            %strong= link_to "blog", blog_path, title: "blog posts"
                         - else
-                            = link_to "blog", blog_path, :title => "blog posts"
+                            = link_to "blog", blog_path, title: "blog posts"
                         &middot;
                         - if params[:type] == "design"
-                            %strong= link_to "design", design_path, :title => "design posts"
+                            %strong= link_to "design", design_path, title: "design posts"
                         - else
-                            = link_to "design", design_path, :title => "design posts"
+                            = link_to "design", design_path, title: "design posts"
                         &middot;
                         - if params[:type] == "code"
-                            %strong= link_to "code", code_path, :title => "code posts"
+                            %strong= link_to "code", code_path, title: "code posts"
                         - else
-                            = link_to "code", code_path, :title => "code posts"
+                            = link_to "code", code_path, title: "code posts"
                         %br
                         = link_to "github", "http://github.com/otters"
                         &middot;
@@ -58,16 +58,16 @@
                     %ul
                         %li
                             - unless session[:user_id]
-                                = link_to "github", "http://github.com/otters", :title => "my code"
+                                = link_to "github", "http://github.com/otters", title: "my code"
                             - else
                                 = link_to "new post", new_entry_path
                         %li
-                            = link_to session[:user_id] ? "read blog" : "stuff", all_path, :title => "stuff I've made"
+                            = link_to session[:user_id] ? "read blog" : "stuff", all_path, title: "stuff I've made"
                         %li
                             - if session[:user_id]
                                 = link_to "logout", logout_path
                             - else
-                                = link_to "hire me", hire_me_path, :title => "what are you waiting for?", :remote => true, :id => "hire_me_link"
-                                = image_tag "ajax.gif", :id => "ajax"
+                                = link_to "hire me", hire_me_path, title: "what are you waiting for?", remote: true, id: "hire_me_link"
+                                = image_tag "ajax.gif", id: "ajax"
             
             #main= yield

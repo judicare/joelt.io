@@ -1,5 +1,5 @@
 class EntriesController < ApplicationController
-  before_filter :authorize, :only => [:new, :create, :edit, :update, :destroy]
+  before_filter :authorize, only: [:new, :create, :edit, :update, :destroy]
   
   def home
   end
@@ -13,7 +13,7 @@ class EntriesController < ApplicationController
     if @entry.save
       redirect_to slug_entries_path(@entry.slug)
     else
-      render :action => :new, :entry => @entry
+      render action: :new, entry: @entry
     end
   end
   
@@ -26,7 +26,7 @@ class EntriesController < ApplicationController
     if @entry.update_attributes params[:entry]
       redirect_to slug_entries_path(@entry.slug)
     else
-      render :action => :edit, :entry => @entry
+      render action: :edit, entry: @entry
     end
   end
   
@@ -36,21 +36,21 @@ class EntriesController < ApplicationController
   end
   
   def index
-    @entries = Entry.find :all, :conditions => need_publish, :order => "created_at DESC"
+    @entries = Entry.find :all, conditions: need_publish, order: "created_at DESC"
     
     respond_to do |format|
       format.html
-      format.rss { render :layout => false }
+      format.rss { render layout: false }
     end
   end
   
   def by_tag
     @tag = Tag.find_by_slug(params[:tag]) || not_found
-    @entries = @tag.entries.find :all, :conditions => need_publish, :order => "created_at DESC"
+    @entries = @tag.entries.find :all, conditions: need_publish, order: "created_at DESC"
   end
   
   def by_type
-    @entries = Entry.find :all, :conditions => { :entry_type => params[:type] }.merge(need_publish), :order => "created_at DESC"
+    @entries = Entry.find :all, conditions: { entry_type: params[:type] }.merge(need_publish), order: "created_at DESC"
   end
   
   def by_slug
@@ -60,7 +60,7 @@ class EntriesController < ApplicationController
   
   private
   def need_publish
-    session[:user_id] ? {} : { :published => true }
+    session[:user_id] ? {} : { published: true }
   end
   
   def authorize

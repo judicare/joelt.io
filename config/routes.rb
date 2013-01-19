@@ -14,20 +14,20 @@ Otters::Application.routes.draw do
   put '/login' => 'users#try_login'
   get '/logout' => 'users#logout'
   
-  resources :entries, :except => [:show]
+  resources :entries, except: [:show]
   
   get 'all' => 'entries#index'
-  get '/entries/:slug' => 'entries#by_slug', :slug => /[\w\-]+/, :as => :slug_entries
+  get '/entries/:slug' => 'entries#by_slug', slug: /[\w\-]+/, as: :slug_entries
   
-  get '/tagged/:tag' => 'entries#by_tag', :as => :tagged
-  get '/typed/:type' => 'entries#by_type', :as => :typed
+  get '/tagged/:tag' => 'entries#by_tag', as: :tagged
+  get '/typed/:type' => 'entries#by_type', as: :typed
   
   %w[blog design code].each do |ty|
-    match "/#{ty}" => 'entries#by_type', :defaults => { :type => ty }, :as => ty.to_sym
+    match "/#{ty}" => 'entries#by_type', defaults: { type: ty }, as: ty.to_sym
   end
   
-  get '/hire-me' => 'extras#hire', :as => :hire_me
-  put '/hire-me' => 'extras#email', :as => :hired_me
+  get '/hire-me' => 'extras#hire', as: :hire_me
+  put '/hire-me' => 'extras#email', as: :hired_me
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
@@ -69,7 +69,7 @@ Otters::Application.routes.draw do
   # just remember to delete public/index.html.
   # root :to => 'welcome#index'
   
-  root :to => 'entries#home'
+  root to: 'entries#home'
 
   # See how all your routes lay out with "rake routes"
 

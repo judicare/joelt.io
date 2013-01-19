@@ -3,9 +3,9 @@ require 'bcrypt'
 class User < ActiveRecord::Base
   attr_accessor :new_password, :new_password_confirmation
   
-  validates_confirmation_of :new_password, :if => :password_changed?
+  validates_confirmation_of :new_password, if: :password_changed?
   
-  before_save :hash_new_password, :if => :password_changed?
+  before_save :hash_new_password, if: :password_changed?
   
   def password_changed?
     !@new_password.blank?

@@ -1,4 +1,4 @@
-%article{:class => "blog#{defined?(single) ? " single" : ""}"}
+%article{class: "blog#{defined?(single) ? " single" : ""}"}
     - unless entry.published
         .unpublished= link_to "Unpublished", edit_entry_path(entry)
     %section
@@ -18,7 +18,7 @@
                 - if session[:user_id]
                     = link_to "Edit", edit_entry_path(entry)
                     or&nbsp;
-                    %span>= link_to "delete", entry_path(entry), :method => :delete, :confirm => "you sure?"
+                    %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
                     = "."
         - else
             = markdown entry.preview

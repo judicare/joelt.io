@@ -1,6 +1,6 @@
 = body_class "home box-shown login"
 #form
-    = form_tag login_path, :method => "put" do
+    = form_tag login_path, method: "put" do
         %p
             = label_tag :username, "Username"
             = text_field_tag :username
@@ -9,4 +9,4 @@
         %p
             = label_tag :password, "Password"
             = password_field_tag :password
-        = submit_tag "Login", :class => "submit"
+        = submit_tag "Login", class: "submit"

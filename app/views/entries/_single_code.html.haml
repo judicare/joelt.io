@@ -1,11 +1,11 @@
-%article{:class => "code#{defined?(single) ? " single" : ""}"}
+%article{class: "code#{defined?(single) ? " single" : ""}"}
     - unless entry.published
         .unpublished= link_to "Unpublished", edit_entry_path(entry)
     %section
         %h3
             = linkify_title entry
             - if !defined?(single)
-                = link_to "read about it →", slug_entries_path(entry.slug), :class => "read_more"
+                = link_to "read about it →", slug_entries_path(entry.slug), class: "read_more"
         - if defined?(single)
             - title entry.title
             = fancy_img entry
@@ -18,6 +18,6 @@
                 - if session[:user_id]
                     = link_to "Edit", edit_entry_path(entry)
                     or&nbsp;
-                    %span>= link_to "delete", entry_path(entry), :method => :delete, :confirm => "you sure?"
+                    %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
                     = "."
                     

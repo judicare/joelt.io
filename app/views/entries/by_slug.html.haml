@@ -1,1 +1,1 @@
-= render :partial => "single_#{@entry.entry_type}", :object => @entry, :as => :entry, :locals => { :single => true }
+= render partial: "single_#{@entry.entry_type}", object: @entry, as: :entry, locals: { single: true }

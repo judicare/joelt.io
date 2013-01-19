@@ -1,6 +1,6 @@
 = body_class "box-shown home form"
 #form
-    = form_for @entry, :html => { :multipart => true } do |f|
+    = form_for @entry, html: { multipart: true } do |f|
         - if @entry.image.exists?
             = fancy_img @entry, :tiny
         %h3= form_title
@@ -27,5 +27,5 @@
                 = f.file_field :image
             %span
                 = f.label :link
-                = f.text_field :link, :placeholder => "link"
-        = f.submit "Post it", :class => "submit"
+                = f.text_field :link, placeholder: "link"
+        = f.submit "Post it", class: "submit"

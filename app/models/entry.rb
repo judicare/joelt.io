@@ -3,11 +3,11 @@ class Entry < ActiveRecord::Base
   attr_accessible :title, :content, :published, :entry_type, :image, :link
   
   attr_accessible :image
-  has_attached_file :image, :styles => { :tiny => "175x24>", :post => "650>" }
+  has_attached_file :image, styles: { tiny: "175x24>", post: "650>" }
   
   validates_presence_of :title, :content, :entry_type
   validates_uniqueness_of :slug
-  validates_inclusion_of :entry_type, :in => %w(blog code design), :message => "must be one of blog, code, design"
+  validates_inclusion_of :entry_type, in: %w(blog code design), message: "must be one of blog, code, design"
   validates_associated :tags
   
   before_create :create_slug
