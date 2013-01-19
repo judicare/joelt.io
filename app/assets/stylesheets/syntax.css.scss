@@ -34,9 +34,14 @@ figure {
             
         pre {
             color: #555;
+            
+            .kr, .kt, .o {
+                font-weight: bold;
+            }
     
             .cm {
                 color: #998;
+                font-style: italic;
             }
     
             .kr, .k, .ow {
