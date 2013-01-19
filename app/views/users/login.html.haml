@@ -1,6 +1,7 @@
 = body_class "home box-shown login"
 #form
     = form_tag login_path, method: "put" do
+        %h3 Login
         %p
             = label_tag :username, "Username"
             = text_field_tag :username

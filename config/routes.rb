@@ -13,6 +13,8 @@ Otters::Application.routes.draw do
   get '/login' => 'users#login'
   put '/login' => 'users#try_login'
   get '/logout' => 'users#logout'
+  get '/change' => 'users#new_pass'
+  put '/change' => 'users#change_pass'
   
   resources :entries, except: [:show]
   

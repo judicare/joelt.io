@@ -1,0 +1,13 @@
+= body_class "home box-shown login"
+#form
+    = form_tag change_path, method: "put" do
+        %h3 Change password
+        %p
+            = label_tag :new_password, "New pass"
+            = password_field_tag :new_password
+        %p
+            = label_tag :new_password_confirmation, "Confirm"
+            = password_field_tag :new_password_confirmation
+            - unless @user.errors.full_messages.empty?
+                %span.error try again
+        = submit_tag "Change it", class: "submit"
