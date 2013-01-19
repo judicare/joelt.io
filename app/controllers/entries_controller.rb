@@ -19,12 +19,13 @@ class EntriesController < ApplicationController
   
   def edit
     @entry = Entry.find(params[:id])
+    @entry.tag_list = @entry.tags.map(&:name).join(" ")
   end
   
   def update
     @entry = Entry.find(params[:id])
     if @entry.update_attributes params[:entry]
-      redirect_to slug_entries_path(@entry.slug)
+      redirect_to edit_entry_path(@entry)
     else
       render action: :edit, entry: @entry
     end

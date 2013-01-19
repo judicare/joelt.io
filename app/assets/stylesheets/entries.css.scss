@@ -39,10 +39,6 @@ article {
     
     section {
         padding: 30px 35px;
-        
-        & > *:not(figure) {
-            max-width: 650px;
-        }
     }
     
     a.img {
@@ -148,9 +144,14 @@ article {
         opacity: 0.8;
     }
     
+    h2 {
+        margin: 16px 0;
+    }
+    
     p {
         line-height: 1.5em;
         padding: 6px;
+        font-size: 15px;
     }
 }
 
