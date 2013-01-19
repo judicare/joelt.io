@@ -21,5 +21,5 @@
                     %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
                     = "."
         - else
-            = markdown entry.preview
+            = markdown excerpt(entry.preview, "", radius: 250)
             = link_to "more →", slug_entries_path(entry.slug)
