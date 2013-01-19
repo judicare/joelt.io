@@ -7,7 +7,6 @@ class UsersController < ApplicationController
     uname, pw = params[:username], params[:password]
     case (u = User.authenticate(uname, pw))
     when nil
-      flash[:error] = "Invalid username or password."
       redirect_to :back
     else
       cookies.permanent.signed[:user_id] = u.id
