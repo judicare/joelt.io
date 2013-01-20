@@ -2,7 +2,7 @@
 
 module EntriesHelper
   def links entry
-    link_to "μ Comments", slug_entries_path(entry.slug) + "#disqus_thread", class: "read_more"
+    link_to "μ Comments →", slug_entries_path(entry.slug) + "#disqus_thread", class: "read_more"
   end
   
   def linkify_title e
