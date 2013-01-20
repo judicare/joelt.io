@@ -13,11 +13,11 @@ module ApplicationHelper
   end
   
   def literate_haskell html
-    html.gsub(/^> /, "").strip.gsub(/<pre([^>]+)>(.*?)<\/pre>/m) do
+    html.gsub(/^> /, "").strip.gsub(/<pre([^>]+)>(.*?)<\/pre>(?:\r\n)/m) do
       if $1.include?("haskell") && !$1.include?("nolhs")
         $2.split("\n")[1..-1].map{|x|"> #{x}"}.join("\n")
       else
-        "<pre>#{$2}</pre>"
+        "<pre>#{$2}</pre>\r\n"
       end
     end.gsub("&lt;", "<").gsub("&gt;", ">")
   end
