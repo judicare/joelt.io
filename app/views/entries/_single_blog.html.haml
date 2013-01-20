@@ -15,10 +15,10 @@
                 = tag_list(entry)
                 on&nbsp;
                 %span>= entry.created_at.strftime("%b %d, %Y.")
-                &nbsp;
                 - if entry.tags.any?{|x|x.slug == "haskell"}
+                    &nbsp;
                     %span>= link_to "Literate Haskell version", slug_entries_path(entry.slug) + ".lhs"
-                = "."
+                    = "."
                 - if session[:user_id]
                     = link_to "Edit", edit_entry_path(entry)
                     or&nbsp;
