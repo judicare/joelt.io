@@ -20,6 +20,7 @@
                     or&nbsp;
                     %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
                     = "."
+            #disqus_thread
         - else
             = markdown excerpt(entry.preview, "", radius: 250)
-            = link_to "more →", slug_entries_path(entry.slug)
+            = links entry

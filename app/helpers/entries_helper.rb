@@ -1,4 +1,10 @@
+# encoding: utf-8
+
 module EntriesHelper
+  def links entry
+    link_to "μ Comments", slug_entries_path(entry.slug) + "#disqus_thread", class: "read_more"
+  end
+  
   def linkify_title e
     first_word = e.title.split(/,/)[0]
     rest = e.title[first_word.length..-1]
