@@ -15,7 +15,7 @@ module ApplicationHelper
   def literate_haskell html
     html.gsub(/^> /, "").strip.gsub(/<pre([^>]+)>(.*?)<\/pre>/m) do
       if $1.include?("haskell") && !$1.include?("nolhs")
-        $2.split("\n").reject(&:blank?).map{|x|"> #{x}"}.join("\n")
+        $2.split("\n")[1..-1].map{|x|"> #{x}"}.join("\n")
       else
         "<pre>#{$2}</pre>"
       end
