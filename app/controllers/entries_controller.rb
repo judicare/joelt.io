@@ -56,7 +56,15 @@ class EntriesController < ApplicationController
   
   def by_slug
     @entry = Entry.find_by_slug(params[:slug]) || not_found
-    redirect_to :root unless session[:user_id] || @entry.published
+    begin
+      redirect_to :root
+      return
+    end unless session[:user_id] || @entry.published
+    
+    respond_to do |format|
+      format.html
+      format.lhs { render :layout => false }
+    end
   end
   
   private

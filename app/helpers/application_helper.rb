@@ -12,6 +12,16 @@ module ApplicationHelper
     doc.at_css("body").inner_html.to_s
   end
   
+  def literate_haskell html
+    html.gsub(/^> /, "").strip.gsub(/<pre([^>]+)>(.*?)<\/pre>/m) do
+      if $1.include?("haskell") && !$1.include?("nolhs")
+        $2.split("\n").reject(&:blank?).map{|x|"> #{x}"}.join("\n")
+      else
+        "<pre>#{$2}</pre>"
+      end
+    end.gsub("&lt;", "<").gsub("&gt;", ">")
+  end
+  
   def title t
     content_for(:title) { t }
   end
