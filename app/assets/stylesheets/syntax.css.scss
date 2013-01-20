@@ -35,47 +35,71 @@ figure {
         }
             
         pre {
-            color: #555;
+            color: black;
+            
+            .nn {
+                color: #555;
+            }
+            
+            .err {
+                color: #a61717;
+                background-color: #e3d2d2;
+            }
             
             .kr, .kt, .o {
                 font-weight: bold;
             }
     
-            .cm {
+            .cm, .c1 {
                 color: #998;
                 font-style: italic;
             }
+            
+            .cp {
+                color: #999;
+                font-weight: bold;
+            }
     
             .kr, .k, .ow {
-                color: black;
-            }
-        
-            .o {
-                color: black;
+                font-weight: bold;
             }
         
             .kt {
             	color: #445588;
             }
 
-            .s {
+            .s, .s1, .s2 {
             	color: #d14;
             }
 
             .nf {
             	color: #900;
+                font-weight: bold;
             }
         
             .nb {
                 color: #0086B3;
             }
+            
+            .nc {
+                color: #445588;
+                font-weight: bold;
+            }
         
-            .m {
+            .m, .mi {
                 color: #099;
             }
         
             .nt {
                 color: #000080;
+            }
+            
+            .ss {
+                color: #990073;
+            }
+            
+            .no, .nv {
+                color: #008080;
             }
         }
     }
