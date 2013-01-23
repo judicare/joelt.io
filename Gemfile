@@ -49,3 +49,5 @@ gem 'thin'
 
 gem 'paperclip', '~> 3.0'
 gem 'paperclip-meta'
+
+gem 'rmagick', :require => "RMagick"

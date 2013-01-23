@@ -30,6 +30,8 @@ Otters::Application.routes.draw do
   
   get '/hire-me' => 'extras#hire', as: :hire_me
   put '/hire-me' => 'extras#email', as: :hired_me
+  
+  get '/signature' => 'extras#signature'
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products

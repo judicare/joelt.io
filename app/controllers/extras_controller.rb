@@ -15,4 +15,31 @@ class ExtrasController < ApplicationController
       format.js
     end
   end
+  
+  def signature
+    img = Magick::Image.new(420, 50) {
+        self.background_color = 'transparent'
+        self.format = 'png'
+    }
+
+    d = Magick::Draw.new
+    
+    5.times do |i|
+      d.fill random_hex
+      d.path "M0,0 h#{400 - (80 * i) - (rand(39) + 1)} l10,50 H#{i == 4 ? 10 : 12} z"
+    end
+
+    d.draw img
+    
+    respond_to do |format|
+      format.png {
+        send_data img.to_blob, :stream => false, :filename => 'signature.png', :type => 'image/png', :disposition => 'inline'
+      }
+    end
+  end
+  
+  private
+  def random_hex
+    "#" + Array.new(3) { rand(205).to_s(16).rjust(2, "0") }.join("")
+  end
 end
