@@ -1,9 +1,13 @@
 module ApplicationHelper
   def markdown(text, entry, nocache = false)
     options = [:hard_wrap, :filter_html, :autolink, :no_intraemphasis, :fenced_code_blocks, :gh_blockcode]
-    Rails.cache.fetch("#{entry.slug}-#{entry.updated_at}", compress: true, force: nocache) {
-      syntax_highlighter(Redcarpet::Markdown.new(Redcarpet::Render::HTML, Hash[options.map{|k|[k,true]}]).render(text))
-    }.html_safe
+    if nocache
+      syntax_highlighter(Redcarpet::Markdown.new(Redcarpet::Render::HTML, Hash[options.map{|k|[k,true]}]).render(text)).html_safe
+    else
+      Rails.cache.fetch("#{entry.slug}-#{entry.updated_at}", compress: true) {
+        syntax_highlighter(Redcarpet::Markdown.new(Redcarpet::Render::HTML, Hash[options.map{|k|[k,true]}]).render(text))
+      }.html_safe
+    end
   end
 
   def syntax_highlighter(html)
