@@ -16,9 +16,10 @@ Otters::Application.routes.draw do
   get '/change' => 'users#new_pass'
   put '/change' => 'users#change_pass'
   
-  resources :entries, except: [:show]
+  resources :entries, except: [:show, :index]
   
   get 'all' => 'entries#index'
+  get '/all/page/:page(.:format)' => 'entries#index'
   get '/entries/:slug' => 'entries#by_slug', slug: /[\w\-]+/, as: :slug_entries
   
   get '/tagged/:tag' => 'entries#by_tag', as: :tagged
