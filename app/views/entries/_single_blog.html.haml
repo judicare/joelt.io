@@ -27,5 +27,5 @@
             .links= around_links
             #disqus_thread
         - else
-            = markdown excerpt(entry.preview, "", radius: 250), entry
+            = markdown excerpt(entry.preview, "", radius: 250), entry, true
             = links entry
