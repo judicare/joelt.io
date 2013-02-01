@@ -31,7 +31,7 @@ article {
         margin-bottom: 0px;
     }
     
-    .tags {
+    .tags, div.links {
         font-size: 13px;
         font-weight: bold;
         margin: 14px 8px 8px;
@@ -192,6 +192,19 @@ article {
 
 #disqus_thread {
     margin-top: 45px;
+}
+
+nav {
+    padding: 0 0 30px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+
+    a {
+        color: #0080aa;
+        text-decoration: none;
+        font-weight: normal;
+    }
 }
 
 @media only screen and (max-width: 775px) {

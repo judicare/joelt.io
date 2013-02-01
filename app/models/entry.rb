@@ -15,6 +15,8 @@ class Entry < ActiveRecord::Base
   
   before_save :create_slug
   
+  paginates_per 10
+  
   def preview
     self.content.split(/(?:\r\n){2}/)[0]
   end

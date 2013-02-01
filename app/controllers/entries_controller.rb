@@ -37,7 +37,7 @@ class EntriesController < ApplicationController
   end
   
   def index
-    @entries = Entry.find :all, conditions: need_publish, order: "created_at DESC"
+    @entries = Entry.where(need_publish).order("created_at DESC").page(params[:page])
     
     respond_to do |format|
       format.html
@@ -47,15 +47,18 @@ class EntriesController < ApplicationController
   
   def by_tag
     @tag = Tag.find_by_slug(params[:tag]) || not_found
-    @entries = @tag.entries.find :all, conditions: need_publish, order: "created_at DESC"
+    @entries = @tag.entries.where(need_publish).order("created_at DESC").page(params[:page])
   end
   
   def by_type
-    @entries = Entry.find :all, conditions: { entry_type: params[:type] }.merge(need_publish), order: "created_at DESC"
+    hsh = { entry_type: params[:type] }.merge(need_publish)
+    @entries = Entry.where(hsh).order("created_at DESC").page(params[:page])
   end
   
   def by_slug
     @entry = Entry.find_by_slug(params[:slug]) || not_found
+    @next = Entry.where("id > ?", @entry.id).order("id ASC").first
+    @prev = Entry.where("id < ?", @entry.id).order("id DESC").first
     begin
       redirect_to :root
       return

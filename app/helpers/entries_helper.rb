@@ -17,6 +17,14 @@ module EntriesHelper
     end.join(sep).html_safe
   end
   
+  def around_links
+    str = ""
+    str << link_to("← #{@prev.title}", slug_entries_path(@prev.slug)) if @prev
+    str << " ⋮ " if @prev && @next
+    str << link_to("#{@next.title} →", slug_entries_path(@next.slug)) if @next
+    str.html_safe
+  end
+  
   def fancy_img e, ty = :post
     return if e.image.width.nil?
     if e.image.width(:post) >= e.image.width
