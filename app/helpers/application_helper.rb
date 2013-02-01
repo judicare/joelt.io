@@ -1,7 +1,9 @@
 module ApplicationHelper
-  def markdown(text)
+  def markdown(text, entry)
     options = [:hard_wrap, :filter_html, :autolink, :no_intraemphasis, :fenced_code_blocks, :gh_blockcode]
-    syntax_highlighter(Redcarpet::Markdown.new(Redcarpet::Render::HTML, Hash[options.map{|k|[k,true]}]).render(text)).html_safe
+    Rails.cache.fetch("#{entry.slug}-#{entry.updated_at}", compress: true) {
+      syntax_highlighter(Redcarpet::Markdown.new(Redcarpet::Render::HTML, Hash[options.map{|k|[k,true]}]).render(text))
+    }.html_safe
   end
 
   def syntax_highlighter(html)

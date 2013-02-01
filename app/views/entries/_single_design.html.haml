@@ -13,7 +13,7 @@
                 = links entry
         - if defined?(single)
             - title entry.title
-            = markdown entry.content
+            = markdown entry.content, entry
             %div.tags
                 Filed in
                 = tag_list(entry)

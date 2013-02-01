@@ -9,7 +9,7 @@
         - if defined?(single)
             - title entry.title
             = fancy_img entry
-            = markdown entry.content
+            = markdown entry.content, entry
             %div.tags
                 Filed in
                 = tag_list(entry)

@@ -9,7 +9,7 @@
                 = link_to entry.title, slug_entries_path(entry.slug)
         - if defined?(single)
             - title entry.title
-            = markdown entry.content
+            = markdown entry.content, entry
             %div.tags<
                 Filed in
                 = tag_list(entry)
@@ -27,5 +27,5 @@
             .links= around_links
             #disqus_thread
         - else
-            = markdown excerpt(entry.preview, "", radius: 250)
+            = markdown excerpt(entry.preview, "", radius: 250), entry
             = links entry
