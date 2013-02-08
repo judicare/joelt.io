@@ -53,3 +53,7 @@ gem 'paperclip-meta'
 gem 'kaminari'
 
 gem 'rmagick', :require => "RMagick"
+
+group :production do
+  gem 'therubyracer', :require => 'v8'
+end
