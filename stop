@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo -n "Stopping server..."
+cd /srv/http/otte.rs
+bundle exec thin stop --pid /run/otters/otte.rs.pid 2>&1 >/dev/null
+echo "kablamo."
