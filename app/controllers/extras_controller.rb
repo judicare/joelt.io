@@ -8,7 +8,7 @@ class ExtrasController < ApplicationController
   
   def email
     @msg = Message.new *params.values_at(:email, :name, :project)
-    HireMailer.hire(params).deliver if @msg.valid?
+    HireMailer.hire(params).deliver! if @msg.valid?
 
     respond_to do |format|
       format.html { redirect_to hire_me_path }
