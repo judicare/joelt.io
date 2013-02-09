@@ -10,7 +10,7 @@ cd /srv/http/otte.rs
 echo -n "Updating gems..."
 bundle install --deployment >/dev/null || exit 1
 echo -n "compiling assets..."
-RAILS_ENV=production bundle exec rake assets:precompile db:migrate 2>&1 >/dev/null || exit 1
+RAILS_ENV=production bundle exec rake assets:precompile db:migrate 2>/dev/null || exit 1
 echo -n "starting webserver..."
 bundle exec thin start --port 39410 --env production --daemonize --pid /run/otters/otte.rs.pid >/dev/null
 echo "done."
