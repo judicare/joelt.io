@@ -53,15 +53,6 @@ Otters::Application.configure do
   config.action_mailer.raise_delivery_errors = false
   
   config.action_mailer.delivery_method = :smtp
-    
-  config.action_mailer.smtp_settings = {
-    :address => 'mail.otte.rs',
-    :port => 26,
-    :authentication => :login,
-    :openssl_verify_mode => 'none',
-    :user_name => "everyone-else+otte.rs",
-    :password => "&{ohaK?GTdZs"
-  }
 
   # Enable threaded mode
   # config.threadsafe!
