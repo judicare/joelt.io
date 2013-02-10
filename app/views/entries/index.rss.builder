@@ -9,9 +9,9 @@ xml.rss version: "2.0" do
       xml.item do
         xml.title entry.title
         if entry.image.exists?
-          xml.description markdown("![#{entry.title} image](http://otte.rs/#{entry.image.url(:post)})\n\n" + entry.content)
+          xml.description markdown("![#{entry.title} image](http://otte.rs/#{entry.image.url(:post)})\n\n" + entry.content, entry)
         else
-          xml.description markdown(entry.content)
+          xml.description markdown(entry.content, entry)
         end
         xml.pubDate entry.created_at.to_s(:rfc822)
         xml.link slug_entries_url(entry)
