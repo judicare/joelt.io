@@ -29,7 +29,7 @@ article {
     
     .tags, div.links {
         font-size: 13px;
-        margin: 14px 8px 8px;
+        margin: 14px 8px 5px;
         
         a {
             text-decoration: underline;
@@ -42,13 +42,14 @@ article {
     
     .tags {
         border-top: 2px dashed #eee;
-        padding-top: 21px;
+        padding-top: 14px;
         margin-top: 18px;
+        margin-bottom: -5px;
     }
     
     div.links {
         border-bottom: 2px dashed #eee;
-        padding-bottom: 20px;
+        padding-bottom: 11px;
         overflow: hidden;
         
         a {
