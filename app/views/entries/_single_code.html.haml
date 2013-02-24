@@ -16,10 +16,7 @@
                 on
                 = entry.created_at.strftime("%b %d, %Y.")
                 - if session[:user_id]
-                    = link_to "Edit", edit_entry_path(entry)
-                    or&nbsp;
-                    %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
-                    = "."
+                    #{edit_link entry} or #{delete_link entry}.
             .links= around_links
             #disqus_thread
                     

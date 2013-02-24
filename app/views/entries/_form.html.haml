@@ -7,7 +7,7 @@
         - unless @entry.errors.empty?
             %ul
                 - @entry.errors.full_messages.each do |m|
-                    %li= m + "."
+                    %li #{m}.
         %p
             = f.label :title
             = f.text_field :title

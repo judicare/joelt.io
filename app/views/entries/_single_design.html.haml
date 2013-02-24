@@ -6,7 +6,7 @@
             - if entry.link.blank?
                 = image_tag entry.image.url(:post)
             - else
-                = link_to (image_tag entry.image.url(:post)), entry.link, class: "img"
+                = link_to image_tag(entry.image.url :post), entry.link, class: "img"
         - if !defined?(single)
             %h3
                 = entry.title
@@ -20,9 +20,6 @@
                 on
                 = entry.created_at.strftime("%b %d, %Y.")
                 - if session[:user_id]
-                    = link_to "Edit", edit_entry_path(entry)
-                    or&nbsp;
-                    %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
-                    = "."
+                    #{edit_link entry} or #{delete_link entry}.
             .links= around_links
             #disqus_thread

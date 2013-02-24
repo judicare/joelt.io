@@ -19,9 +19,8 @@ module EntriesHelper
   
   def around_links
     str = ""
-    str << link_to("← #{@prev.title}", slug_entries_path(@prev.slug)) if @prev
-    str << " ⋮ " if @prev && @next
-    str << link_to("#{@next.title} →", slug_entries_path(@next.slug)) if @next
+    str << link_to("← #{@prev.title}", slug_entries_path(@prev.slug), class: "prev-link") if @prev
+    str << link_to("#{@next.title} →", slug_entries_path(@next.slug), class: "next-link") if @next
     str.html_safe
   end
   
@@ -32,5 +31,13 @@ module EntriesHelper
     else
       link_to image_tag(e.image.url(ty == :tiny ? ty : :original), class: "noshadow"), e.image.url, class: "fancy", rel: "shadowbox", style: "height: #{[e.image.height, 110].min}px"
     end
+  end
+  
+  def edit_link entry
+    link_to "Edit", edit_entry_path(entry)
+  end
+  
+  def delete_link entry
+    link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
   end
 end

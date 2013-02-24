@@ -29,8 +29,43 @@ article {
     
     .tags, div.links {
         font-size: 13px;
-        font-weight: bold;
         margin: 14px 8px 8px;
+        
+        a {
+            text-decoration: underline;
+        }
+        
+        strong a {
+            text-decoration: none;
+        }
+    }
+    
+    .tags {
+        border-top: 2px dashed #eee;
+        padding-top: 21px;
+        margin-top: 18px;
+    }
+    
+    div.links {
+        border-bottom: 2px dashed #eee;
+        padding-bottom: 20px;
+        overflow: hidden;
+        
+        a {
+            display: block;
+            margin: 0 0 3px;
+            width: 50%;
+            text-decoration: none;
+            
+            &.prev-link {
+                float: left;
+            }
+        
+            &.next-link {
+                float: right;
+                text-align: right;
+            }
+        }
     }
     
     section {
@@ -187,7 +222,7 @@ article {
 }
 
 #disqus_thread {
-    margin-top: 45px;
+    margin-top: 30px;
 }
 
 nav {

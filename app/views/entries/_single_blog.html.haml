@@ -10,20 +10,15 @@
         - if defined?(single)
             - title entry.title
             = markdown entry.content, entry
-            %div.tags<
+            %div.tags
                 Filed in
-                = tag_list(entry)
-                on&nbsp;
-                %span>= entry.created_at.strftime("%b %d, %Y.")
+                = tag_list entry
+                on
+                = entry.created_at.strftime("%b %d, %Y.")
                 - if entry.tags.any?{|x|x.slug == "haskell"}
-                    &nbsp;
-                    %span>= link_to "Literate Haskell version", slug_entries_path(entry.slug) + ".lhs"
-                    = "."
+                    #{link_to "Literate Haskell version", slug_entries_path(entry.slug) + ".lhs"}.
                 - if session[:user_id]
-                    = link_to "Edit", edit_entry_path(entry)
-                    or&nbsp;
-                    %span>= link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
-                    = "."
+                    #{edit_link entry} or #{delete_link entry}.
             .links= around_links
             #disqus_thread
         - else
