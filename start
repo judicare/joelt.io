@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PIDFILE=/run/otters/otte.rs.unicorn.pid
+
 echo "Updating code..."
 cd /opt/git/otte.rs.git
 GIT_WORK_TREE=/srv/http/otte.rs git checkout -f HEAD || exit 1
@@ -12,6 +14,10 @@ SSL_CERT_FILE=/usr/local/etc/ssl/cacert.pem bundle install --deployment || exit 
 echo "Compiling assets..."
 bundle exec rake update_token || exit 1
 RAILS_ENV=production bundle exec rake assets:precompile db:migrate || exit 1
-echo "Starting webserver..."
-bundle exec unicorn_rails -c config/unicorn.rb -D -E production
+echo "(Re)starting webserver..."
+if [[ -e $PIDFILE ]]; then
+    kill -s USR2 `cat $PIDFILE`
+else
+    bundle exec unicorn_rails -c config/unicorn.rb -D -E production
+fi
 echo "Done."

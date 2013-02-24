@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo -n "Stopping server..."
-kill -s USR2 `cat /run/otters/otte.rs.unicorn.pid`
-echo "kablamo."
