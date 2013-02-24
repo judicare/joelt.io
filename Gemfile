@@ -26,7 +26,7 @@ gem 'sass'
 gem 'redcarpet'
 gem 'pygments.rb'
 gem 'nokogiri'
-gem 'thin'
+gem 'unicorn'
 
 gem 'paperclip', '~> 3.0'
 gem 'paperclip-meta'
