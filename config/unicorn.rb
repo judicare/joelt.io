@@ -1,6 +1,6 @@
 @path = "/srv/http/otte.rs"
 
-worker_processes 4
+worker_processes 2
 working_directory @path
 listen "/tmp/otte.rs.unicorn.sock", :backlog => 64
 timeout 30
