@@ -1,17 +1,17 @@
 #!/bin/bash
 
-echo -n "Updating code..."
+echo "Updating code..."
 cd /opt/git/otte.rs.git
-GIT_WORK_TREE=/srv/http/otte.rs git checkout -f HEAD >/dev/null || exit 1
-echo "all done."
+GIT_WORK_TREE=/srv/http/otte.rs git checkout -f HEAD || exit 1
+echo "All done."
 
 cd /srv/http/otte.rs
 
-echo -n "Updating gems..."
-SSL_CERT_FILE=/usr/local/etc/ssl/cacert.pem bundle install --deployment >/dev/null || exit 1
-echo -n "compiling assets..."
+echo "Updating gems..."
+SSL_CERT_FILE=/usr/local/etc/ssl/cacert.pem bundle install --deployment || exit 1
+echo "Compiling assets..."
 bundle exec rake update_token || exit 1
-RAILS_ENV=production bundle exec rake assets:precompile db:migrate 2>/dev/null || exit 1
-echo -n "starting webserver..."
+RAILS_ENV=production bundle exec rake assets:precompile db:migrate || exit 1
+echo "Starting webserver..."
 bundle exec unicorn_rails -c config/unicorn.rb -D -E production
-echo "done."
+echo "Done."
