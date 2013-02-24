@@ -8,7 +8,7 @@ echo "all done."
 cd /srv/http/otte.rs
 
 echo -n "Updating gems..."
-bundle install --deployment >/dev/null || exit 1
+SSL_CERT_FILE=/usr/local/etc/ssl/cacert.pem bundle install --deployment >/dev/null || exit 1
 echo -n "compiling assets..."
 bundle exec rake update_token || exit 1
 RAILS_ENV=production bundle exec rake assets:precompile db:migrate 2>/dev/null || exit 1
