@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PIDFILE=/run/otters/otte.rs.unicorn.pid
+
+echo "Stopping unicorn..."
+if [[ -e $PIDFILE ]]; then
+    kill -QUIT `cat $PIDFILE`
+    echo "All done."
+else
+    echo "Never mind, it isn't running."
+fi
