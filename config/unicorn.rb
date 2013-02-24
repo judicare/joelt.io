@@ -4,7 +4,7 @@ worker_processes 4
 working_directory @path
 listen "/tmp/otte.rs.unicorn.sock", :backlog => 64
 timeout 30
-pid "/run/otte.rs.unicorn.pid"
+pid "/run/otters/otte.rs.unicorn.pid"
 stderr_path "#@path/log/unicorn.stderr.log"
 stdout_path "#@path/log/unicorn.stdout.log"
 preload_app true
