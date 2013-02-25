@@ -3,7 +3,7 @@ body {
 }
 
 code, pre {
-    font-family: "CMU Typewriter Text", Menlo, monospace;
+    font-family: Consolas, monospace;
 }
 
 article.design figure {
@@ -19,7 +19,7 @@ figure {
     background: #eee;
     border-radius: 3px;
     margin: 20px -35px 20px 7px;
-    font-size: 17px;
+    font-size: 14px;
     line-height: 1.3em;
             
     table {
@@ -35,7 +35,7 @@ figure {
         }
             
         pre {
-            color: black;
+            color: #444;
             
             .nn {
                 color: #555;
