@@ -15,6 +15,7 @@ Otters::Application.configure do
   
   config.i18n.fallbacks = true
   config.active_support.deprecation = :notify
-  config.active_record.auto_explain_threshold_in_seconds = 0.5
   config.cache_store = :memory_store
+
+  config.eager_load = true
 end

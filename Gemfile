@@ -2,13 +2,13 @@ source 'https://rubygems.org'
 
 gem 'bundler', '~> 1.3.0.pre.8'
 
-gem 'rails'
+gem 'rails', '~> 4.0.0.beta1'
 
 gem 'pg'
 
+gem 'sass-rails', '~> 4.0.0.beta1'
 group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
+  gem 'coffee-rails', '~> 4.0.0.beta1', require: 'coffee_script'
 
   gem 'uglifier', '>= 1.0.3'
 end
@@ -20,7 +20,7 @@ gem 'bcrypt-ruby', '~> 3.0.0'
 
 gem 'haml-rails', '>= 0.3.4', :group => :development
 
-gem 'haml'
+gem 'haml', github: 'haml/haml', branch: 'stable'
 gem 'sass'
 
 gem 'redcarpet'
@@ -37,4 +37,10 @@ gem 'rmagick', :require => "RMagick"
 
 group :production do
   gem 'therubyracer', :require => 'v8'
+end
+
+group :test do
+  gem 'fabrication', github: 'paulelliott/fabrication', branch: 'activerecord4'
+  gem 'faker'
+  gem 'sqlite3'
 end
