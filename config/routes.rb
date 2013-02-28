@@ -14,8 +14,8 @@ Otters::Application.routes.draw do
   get '/tagged/:tag' => 'entries#by_tag', as: :tagged
   get '/typed/:type' => 'entries#by_type', as: :typed
   
-  %w[blog design code].each do |ty|
-    get "/#{ty}" => 'entries#by_type', defaults: { type: ty }, as: ty.to_sym
+  %i[blog design code].each do |ty|
+    get "/#{ty}" => 'entries#by_type', defaults: { type: ty.to_s }, as: ty
   end
   
   get '/hire-me' => 'extras#hire', as: :hire_me
