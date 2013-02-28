@@ -38,6 +38,6 @@ module EntriesHelper
   end
   
   def delete_link entry
-    link_to "delete", entry_path(entry), method: :delete, confirm: "you sure?"
+    link_to "delete", entry_path(entry), method: :delete, data: { confirm: "you sure?" }
   end
 end

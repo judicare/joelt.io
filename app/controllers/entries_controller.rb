@@ -9,7 +9,7 @@ class EntriesController < ApplicationController
   end
   
   def create
-    @entry = Entry.new params[:entry]
+    @entry = Entry.new params.require(:entry).permit(*Entry::ACCESSIBLE_FIELDS)
     if @entry.save
       redirect_to slug_entries_path(@entry.slug)
     else
@@ -24,7 +24,7 @@ class EntriesController < ApplicationController
   
   def update
     @entry = Entry.find(params[:id])
-    if @entry.update_attributes params[:entry]
+    if @entry.update_attributes params.require(:entry).permit(*Entry::ACCESSIBLE_FIELDS)
       redirect_to edit_entry_path(@entry)
     else
       render action: :edit, entry: @entry
