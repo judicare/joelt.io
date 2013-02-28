@@ -29,6 +29,7 @@ class Entry < ActiveRecord::Base
   end
   
   def update_tags
+    return if @tag_list.nil?
     self.tags = @tag_list.split(/\s+/).map{|t|Tag.find_or_create_by name: t}
   end
 end
