@@ -1,0 +1,7 @@
+.form-title {
+  font-weight: 200;
+}
+
+textarea {
+  font-family: Consolas, "DejaVu Sans Mono", monospace;
+}

@@ -1,0 +1,157 @@
+body {
+  background: #eee;
+
+  .speech {
+    margin-top: 11px;
+    position: relative;
+
+    #message {
+      border-color: #eadbbc;
+
+      .close {
+        margin-top: -2px;
+      }
+    }
+
+    header {
+      .dot {
+        display: block;
+        width: 32px;
+        height: 32px;
+        margin: 8px;
+        background-size: 64px 96px;
+        background-repeat: no-repeat;
+        text-indent: -9999px;
+        opacity: 0.2;
+        background-image: url(@{StaticR img_icons_png});
+
+        &:hover {
+          opacity: 1;
+        }
+
+        &#github {
+          margin-top: 5px;
+
+          &:hover {
+            background-position: -32px 0;
+          }
+        }
+
+        &#linkedin {
+          background-position: 0 -32px;
+
+          &:hover {
+            background-position: -32px -32px;
+          }
+        }
+
+        &#new-post {
+          background-position: 0 -64px;
+
+          &:hover {
+            background-position: -32px -64px;
+          }
+        }
+      }
+
+      #head {
+        background-position: center left;
+        background-repeat: no-repeat;
+        background-image: url(@{StaticR img_otter_png});
+        background-size: 48px 37px;
+        width: 49px;
+        height: 48px;
+        opacity: 0.9;
+        text-indent: -9999px;
+        display: block;
+        margin-bottom: 9px;
+
+        &:hover {
+          opacity: 1;
+        }
+
+        .arrow {
+          border: 10px solid transparent;
+          border-bottom-color: white;
+          display: block;
+          position: absolute;
+          left: 14px;
+          top: 39px;
+        }
+      }
+    }
+
+    .bubble {
+      background: white;
+      padding: 35px;
+      margin-bottom: 10px;
+
+      &.first-bubble {
+        padding: 25px;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        &:first-child {
+          margin-top: 0;
+        }
+
+        &.site-title {
+          font-weight: 400;
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 900px) {
+  .container {
+    max-width: 860px;
+
+    .speech {
+      margin-top: 68px;
+
+      header {
+        position: absolute;
+        left: -64px;
+        width: 64px;
+
+        #head {
+          margin-bottom: 0;
+
+          .arrow {
+            top: 14px;
+            left: 45px;
+            border-bottom-color: transparent;
+            border-right-color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 899px) {
+  body .speech header {
+    overflow: hidden;
+
+    #head, .dot {
+      float: left;
+    }
+
+    .dot#github {
+      margin-top: 8px;
+      margin-left: 12px;
+    }
+
+    .dot#twitter {
+      margin-left: 6px;
+    }
+  }
+}
+
+footer {
+  padding: 10px 20px 20px;
+  font-size: 13px;
+  color: #666;
+}

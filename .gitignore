@@ -1,0 +1,12 @@
+.env
+config/client_session_key.aes
+config/magic
+dist
+result
+static/combined
+static/tmp
+yesod-devel
+
+*.o
+*.hi
+Setup

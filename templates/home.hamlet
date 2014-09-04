@@ -1,0 +1,26 @@
+<article .bubble .first-bubble>
+  <h4 .site-title>
+    $maybe _ <- m
+      Hi buddy, nice website.
+    $nothing
+      I’m Joel, a functional programmer with a colorful head.
+
+$forall Entity _ post <- pageResults posts
+  <article .bubble .preview-bubble>
+    <h3 .post-preview>
+      <a .post-title href=@{ReadPostR (postSlug post)}>#{postTitle post}
+        <span .comment-bubble data-disqus=@{ReadPostR (postSlug post)}>
+          𝑥
+          <span .glyphicon .glyphicon-comment>
+
+<p .pages>
+  $maybe p <- previousPage posts
+    <a href=@{p} #pback>← back
+
+  $case (previousPage posts, nextPage posts)
+    $of (Just _, Just _)
+      \ | #
+    $of _
+
+  $maybe n <- nextPage posts
+    <a href=@{n} #pfor>forward →

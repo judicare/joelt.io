@@ -1,0 +1,5 @@
+<article .bubble>
+  <h2 .form-title>Write something
+  <form role=form method=post action=@{target} enctype=#{enctype}>
+    ^{widget}
+    <button type=submit .btn .btn-default>Commit

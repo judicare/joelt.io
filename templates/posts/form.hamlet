@@ -1,0 +1,8 @@
+#{extra}
+<div .form-group>
+  <label for=#{fvId tview}>^{fvLabel tview}
+  ^{fvInput tview}
+
+<div .form-group>
+  <label for=#{fvId ctview}>^{fvLabel ctview}
+  ^{fvInput ctview}

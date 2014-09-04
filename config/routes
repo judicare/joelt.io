@@ -1,0 +1,13 @@
+/s StaticR Static getStatic
+/auth   AuthR   Auth   getAuth
+
+/favicon.ico FaviconR GET
+/robots.txt RobotsR GET
+
+/ HomeR GET
+/#Int PageR GET
+/feed.rss FeedR GET
+/n NewPostR GET POST
+/r/#Text ReadPostR GET
+/entries/#Text ReadLegacyR GET
+/e/#PostId EditPostR GET POST
