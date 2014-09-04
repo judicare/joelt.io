@@ -9,9 +9,12 @@
     }
   }
 
+  code, pre {
+    font-family: Hasklig, "Source Code Pro", "DejaVu Sans Mono", monospace;
+  }
+
   code {
-    font-family: Consolas, "DejaVu Sans Mono", monospace;
-    color: #8f4e8b;
+    color: #5f4381;
   }
 
   p, li {
@@ -59,7 +62,6 @@
       background-color: transparent;
       border: none;
       border-radius: 0px;
-      font-family: Consolas, "DejaVu Sans Mono", monospace;
     }
 
     table {
