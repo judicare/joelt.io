@@ -1,11 +1,9 @@
 module Handler.Home where
 
 import Blaze.ByteString.Builder.Internal
-import Control.Lens
 import Control.Monad
 import Data.Text.Lazy (toStrict)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Thyme.LocalTime
 import qualified Database.Esqueleto as E
 import Import
 import Network.HTTP.Types.URI
@@ -16,7 +14,7 @@ import Yesod.Paginate
 getFeedR :: Handler TypedContent
 getFeedR = do
     posts <- runDB $ selectList [] [Desc PostCreatedAt]
-    cur <- liftIO getZonedTime
+    cur <- liftIO getCurrentTime
     newsFeed Feed
         { feedTitle = "joelt.io"
         , feedLinkSelf = FeedR
@@ -24,16 +22,16 @@ getFeedR = do
         , feedAuthor = "Joel Taylor"
         , feedDescription = "Haskell, Ruby, and friends"
         , feedLanguage = "en-US"
-        , feedUpdated = fromThyme . snd $ case posts of
-                            (Entity _ x:_) -> postCreatedAt x ^. from zonedTime
-                            [] -> cur ^. from zonedTime
+        , feedUpdated = fromThyme $ case posts of
+                            (Entity _ x:_) -> postCreatedAt x
+                            [] -> cur
         , feedEntries = map (toFeedEntry . entityVal) posts
         }
 
 toFeedEntry :: Post -> FeedEntry (Route App)
 toFeedEntry p = FeedEntry
     { feedEntryLink = ReadPostR (postSlug p)
-    , feedEntryUpdated = fromThyme $ snd (postCreatedAt p ^. from zonedTime)
+    , feedEntryUpdated = fromThyme $ postCreatedAt p
     , feedEntryTitle = postTitle p
     , feedEntryContent = toHtml $ postContent p
     }

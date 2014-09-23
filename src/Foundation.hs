@@ -6,7 +6,7 @@ module Foundation where
 import Control.Applicative
 import Data.Text (Text)
 import qualified Database.Persist
-import Database.Persist.Sql (SqlPersistT)
+import Database.Persist.Sql (SqlBackend)
 import Handler.Error
 import Model
 import Network.HTTP.Conduit (Manager)
@@ -69,7 +69,7 @@ instance Yesod App where
 
             $(widgetFile "default-layout")
         let hasTitle = not . null . renderHtml $ pageTitle pc
-        giveUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
+        withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     urlRenderOverride y (StaticR s) =
         Just $ uncurry (joinPath y (Settings.staticRoot $ settings y)) $ renderRoute s
@@ -93,7 +93,7 @@ instance Yesod App where
     makeLogger = return . appLogger
 
 instance YesodPersist App where
-    type YesodPersistBackend App = SqlPersistT
+    type YesodPersistBackend App = SqlBackend
     runDB = defaultRunDB persistConfig connPool
 instance YesodPersistRunner App where
     getDBRunner = defaultGetDBRunner connPool

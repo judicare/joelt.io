@@ -29,7 +29,7 @@ import System.FilePath
 import System.Log.FastLogger (newStdoutLoggerSet, defaultBufSize)
 import Network.Wai.Logger (clockDateCacher)
 import Yesod.Core.Types (loggerSet, Logger (Logger))
-import Database.Persist.Postgresql
+import Database.Persist.Postgresql hiding (LogFunc)
 import Control.Monad
 import qualified Data.ByteString as B
 

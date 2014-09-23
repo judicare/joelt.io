@@ -6,7 +6,7 @@ import Control.Applicative     as Import (pure, (<$>), (<*>))
 import Data.Maybe              as Import (fromMaybe, fromJust)
 import Data.Monoid             as Import
 import Data.Text               as Import (Text)
-import Data.Thyme              as Import (getZonedTime)
+import Data.Thyme              as Import (getCurrentTime)
 import Data.Thyme.Format       as Import (formatTime)
 import Data.Thyme.Time.Core    as Import (fromThyme, toThyme)
 import Foundation              as Import

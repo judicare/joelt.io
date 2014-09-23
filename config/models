@@ -2,6 +2,6 @@ Post
   title Text
   slug Text
   content Markdown
-  createdAt ZonedTime
+  createdAt UTCTime
   UniquePost slug
   deriving Show

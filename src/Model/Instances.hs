@@ -8,16 +8,13 @@ import Data.Thyme
 import Data.Thyme.Time.Core
 import Database.Persist.Sql
 import Prelude
-import Text.Markdown
 import Web.PathPieces
 
-deriving instance Show Markdown
-
-instance PersistField ZonedTime where
+instance PersistField UTCTime where
     toPersistValue = toPersistValue . fromThyme
     fromPersistValue = fmap toThyme . fromPersistValue
 
-instance PersistFieldSql ZonedTime where
+instance PersistFieldSql UTCTime where
     sqlType = sqlType . liftM fromThyme
 
 instance PathPiece () where
