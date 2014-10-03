@@ -10,8 +10,11 @@ in lib.mapAttrs (_: attrs:
         pkgs = import <nixpkgs> { inherit system; };
         h = pkgs.lib.getAttrFromPath ["haskellPackages_${ghcVer}"] pkgs;
       in lib.overrideDerivation bySystem
-        (attrs: { buildInputs = [
-          h.cabalInstall h.ghcMod h.scan h.yesodBin pkgs.ruby21Libs.dotenv
-        ] ++ attrs.buildInputs; }))
+        (attrs: {
+          buildInputs = [
+            h.cabalInstall h.ghcMod h.scan h.yesodBin pkgs.ruby21Libs.dotenv
+          ] ++ attrs.buildInputs;
+          shellHook = "trap 'git clean -fdx' EXIT";
+        }))
       byCompiler)
   attrs) release
