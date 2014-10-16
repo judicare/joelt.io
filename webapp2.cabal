@@ -72,7 +72,8 @@ library
                  , MonadRandom
                  , monad-control
                  , monad-logger
-                 , network
+                 , network               >= 2.6
+                 , network-uri
                  , old-locale
                  , path-pieces
                  , pcre-light
