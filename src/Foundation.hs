@@ -58,13 +58,13 @@ instance Yesod App where
         pc <- widgetToPageContent $ do
             addScriptRemote "//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"
             $(combineScripts 'StaticR
-                [ js_jquery_tipsy_js
+                [ javascripts_jquery_tipsy_js
                 , js_app_js
                 ])
 
             $(combineStylesheets 'StaticR
                 [ css_bootstrap_css
-                , css_tipsy_css
+                , stylesheets_tipsy_css
                 , css_themes_amelie_css
                 ])
 

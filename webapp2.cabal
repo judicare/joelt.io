@@ -80,7 +80,9 @@ library
                  , persistent
                  , persistent-postgresql
                  , persistent-template
+                 , process-extras
                  , shakespeare           >= 2
+                 , system-filepath
                  , template-haskell
                  , text                  >= 1.1
                  , thyme

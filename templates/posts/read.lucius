@@ -11,6 +11,7 @@
 
   code, pre {
     font-family: Hasklig, "Source Code Pro", "DejaVu Sans Mono", monospace;
+    text-rendering: optimizeLegibility;
   }
 
   code {

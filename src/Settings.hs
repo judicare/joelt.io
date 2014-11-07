@@ -4,6 +4,7 @@ import Control.Applicative
 import Control.Lens
 import Data.Default (def)
 import Data.Monoid ((<>))
+import Data.String
 import Data.Text (Text)
 import Data.Text.Lens
 import Data.Yaml
@@ -12,6 +13,7 @@ import Language.Haskell.TH.Syntax
 import Network.URI
 import Prelude
 import Settings.Development
+import Text.Coffee
 import Text.Hamlet
 import Text.Shakespeare.Text (st)
 import Yesod.Default.Config
@@ -19,7 +21,7 @@ import Yesod.Default.Util
 
 type PersistConf = PostgresConf
 
-staticDir :: FilePath
+staticDir :: IsString s => s
 staticDir = "static"
 
 staticRoot :: AppConfig DefaultEnv x -> Text
@@ -41,6 +43,10 @@ widgetFileSettings = def
     { wfsHamletSettings = defaultHamletSettings
         { hamletNewlines = AlwaysNewlines
         }
+    , wfsLanguages = \ hset -> defaultTemplateLanguages hset ++
+        [ TemplateLanguage True "coffee"
+              coffeeFile
+              coffeeFileReload ]
     }
 
 widgetFile :: String -> Q Exp

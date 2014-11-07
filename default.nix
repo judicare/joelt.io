@@ -5,43 +5,43 @@
 , highlighter, hjsmin, hspec, httpConduit, httpTypes, lens
 , liftedBase, markdown, monadControl, monadLogger, MonadRandom
 , network, pathPieces, pcreLight, persistent, persistentPostgresql
-, persistentTemplate, resourcet, shakespeare, text, thyme
+, persistentTemplate, processExtras, resourcet, shakespeare, text, thyme
 , transformers, wai, waiExtra, waiLogger, warp, yaml, yesod
 , yesodAuth, yesodCore, yesodForm, yesodNewsfeed, yesodPagination
 , yesodStatic, yesodTest, stdenv
 
-, postgresql
-
-, preBuild ? ""
+, bowerPreBuilder, nodePackages, postgresql
 }:
 
 cabal.mkDerivation (self: {
   pname = "webapp2";
   version = "0.0.0";
   src = stdenv.lib.sourceFilesBySuffices ./. [
-    ".cabal" ".hs" ".lucius" ".msg" "models" "routes"
-    # ".cabal" ".coffee" ".eot" ".hamlet" ".hs" ".ico" ".julius" ".lucius" ".msg" ".png"
-    # ".svg" ".text" ".ttf" ".txt" ".woff" ".yml" "models" "routes"
+    ".cabal" ".css" ".hamlet" ".hs" ".ico" ".js" ".lucius" ".msg" ".png" "models" "routes"
+    ".txt" ".yml"
   ];
   doCheck = false;
   noHaddock = true;
   isLibrary = true;
   isExecutable = true;
-  buildTools = [ postgresql ];
+  buildTools = [
+    nodePackages.coffee-script nodePackages.uglify-js postgresql
+  ];
   buildDepends = [
     aeson asn1Types attoparsec blazeBuilder blazeHtml conduit
     dataDefault esqueleto fastLogger fileEmbed highlighter hjsmin
     httpConduit httpTypes lens markdown monadControl monadLogger
     MonadRandom network pathPieces pcreLight persistent
-    persistentPostgresql persistentTemplate shakespeare text thyme wai
-    waiExtra waiLogger warp yaml yesod yesodAuth yesodCore yesodForm
-    yesodNewsfeed yesodPagination yesodStatic
+    persistentPostgresql persistentTemplate processExtras
+    shakespeare text thyme wai waiExtra waiLogger warp yaml yesod
+    yesodAuth yesodCore yesodForm yesodNewsfeed yesodPagination
+    yesodStatic
   ];
   testDepends = [
     hspec liftedBase monadLogger persistent persistentPostgresql
     resourcet text transformers yesod yesodCore yesodTest
   ];
-  inherit preBuild;
+  preBuild = bowerPreBuilder ./nix/bower.nix;
   postInstall = ''
     cp -pR static $out/static
     cp -pR config $out/config
