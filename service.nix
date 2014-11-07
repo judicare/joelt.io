@@ -69,7 +69,7 @@ in
   config = mkIf cfg.enable {
     users.extraUsers."${cfg.user}" = {
       description = "webapp2 runner.";
-      home = cfg.stateDir;
+      home = "/var/empty";
       createHome = true;
       useDefaultShell = true;
     };
@@ -81,7 +81,6 @@ in
       requires = [ "postgresql.service" ];
       after = [ "postgresql.service" ];
       description = "Run the webapp2 server";
-      serviceConfig.User = cfg.user;
       environment = {
         # app stuff
         HOME = "/homeless-shelter";
@@ -99,8 +98,17 @@ in
         PGPASS = cfg.database.password;
         PGDATABASE = cfg.database.name;
       };
+
+      serviceConfig = {
+        User = cfg.user;
+        PermissionsStartOnly = true;
+      };
+
+      preStart = ''
+        mkdir -p -m 0755 ${cfg.stateDir}
+        chown -R ${cfg.user} ${cfg.stateDir}
+      '';
       script = ''
-        mkdir -p ${cfg.stateDir}
         cd ${cfg.stateDir}
         mkdir -p config
         mkdir -p static

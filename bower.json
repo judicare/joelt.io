@@ -1,0 +1,17 @@
+{
+  "name": "webapp2",
+  "version": "0.0.0",
+  "homepage": "https://github.com/joelteon/joelt.io",
+  "authors": [
+    "Joel Taylor <me@joelt.io>"
+  ],
+  "description": "nrwhl.org",
+  "main": "app/main.hs",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "jquery": "*",
+    "tipsy": "*",
+    "bootstrap": "*"
+  }
+}

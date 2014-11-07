@@ -11,13 +11,20 @@
 , yesodStatic, yesodTest, stdenv
 
 , postgresql
-, src
+
+, preBuild ? ""
 }:
 
 cabal.mkDerivation (self: {
   pname = "webapp2";
   version = "0.0.0";
-  inherit src;
+  src = stdenv.lib.sourceFilesBySuffices ./. [
+    ".cabal" ".hs" ".lucius" ".msg" "models" "routes"
+    # ".cabal" ".coffee" ".eot" ".hamlet" ".hs" ".ico" ".julius" ".lucius" ".msg" ".png"
+    # ".svg" ".text" ".ttf" ".txt" ".woff" ".yml" "models" "routes"
+  ];
+  doCheck = false;
+  noHaddock = true;
   isLibrary = true;
   isExecutable = true;
   buildTools = [ postgresql ];
@@ -34,30 +41,7 @@ cabal.mkDerivation (self: {
     hspec liftedBase monadLogger persistent persistentPostgresql
     resourcet text transformers yesod yesodCore yesodTest
   ];
-  preCheck = let
-    testUser = "webapp-test";
-    testDb = "webapp-test";
-  in ''
-    cleanup() {
-      trap - EXIT
-      echo "removing database ${testDb}"
-      dropdb ${testDb} || true
-      echo "removing user ${testUser}"
-      dropuser ${testUser} || true
-    }
-    trap cleanup EXIT
-    createuser ${testUser}
-    createdb ${testDb} -O ${testUser}
-    export PGHOST=localhost
-    export PGDATABASE=${testDb}
-    export PGUSER=${testUser}
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    ln -s /usr/bin/security $TMPDIR
-    export PATH=$PATH:$TMPDIR
-  '';
-  postCheck = "cleanup";
-  noHaddock = 1;
-  doCheck = false;
+  inherit preBuild;
   postInstall = ''
     cp -pR static $out/static
     cp -pR config $out/config
