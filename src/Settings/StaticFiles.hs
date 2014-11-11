@@ -29,6 +29,7 @@ staticFilesList "bower_components/bootstrap/dist"
 staticFilesList "bower_components/tipsy/src"
     [ "javascripts/jquery.tipsy.js"
     , "stylesheets/tipsy.css"
+    , "images/tipsy.gif"
     ]
 
 combineSettings :: CombineSettings

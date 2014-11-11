@@ -59,7 +59,7 @@ instance Yesod App where
             addScriptRemote "//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"
             $(combineScripts 'StaticR
                 [ javascripts_jquery_tipsy_js
-                , js_app_js
+                , js_disqus_js
                 ])
 
             $(combineStylesheets 'StaticR

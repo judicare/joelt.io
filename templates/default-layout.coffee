@@ -1,15 +1,3 @@
-window.disqus_shortname = 'otters'
-
-window.DISQUSWIDGETS =
-  displayCount: (obj) ->
-    console.log(c)
-    $.each(obj.counts, (_, c) ->
-      badge = $("span[data-disqus='#{c.id}'")
-      badge.html("#{c.comments} <span class='glyphicon glyphicon-comment'></span>")
-      if c.comments != 0
-        badge.addClass("commentful")
-    )
-
 $(document).ready ->
   goTo = (e) -> window.location = e if e
 
@@ -27,3 +15,4 @@ $(document).ready ->
       else
         'e'
     offset: 4
+    trigger: 'focus'
