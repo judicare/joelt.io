@@ -1,7 +1,7 @@
 cleanup () {
   echo stopping the postgres database server and cleaning up...
-  pg_ctl -D $datadir -w -o "-c listen_addresses= -c port=$PGPORT" stop
-  rm -rf $datadir
+  pg_ctl -D $datadir -w -o "-c listen_addresses= -c port=$PGPORT" stop || true
+  rm -rf $datadir || true
 }
 
 trap cleanup EXIT
@@ -10,7 +10,6 @@ trap cleanup EXIT
 ln -s /usr/bin/security $TMPDIR/security
 export PATH="$PATH:$TMPDIR"
 
-dbpid=
 datadir=$(mktemp -d "$TMPDIR/postgresXXXXX")
 
 export PGPORT=34567
@@ -20,5 +19,3 @@ initdb $datadir
 pg_ctl -D $datadir -w -o "-c listen_addresses= -c port=$PGPORT" start
 
 createdb -p $PGPORT -h /tmp
-
-dbpid=$!

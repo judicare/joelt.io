@@ -20,9 +20,14 @@ cabal.mkDerivation (self: {
     ".cabal" ".css" ".hamlet" ".hs" ".ico" ".js" ".lucius" ".msg" ".png" ".txt" ".yml"
     "models" "routes"
   ];
+
+  # start a temporary postgres server for tests
   preCheck = builtins.readFile ./tests/dbsetup.sh;
   doCheck = true;
+
+  # speeds up build time
   noHaddock = true;
+
   isLibrary = true;
   isExecutable = true;
   buildTools = [
