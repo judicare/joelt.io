@@ -10,22 +10,24 @@
 , yesodAuth, yesodCore, yesodForm, yesodNewsfeed, yesodPagination
 , yesodStatic, yesodTest, stdenv
 
-, bowerPreBuilder, nodePackages, postgresql
+, bowerPreBuilder, nodePackages, postgresql, darwin
 }:
 
 cabal.mkDerivation (self: {
   pname = "webapp2";
   version = "0.0.0";
   src = stdenv.lib.sourceFilesBySuffices ./. [
-    ".cabal" ".css" ".hamlet" ".hs" ".ico" ".js" ".lucius" ".msg" ".png" "models" "routes"
-    ".txt" ".yml"
+    ".cabal" ".css" ".hamlet" ".hs" ".ico" ".js" ".lucius" ".msg" ".png" ".txt" ".yml"
+    "models" "routes"
   ];
-  doCheck = false;
+  preCheck = builtins.readFile ./tests/dbsetup.sh;
+  doCheck = true;
   noHaddock = true;
   isLibrary = true;
   isExecutable = true;
   buildTools = [
     nodePackages.coffee-script nodePackages.uglify-js postgresql
+    # darwin.security_tool
   ];
   buildDepends = [
     aeson asn1Types attoparsec blazeBuilder blazeHtml conduit
