@@ -6,10 +6,6 @@ cleanup () {
 
 trap cleanup EXIT
 
-# todo: remove once security-tool builds
-ln -s /usr/bin/security $TMPDIR/security
-export PATH="$PATH:$TMPDIR"
-
 datadir=$(mktemp -d "$TMPDIR/postgresXXXXX")
 
 export PGPORT=34567
