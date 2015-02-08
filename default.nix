@@ -15,7 +15,11 @@
 , bowerPreBuilder, nodePackages, postgresql, darwin
 }:
 
-mkDerivation {
+let self = {
+  passthru.flag = flag: mkDerivation (self // {
+    configureFlags = (self.configureFlags or []) ++ [ flag ];
+  });
+
   pname = "webapp2";
   version = "0.0.0";
   src = stdenv.lib.sourceFilesBySuffices ./. [
@@ -54,4 +58,4 @@ mkDerivation {
     cp -pR config $out/config
   '';
   license = stdenv.lib.licenses.bsd3;
-}
+}; in mkDerivation self

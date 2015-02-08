@@ -57,6 +57,7 @@ library
                  , blaze-html
                  , bytestring
                  , conduit
+                 , conduit-extra
                  , data-default
                  , directory
                  , esqueleto
@@ -81,7 +82,10 @@ library
                  , persistent-postgresql
                  , persistent-template
                  , process-extras
+                 , resourcet
+                 , semigroups
                  , shakespeare           >= 2
+                 , system-fileio
                  , system-filepath
                  , template-haskell
                  , text                  >= 1.1

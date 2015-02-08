@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedLists #-}
+
 module Settings.StaticFiles where
 
 import qualified Data.ByteString.Lazy.Char8 as B8
@@ -12,8 +14,8 @@ import System.Exit
 import System.Process.ByteString.Lazy (readProcessWithExitCode)
 import Text.Lucius (luciusRTMinified)
 import Text.Printf (printf)
-import Yesod.Static
-import qualified Yesod.Static as Static
+import Yesod.Static.Extended
+import qualified Yesod.Static.Extended as Static
 
 staticSite :: IO Static.Static
 staticSite = if development then Static.staticDevel staticDir
@@ -34,15 +36,14 @@ staticFilesList "bower_components/tipsy/src"
 
 combineSettings :: CombineSettings
 combineSettings = def
-    { csCssPostProcess = \fps ->
+    { csStaticDirs = [ Settings.staticDir
+                     , "bower_components/bootstrap/dist"
+                     , "bower_components/tipsy/src" ]
+    , csCssPostProcess = \fps ->
           either (error . errorIntro fps) (return . LT.encodeUtf8)
         . flip luciusRTMinified []
         . LT.decodeUtf8
     , csJsPostProcess = uglify
-    , csStaticDirs = [ Settings.staticDir
-                     , "bower_components/bootstrap/dist"
-                     , "bower_components/tipsy/src"
-                     ]
     }
     where
         errorIntro fps s = "Error minifying " ++ show fps ++ ": " ++ s
