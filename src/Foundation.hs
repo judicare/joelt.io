@@ -5,36 +5,28 @@
 module Foundation where
 
 import Control.Applicative
-import Data.Text (Text)
-import qualified Database.Persist
-import Database.Persist.Sql (SqlBackend)
+import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Handler.Error
-import Model
-import Network.HTTP.Conduit (Manager)
-import Prelude
-import qualified Settings
-import Settings (widgetFile, Extra (..))
+import Import.NoFoundation
 import Settings.Development (development)
-import Settings.StaticFiles
 import Text.Blaze.Html.Renderer.String (renderHtml)
 import Text.Hamlet (hamletFile)
 import Text.Jasmine (minifym)
-import Yesod
-import Yesod.Auth
 import Yesod.Core.Types (Logger)
-import Yesod.Default.Config
 import Yesod.Default.Util (addStaticContentExternal)
-import Yesod.Static
+import qualified Yesod.Core.Unsafe as Unsafe
 
 data App = App
-    { settings :: AppConfig DefaultEnv Extra
-    , getStatic :: Static
-    , connPool :: Database.Persist.PersistConfigPool Settings.PersistConf
-    , httpManager :: Manager
-    , persistConfig :: Settings.PersistConf
-    , appLogger :: Logger
-    , magic :: Text
+    { appSettings    :: AppSettings
+    , appStatic      :: Static -- ^ Settings for static file serving.
+    , appConnPool    :: ConnectionPool -- ^ Database connection pool.
+    , appHttpManager :: Manager
+    , appLogger      :: Logger
+    , appMagic       :: Text
     }
+
+instance HasHttpManager App where
+    getHttpManager = appHttpManager
 
 mkMessage "App" "messages" "en"
 
@@ -43,7 +35,7 @@ mkYesodData "App" $(parseRoutesFileNoCheck "config/routes")
 type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
 
 instance Yesod App where
-    approot = ApprootMaster $ appRoot . settings
+    approot = ApprootMaster $ appRoot . appSettings
 
     makeSessionBackend _ = Just <$> defaultClientSessionBackend
         (120 * 60)
@@ -73,18 +65,25 @@ instance Yesod App where
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     urlRenderOverride y (StaticR s) =
-        Just $ uncurry (joinPath y (Settings.staticRoot $ settings y)) $ renderRoute s
+        Just $ uncurry (joinPath y [st|#{appRoot (appSettings y)}/s|]) $ renderRoute s
     urlRenderOverride _ _ = Nothing
 
     authRoute _ = Just $ AuthR LoginR
 
-    addStaticContent =
-        addStaticContentExternal minify genFileName Settings.staticDir (StaticR . flip StaticRoute [])
+    addStaticContent ext mime content = do
+        master <- getYesod
+        let staticDir = appStaticDir $ appSettings master
+        addStaticContentExternal
+            minifym
+            genFileName
+            staticDir
+            (StaticR . flip StaticRoute [])
+            ext
+            mime
+            content
       where
-        genFileName lbs
-            | development = "autogen-" ++ base64md5 lbs
-            | otherwise   = base64md5 lbs
-        minify | development = Right | otherwise = minifym
+        -- Generate a unique filename based on the content itself
+        genFileName lbs = "autogen-" ++ base64md5 lbs
 
     jsLoader _ = BottomOfBody
 
@@ -95,9 +94,11 @@ instance Yesod App where
 
 instance YesodPersist App where
     type YesodPersistBackend App = SqlBackend
-    runDB = defaultRunDB persistConfig connPool
+    runDB action = do
+        master <- getYesod
+        runSqlPool action $ appConnPool master
 instance YesodPersistRunner App where
-    getDBRunner = defaultGetDBRunner connPool
+    getDBRunner = defaultGetDBRunner appConnPool
 
 instance YesodAuth App where
     type AuthId App = ()
@@ -117,14 +118,14 @@ instance YesodAuth App where
         login = PluginR "magic" ["login"]
         postLoginR = do
             pw <- lift $ runInputPost (iopt textField "password")
-            lift $ if pw == Just (magic app)
+            lift $ if pw == Just (appMagic app)
                 then fmap toTypedContent $ setCreds True (Creds "magic" "nonsense" [])
                 else loginErrorMessage (AuthR LoginR) "Nah."
 
-    authHttpManager = httpManager
+    authHttpManager = getHttpManager
 
 instance RenderMessage App FormMessage where
     renderMessage _ _ = defaultFormMessage
 
-getExtra :: Handler Extra
-getExtra = fmap (appExtra . settings) getYesod
+unsafeHandler :: App -> Handler a -> IO a
+unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger

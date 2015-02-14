@@ -1,10 +1,12 @@
-{ profiling ? true
+{ profiling ? false
 , ghc ? "ghc784"
 }:
 
 let
   release = import ./release.nix {};
-  lib = (import <nixpkgs> {}).lib;
+  pkgs = import <nixpkgs> {};
+  lib = pkgs.lib;
+  haskellLib = import <nixpkgs/pkgs/development/haskell-modules/lib.nix> { inherit pkgs; };
 in (lib.mapAttrs (_: attrs:
   lib.mapAttrs (ghcVer: byCompiler:
     lib.mapAttrs (system: bySystem_:
@@ -22,20 +24,30 @@ in (lib.mapAttrs (_: attrs:
             });
           };
         };
-      in lib.overrideDerivation (bySystem.flag "-fdev")
-        (attrs: {
-          enableLibraryProfiling = profiling;
-          buildInputs = with pkgs; [
-            h.cabal-install h.ghc-mod h.hlint h.scan h.yesod-bin # dotenv
-          ] ++ attrs.buildInputs;
-          NODE_PATH = "${pkgs.nodePackages.by-version.es5-ext."0.10.4"}/lib/node_modules";
+      in lib.overrideDerivation
+        (haskellLib.overrideCabal
+          (haskellLib.appendConfigureFlag bySystem "-fdev")
+          (drv: {
+            extraLibraries = (drv.extraLibraries or []) ++ [ h.Cabal_1_22_0_0 ];
+            buildTools = (drv.buildTools or []) ++ [
+              h.cabal-install h.ghc-mod h.hlint h.scan h.yesod-bin
+              pkgs.postgresql pkgs.nodePackages.bower2nix
+            ];
+            enableLibraryProfiling = profiling;
+          })) # /overrideCabal
+        (drv: {
           shellHook = ''
-            ${pkgs.bowerPreBuilder ./nix/bower.nix}
+            ${drv.preBuild}
             eval "$setupCompilerEnvironmentPhase"
+            eval "$jailbreakPhase"
+
+            # force building with newer cabal library, see
+            # https://github.com/haskell/cabal/issues/2144
+            setupCompileFlags+=" -package Cabal-1.22.0.0"
             eval "$compileBuildDriverPhase"
             eval "$configurePhase"
-            ./Setup repl
+            ./Setup repl --ghc-options="-O0 -fobject-code" DevelMain
           '';
-        }))
+        })) # /overrideDerivation
       byCompiler)
   attrs) release).build.${ghc}.${builtins.currentSystem}

@@ -6,22 +6,17 @@ import qualified Data.ByteString.Lazy.Char8 as B8
 import Data.Default (def)
 import qualified Data.Text.Lazy.Encoding as LT
 import Filesystem.Path
+import Data.String
 import Language.Haskell.TH (Q, Exp, Name)
 import Prelude hiding (FilePath)
-import Settings (staticDir)
-import Settings.Development
+import Settings (appStaticDir, compileTimeAppSettings)
 import System.Exit
 import System.Process.ByteString.Lazy (readProcessWithExitCode)
 import Text.Lucius (luciusRTMinified)
 import Text.Printf (printf)
 import Yesod.Static.Extended
-import qualified Yesod.Static.Extended as Static
 
-staticSite :: IO Static.Static
-staticSite = if development then Static.staticDevel staticDir
-                            else Static.static      staticDir
-
-staticFiles Settings.staticDir
+staticFiles (appStaticDir compileTimeAppSettings)
 
 staticFilesList "bower_components/bootstrap/dist"
     [ "js/bootstrap.js"
@@ -36,7 +31,7 @@ staticFilesList "bower_components/tipsy/src"
 
 combineSettings :: CombineSettings
 combineSettings = def
-    { csStaticDirs = [ Settings.staticDir
+    { csStaticDirs = [ fromString (appStaticDir compileTimeAppSettings)
                      , "bower_components/bootstrap/dist"
                      , "bower_components/tipsy/src" ]
     , csCssPostProcess = \fps ->

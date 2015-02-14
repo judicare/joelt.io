@@ -1,42 +1,87 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StandaloneDeriving #-}
+
+#if DEVELOPMENT
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+#endif
+
 module Settings where
 
-import Control.Applicative
-import Control.Lens
-import Data.Default (def)
-import Data.Monoid ((<>))
-import Data.String
-import Data.Text (Text)
-import Data.Text.Lens
+import ClassyPrelude.Yesod
+import Control.Exception (throw)
+import Data.Aeson (Result (..), fromJSON, withObject)
+import Data.FileEmbed              (embedFile)
 import Data.Yaml
-import Database.Persist.Postgresql (PostgresConf)
+import Database.Persist.Postgresql (PostgresConf (..))
 import Language.Haskell.TH.Syntax
-import Network.URI
-import Prelude
-import Settings.Development
+import Network.Wai.Handler.Warp    (HostPreference)
 import Text.Coffee
 import Text.Hamlet
-import Text.Shakespeare.Text (st)
-import Yesod.Default.Config
+import Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
 import Yesod.Default.Util
 
 type PersistConf = PostgresConf
 
-staticDir :: IsString s => s
-staticDir = "static"
+data AppSettings = AppSettings
+    { appStaticDir              :: String
+    -- ^ Directory from which to serve static files.
+    , appDatabaseConf           :: PostgresConf
+    -- ^ Configuration settings for accessing the database.
+    , appRoot                   :: Text
+    -- ^ Base for all generated URLs.
+    , appHost                   :: HostPreference
+    -- ^ Host/interface the server should bind to.
+    , appPort                   :: Int
+    -- ^ Port to listen on
+    , appIpFromHeader           :: Bool
+    -- ^ Get the IP address from the header when logging. Useful when sitting
+    -- behind a reverse proxy.
 
-staticRoot :: AppConfig DefaultEnv x -> Text
-staticRoot conf =
-    if development
-        then [st|#{appRoot conf}/s|]
-        else staticize (appRoot conf)
+    , appDetailedRequestLogging :: Bool
+    -- ^ Use detailed request logging system
+    , appShouldLogAll           :: Bool
+    -- ^ Should all log messages be displayed?
+    , appReloadTemplates        :: Bool
+    -- ^ Use the reload version of templates
+    , appMutableStatic          :: Bool
+    -- ^ Assume that files in the static dir may change after compilation
+    , appSkipCombining          :: Bool
+    -- ^ Perform no stylesheet/script combining
 
-staticize :: Text -> Text
-staticize t = t & unpacked . _URI . _uriAuthority . _Just . _uriRegName
-                %~ ("static." <>)
-    where
-        _URI = prism' show parseURI
-        _uriAuthority = lens uriAuthority (\ a b -> a { uriAuthority = b })
-        _uriRegName = lens uriRegName (\ a b -> a { uriRegName = b })
+    -- Example app-specific configuration values.
+    , appAnalytics              :: Maybe Text
+    -- ^ Google Analytics code
+    }
+
+#if DEVELOPMENT
+deriving instance Show PostgresConf
+deriving instance Show AppSettings
+#endif
+
+instance FromJSON AppSettings where
+    parseJSON = withObject "AppSettings" $ \o -> do
+        let defaultDev =
+#if DEVELOPMENT
+                True
+#else
+                False
+#endif
+        appStaticDir              <- o .: "static-dir"
+        appDatabaseConf           <- o .: "database"
+        appRoot                   <- o .: "approot"
+        appHost                   <- fromString <$> o .: "host"
+        appPort                   <- o .: "port"
+        appIpFromHeader           <- o .: "ip-from-header"
+
+        appDetailedRequestLogging <- o .:? "detailed-logging" .!= defaultDev
+        appShouldLogAll           <- o .:? "should-log-all"   .!= defaultDev
+        appReloadTemplates        <- o .:? "reload-templates" .!= defaultDev
+        appMutableStatic          <- o .:? "mutable-static"   .!= defaultDev
+        appSkipCombining          <- o .:? "skip-combining"   .!= defaultDev
+
+        appAnalytics              <- o .:? "analytics"
+
+        return AppSettings {..}
 
 widgetFileSettings :: WidgetFileSettings
 widgetFileSettings = def
@@ -50,16 +95,19 @@ widgetFileSettings = def
     }
 
 widgetFile :: String -> Q Exp
-widgetFile = (if development then widgetFileReload
-                             else widgetFileNoReload)
+widgetFile = (if appReloadTemplates compileTimeAppSettings
+                then widgetFileReload
+                else widgetFileNoReload)
               widgetFileSettings
 
-data Extra = Extra
-    { extraCopyright :: Text
-    , extraAnalytics :: Maybe Text
-    } deriving Show
+configSettingsYmlBS :: ByteString
+configSettingsYmlBS = $(embedFile configSettingsYml)
 
-parseExtra :: DefaultEnv -> Object -> Parser Extra
-parseExtra _ o = Extra
-    <$> o .:  "copyright"
-    <*> o .:? "analytics"
+configSettingsYmlValue :: Value
+configSettingsYmlValue = either throw id $ decodeEither' configSettingsYmlBS
+
+compileTimeAppSettings :: AppSettings
+compileTimeAppSettings =
+    case fromJSON $ applyEnvValue False mempty configSettingsYmlValue of
+        Error e -> error e
+        Success settings -> settings

@@ -1,0 +1,6 @@
+[ "bower2nix"
+, "fetch-bower"
+, "coffee-script"
+, "npm2nix"
+, "uglify-js"
+]

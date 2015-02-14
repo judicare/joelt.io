@@ -10,8 +10,6 @@ in rec {
     let
       pkgs = import <nixpkgs> { inherit system; };
       haskellPackages = pkgs.haskell-ng.packages.${ghcVer};
-    in haskellPackages.callPackage ./default.nix {
-      inherit (pkgs) stdenv bowerPreBuilder nodePackages postgresql darwin;
-    }
+    in pkgs.callPackage ./default.nix { inherit (haskellPackages) callPackage; }
   ));
 }

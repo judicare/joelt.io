@@ -3,7 +3,7 @@ module Handler.Post.New where
 import Control.Lens
 import Data.Char
 import Data.Text.Lens
-import Import
+import Import hiding (text, toLower)
 import Yesod.Text.Markdown
 
 postForm :: Maybe Post -> Form Post

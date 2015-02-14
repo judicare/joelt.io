@@ -1,14 +1,9 @@
 module Handler.Home where
 
 import Blaze.ByteString.Builder.Internal
-import Control.Monad
-import Data.Text.Lazy (toStrict)
-import Data.Text.Encoding (decodeUtf8)
 import qualified Database.Esqueleto as E
 import Import
-import Network.HTTP.Types.URI
 import Text.Blaze.Html.Renderer.Text
-import Yesod.Feed
 import Yesod.Paginate
 
 getFeedR :: Handler TypedContent
@@ -22,16 +17,16 @@ getFeedR = do
         , feedAuthor = "Joel Taylor"
         , feedDescription = "Haskell, Ruby, and friends"
         , feedLanguage = "en-US"
-        , feedUpdated = fromThyme $ case posts of
-                            (Entity _ x:_) -> postCreatedAt x
-                            [] -> cur
+        , feedUpdated = case posts of
+            (Entity _ x:_) -> postCreatedAt x
+            [] -> cur
         , feedEntries = map (toFeedEntry . entityVal) posts
         }
 
 toFeedEntry :: Post -> FeedEntry (Route App)
 toFeedEntry p = FeedEntry
     { feedEntryLink = ReadPostR (postSlug p)
-    , feedEntryUpdated = fromThyme $ postCreatedAt p
+    , feedEntryUpdated = postCreatedAt p
     , feedEntryTitle = postTitle p
     , feedEntryContent = toHtml $ postContent p
     }

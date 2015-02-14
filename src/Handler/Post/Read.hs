@@ -4,9 +4,8 @@ import Control.Lens
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as T
 import Data.Text.Lens
-import Import
+import Import hiding (head)
 import Prelude (head)
-import Network.HTTP.Types.Status (status301)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 import Text.Highlighter hiding (Entity)
