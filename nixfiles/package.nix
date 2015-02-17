@@ -10,7 +10,7 @@
 , shakespeare, stdenv, system-fileio, system-filepath
 , template-haskell, text, transformers, wai, wai-extra, wai-logger
 , warp, yaml, yesod, yesod-auth, yesod-core, yesod-form
-, yesod-newsfeed, yesod-pagination, yesod-static, yesod-test
+, yesod-newsfeed, yesod-static, yesod-test
 }:
 mkDerivation {
   pname = "webapp2";
@@ -29,7 +29,7 @@ mkDerivation {
     persistent-template process-extras resourcet semigroups shakespeare
     system-fileio system-filepath template-haskell text wai wai-extra
     wai-logger warp yaml yesod yesod-auth yesod-core yesod-form
-    yesod-newsfeed yesod-pagination yesod-static
+    yesod-newsfeed yesod-static
   ];
   testDepends = [
     base classy-prelude hspec lifted-base monad-logger persistent

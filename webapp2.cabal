@@ -107,7 +107,6 @@ library
                  , yesod-core
                  , yesod-form
                  , yesod-newsfeed
-                 , yesod-pagination
                  , yesod-static
 
 executable         webapp2
