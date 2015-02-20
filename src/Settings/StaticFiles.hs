@@ -14,26 +14,13 @@ import System.Exit
 import System.Process.ByteString.Lazy (readProcessWithExitCode)
 import Text.Lucius (luciusRTMinified)
 import Text.Printf (printf)
-import Yesod.Static.Extended
+import Yesod.Static
 
 staticFiles (appStaticDir compileTimeAppSettings)
 
-staticFilesList "bower_components/bootstrap/dist"
-    [ "js/bootstrap.js"
-    , "css/bootstrap.css"
-    ]
-
-staticFilesList "bower_components/tipsy/src"
-    [ "javascripts/jquery.tipsy.js"
-    , "stylesheets/tipsy.css"
-    , "images/tipsy.gif"
-    ]
-
 combineSettings :: CombineSettings
 combineSettings = def
-    { csStaticDirs = [ fromString (appStaticDir compileTimeAppSettings)
-                     , "bower_components/bootstrap/dist"
-                     , "bower_components/tipsy/src" ]
+    { csStaticDir = fromString (appStaticDir compileTimeAppSettings)
     , csCssPostProcess = \fps ->
           either (error . errorIntro fps) (return . LT.encodeUtf8)
         . flip luciusRTMinified []

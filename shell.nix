@@ -1,5 +1,5 @@
 { profiling ? false
-, ghc ? "ghc784"
+, ghc ? "784"
 }:
 
 let
@@ -53,4 +53,4 @@ in (lib.mapAttrs (_: attrs:
           '';
         })) # /overrideDerivation
       byCompiler)
-  attrs) release).build.${ghc}.${builtins.currentSystem}
+  attrs) release).build.ghc${ghc}.${builtins.currentSystem}

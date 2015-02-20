@@ -9,5 +9,5 @@ database:
   password: "_env:PGPASS:webapp2"
   host:     "_env:PGHOST:localhost"
   port:     "_env:PGPORT:5432"
-  database: "_env:PGDATABASE:webapp3"
+  database: "_env:PGDATABASE:webapp2"
   poolsize: "_env:PGPOOLSIZE:10"

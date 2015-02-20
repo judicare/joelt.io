@@ -29,8 +29,8 @@ library
                      Settings
                      Settings.Development
                      Settings.StaticFiles
-                     Yesod.Static.Extended
                      Yesod.Text.Markdown
+                     Yesod.Paginate
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
