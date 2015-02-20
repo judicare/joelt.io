@@ -37,6 +37,9 @@ in (lib.mapAttrs (_: attrs:
           })) # /overrideCabal
         (drv: {
           shellHook = ''
+            export TMPDIR="$(mktemp -d -t shellXXXXX)"
+            mkdir -p $TMPDIR
+
             ${drv.preBuild}
             eval "$setupCompilerEnvironmentPhase"
             eval "$jailbreakPhase"

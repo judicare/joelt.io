@@ -4,7 +4,6 @@ import Blaze.ByteString.Builder.Internal
 import qualified Database.Esqueleto as E
 import Import
 import Text.Blaze.Html.Renderer.Text
-import Yesod.Paginate
 
 getFeedR :: Handler TypedContent
 getFeedR = do
