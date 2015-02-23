@@ -24,13 +24,17 @@ in (lib.mapAttrs (_: attrs:
             });
           };
         };
+        pre710 = pkgs.stdenv.lib.versionOlder
+          pkgs.haskell-ng.compiler.${ghcVer}.version
+          "7.10";
       in lib.overrideDerivation
         (haskellLib.overrideCabal
           (haskellLib.appendConfigureFlag bySystem "-fdev")
           (drv: {
-            extraLibraries = (drv.extraLibraries or []) ++ [ h.Cabal_1_22_0_0 ];
+            extraLibraries = (drv.extraLibraries or [])
+              ++ pkgs.stdenv.lib.optional pre710 h.Cabal_1_22_0_0;
             buildTools = (drv.buildTools or []) ++ [
-              h.cabal-install h.ghc-mod h.hlint h.scan h.yesod-bin
+              h.cabal-install /* h.ghc-mod */ h.hlint h.scan
               pkgs.postgresql pkgs.nodePackages.bower2nix
             ];
             enableLibraryProfiling = profiling;
@@ -38,19 +42,22 @@ in (lib.mapAttrs (_: attrs:
         (drv: {
           shellHook = ''
             export TMPDIR="$(mktemp -d -t shellXXXXX)"
+            export TMP="$TMPDIR"
             mkdir -p $TMPDIR
 
             ${drv.preBuild}
             eval "$setupCompilerEnvironmentPhase"
             eval "$jailbreakPhase"
 
-            # force building with newer cabal library, see
-            # https://github.com/haskell/cabal/issues/2144
-            setupCompileFlags+=" -package Cabal-1.22.0.0"
+            ${pkgs.stdenv.lib.optionalString pre710 ''
+              # force building with newer cabal library, see
+              # https://github.com/haskell/cabal/issues/2144
+              setupCompileFlags+=" -package Cabal-1.22.0.0"
+            ''}
             eval "$compileBuildDriverPhase"
             eval "$configurePhase"
             ./Setup repl --ghc-options="-O0 -fobject-code" DevelMain
           '';
         })) # /overrideDerivation
       byCompiler)
-  attrs) release).build.ghc${ghc}.${builtins.currentSystem}
+  attrs) release).build."ghc${ghc}".${builtins.currentSystem}
