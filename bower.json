@@ -12,6 +12,7 @@
   "dependencies": {
     "jquery": "*",
     "tipsy": "*",
-    "bootstrap": "*"
+    "foundation": "*",
+    "modernizr": "*"
   }
 }

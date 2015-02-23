@@ -26,13 +26,8 @@ import Network.Wai.Middleware.RequestLogger
     ( mkRequestLogger, outputFormat, Destination (Logger), OutputFormat (..)
     , IPAddrSource (..), destination
     )
-import qualified Data.Text.IO as T
-import qualified Data.Text as T
 import Control.Monad.Logger (runLoggingT)
-import Control.Monad.Random
-import System.Directory
 import System.Log.FastLogger (newStdoutLoggerSet, defaultBufSize, toLogStr)
-import System.FilePath
 import Database.Persist.Postgresql hiding (LogFunc)
 
 import Handler.Common
@@ -70,8 +65,6 @@ makeFoundation appSettings = do
         (if appMutableStatic appSettings then staticDevel else static)
         (appStaticDir appSettings)
 
-    appMagic <- genSecret
-
     -- We need a log function to create a connection pool. We need a connection
     -- pool to create our foundation. And we need our foundation to get a
     -- logging function. To get out of this loop, we initially create a
@@ -91,18 +84,6 @@ makeFoundation appSettings = do
 
     -- Return the foundation
     return $ mkFoundation pool
-
-genSecret :: IO Text
-genSecret = do
-    hasMagic <- doesFileExist magicPath
-    if hasMagic
-        then T.readFile magicPath
-        else do
-            magick <- fmap T.pack . evalRandIO $ replicateM 16 (getRandomR ('A', 'z'))
-            T.putStrLn $ "The secret word is: " <> magick
-            T.writeFile magicPath magick
-            return magick
-    where magicPath = "config" </> "magic"
 
 warpSettings :: App -> Settings
 warpSettings foundation =

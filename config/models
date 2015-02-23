@@ -5,3 +5,7 @@ Post
   createdAt UTCTime
   UniquePost slug
   deriving Show
+
+User
+  email EmailAddress
+  authy_id Int

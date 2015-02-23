@@ -1,11 +1,9 @@
-<div .container role=main>
-  <div .speech>
+<div .row role=main>
+  <div .speech .large-12 .columns>
     $maybe msg <- mmsg
-      <div #message .alert .alert-warning .alert-dismissible>
-        <button type=button .close data-dismiss=alert>
-          <span aria-hidden=true>&times;
-          <span .sr-only>Close
+      <div #message data-alert .alert-box .warning>
         #{msg}
+        <button tabindex=0 href=# .close aria-label="Close Alert">&times;
     <header>
       <a #head href=@{HomeR}>
         joelt.io

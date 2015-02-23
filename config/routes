@@ -1,5 +1,5 @@
-/s      StaticR Static appStatic
-/auth   AuthR   Auth   getAuth
+/s StaticR Static appStatic
+/a AuthR   Auth   getAuth
 
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET

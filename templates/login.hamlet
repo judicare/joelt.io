@@ -1,12 +1,15 @@
 <article .bubble>
-  <h2 .form-title>Log in…if you dare
+  <h3 .form-title>Log in
   <form role=form method=post action=@{tm login}>
-    <div .form-group>
-      <label for=username>Username
-      <input name=username type=text .form-control>
+    <div .row>
+      <div .large-6 .columns>
+        <label>
+          Username
+          <input name=username type=text .form-control>
 
-    <div .form-group>
-      <label for=password>Password
-      <input name=password type=password .form-control>
+      <div .large-6 .columns>
+        <label>
+          Password
+          <input name=password type=password .form-control>
 
-    <button type=submit .btn .btn-default>Try it
+    <button type=submit .button .tiny>Try it

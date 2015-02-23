@@ -32,7 +32,7 @@ in (lib.mapAttrs (_: attrs:
           (haskellLib.appendConfigureFlag bySystem "-fdev")
           (drv: {
             extraLibraries = (drv.extraLibraries or [])
-              ++ pkgs.stdenv.lib.optional pre710 h.Cabal_1_22_0_0;
+              ++ pkgs.stdenv.lib.optional pre710 h.Cabal_1_22_1_0;
             buildTools = (drv.buildTools or []) ++ [
               h.cabal-install /* h.ghc-mod */ h.hlint h.scan
               pkgs.postgresql pkgs.nodePackages.bower2nix
@@ -52,7 +52,7 @@ in (lib.mapAttrs (_: attrs:
             ${pkgs.stdenv.lib.optionalString pre710 ''
               # force building with newer cabal library, see
               # https://github.com/haskell/cabal/issues/2144
-              setupCompileFlags+=" -package Cabal-1.22.0.0"
+              setupCompileFlags+=" -package Cabal-1.22.1.0"
             ''}
             eval "$compileBuildDriverPhase"
             eval "$configurePhase"

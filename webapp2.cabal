@@ -67,6 +67,7 @@ library
                  , conduit-extra
                  , data-default
                  , directory
+                 , email-validate
                  , esqueleto
                  , exceptions
                  , fast-logger

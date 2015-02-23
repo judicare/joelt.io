@@ -22,7 +22,6 @@ data App = App
     , appConnPool    :: ConnectionPool -- ^ Database connection pool.
     , appHttpManager :: Manager
     , appLogger      :: Logger
-    , appMagic       :: Text
     }
 
 instance HasHttpManager App where
@@ -52,13 +51,18 @@ instance Yesod App where
             $(combineScripts 'StaticR
                 [ js_jquery_tipsy_js
                 , js_disqus_js
+                , js_modernizr_js
+                , js_foundation_js
                 ])
 
             $(combineStylesheets 'StaticR
-                [ css_bootstrap_css
+                [ css_normalize_css
+                , css_foundation_css
                 , css_tipsy_css
                 , css_themes_amelie_css
                 ])
+
+            toWidget [julius|$(document).foundation()|]
 
             $(widgetFile "default-layout")
         let hasTitle = not . null . renderHtml $ pageTitle pc
@@ -111,16 +115,17 @@ instance YesodAuth App where
         s <- lookupSession credsKey
         return $ () <$ s
 
-    authPlugins app = [AuthPlugin "magic" dispatch render] where
+    authPlugins _app = [AuthPlugin "authy" dispatch render] where
         render tm = $(widgetFile "login")
         dispatch "POST" ["login"] = postLoginR >>= sendResponse
         dispatch _ _ = notFound
-        login = PluginR "magic" ["login"]
+        login = PluginR "authy" ["login"]
         postLoginR = do
-            pw <- lift $ runInputPost (iopt textField "password")
-            lift $ if pw == Just (appMagic app)
-                then fmap toTypedContent $ setCreds True (Creds "magic" "nonsense" [])
-                else loginErrorMessage (AuthR LoginR) "Nah."
+            (_email, _pw) <- lift . runInputPost $
+                liftA2 (,)
+                    (iopt textField "email")
+                    (iopt textField "password")
+            lift $ loginErrorMessage (AuthR LoginR) "Incorrect credentials"
 
     authHttpManager = getHttpManager
 

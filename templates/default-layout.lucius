@@ -5,14 +5,6 @@ body {
     margin-top: 11px;
     position: relative;
 
-    #message {
-      border-color: #eadbbc;
-
-      .close {
-        margin-top: -2px;
-      }
-    }
-
     header {
       .dot {
         display: block;
@@ -105,7 +97,7 @@ body {
 }
 
 @media (min-width: 900px) {
-  .container {
+  .row {
     max-width: 860px;
 
     .speech {
@@ -113,7 +105,7 @@ body {
 
       header {
         position: absolute;
-        left: -64px;
+        left: -48px;
         width: 64px;
 
         #head {
