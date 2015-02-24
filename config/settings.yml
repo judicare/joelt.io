@@ -3,6 +3,8 @@ host:           "_env:HOST:*4" # any IPv4 host
 port:           "_env:PORT:3000"
 approot:        "_env:APPROOT:http://localhost:3000"
 ip-from-header: "_env:IP_FROM_HEADER:false"
+authy-key:      "_env:AUTHY_KEY:d57d919d11e6b221c9bf6f7c882028f9"
+authy-endpoint: "_env:AUTHY_ENDPOINT:sandbox-api.authy.com"
 
 database:
   user:     "_env:PGUSER:webapp2"

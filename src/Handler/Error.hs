@@ -52,4 +52,19 @@ otterHandler (BadMethod m) = selectRep $ do
         |]
     provideRep . return $ object ["message" .= ("Bad method" :: Text), "method" .= show m]
 
-otterHandler _ = error "unhandled"
+otterHandler (InvalidArgs args) = selectRep $ do
+    provideRep . defaultLayout $ do
+        setTitle "Invalid Arguments"
+        toWidget $(luciusFile "templates/posts/read.lucius")
+        [whamlet|
+            <article .bubble .error>
+                <h2 .error-title>Invalid Arguments
+                <ul>
+                    $forall arg <- args
+                        <li>#{arg}
+        |]
+    provideRep . return $ object ["message" .= ("Invalid arguments" :: Text), "method" .= show args]
+
+otterHandler e = error (show e)
+
+-- otterHandler _ = error "unhandled"

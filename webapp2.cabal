@@ -59,12 +59,14 @@ library
                  , attoparsec
                  , blaze-builder
                  , blaze-html
+                 , bifunctors
                  , bytestring
                  , classy-prelude
                  , classy-prelude-conduit
                  , classy-prelude-yesod
                  , conduit
                  , conduit-extra
+                 , containers
                  , data-default
                  , directory
                  , email-validate
@@ -76,12 +78,15 @@ library
                  , foreign-store
                  , highlighter
                  , hjsmin
+                 , http-client
                  , http-conduit
                  , http-types
                  , lens
+                 , lens-aeson
                  , markdown
                  , monad-control
                  , monad-logger
+                 , mtl
                  , network
                  , network-uri
                  , old-locale
@@ -98,10 +103,12 @@ library
                  , system-filepath
                  , template-haskell
                  , text
+                 , transformers
                  , wai
                  , wai-extra
                  , wai-logger
                  , warp
+                 , wreq
                  , yaml
                  , yesod
                  , yesod-auth

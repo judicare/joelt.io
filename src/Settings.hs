@@ -49,8 +49,8 @@ data AppSettings = AppSettings
     -- ^ Perform no stylesheet/script combining
 
     -- Example app-specific configuration values.
-    , appAnalytics              :: Maybe Text
-    -- ^ Google Analytics code
+    , appAuthyKey               :: String
+    , appAuthyEndpoint          :: String
     }
 
 #if DEVELOPMENT
@@ -79,7 +79,8 @@ instance FromJSON AppSettings where
         appMutableStatic          <- o .:? "mutable-static"   .!= defaultDev
         appSkipCombining          <- o .:? "skip-combining"   .!= defaultDev
 
-        appAnalytics              <- o .:? "analytics"
+        appAuthyKey               <- o .: "authy-key"
+        appAuthyEndpoint          <- o .: "authy-endpoint"
 
         return AppSettings {..}
 

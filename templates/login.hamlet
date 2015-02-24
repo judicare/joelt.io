@@ -4,8 +4,8 @@
     <div .row>
       <div .large-6 .columns>
         <label>
-          Username
-          <input name=username type=text .form-control>
+          Email
+          <input name=email type=email .form-control>
 
       <div .large-6 .columns>
         <label>

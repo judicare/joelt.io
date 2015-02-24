@@ -1,16 +1,17 @@
-{ mkDerivation, aeson, asn1-types, attoparsec, base, blaze-builder
-, blaze-html, bytestring, classy-prelude, classy-prelude-conduit
-, classy-prelude-yesod, conduit, conduit-extra, data-default
-, directory, email-validate, esqueleto, exceptions, fast-logger
-, file-embed, filepath, foreign-store, highlighter, hjsmin, hspec
-, http-conduit, http-types, lens, lifted-base, markdown
-, monad-control, monad-logger, MonadRandom, network, network-uri
-, old-locale, path-pieces, pcre-light, persistent
+{ mkDerivation, aeson, asn1-types, attoparsec, base, bifunctors
+, blaze-builder, blaze-html, bytestring, classy-prelude
+, classy-prelude-conduit, classy-prelude-yesod, conduit
+, conduit-extra, containers, data-default, directory
+, email-validate, esqueleto, exceptions, fast-logger, file-embed
+, filepath, foreign-store, highlighter, hjsmin, hspec, http-client
+, http-conduit, http-types, lens, lens-aeson, lifted-base, markdown
+, monad-control, monad-logger, MonadRandom, mtl, network
+, network-uri, old-locale, path-pieces, pcre-light, persistent
 , persistent-postgresql, persistent-template, process-extras
 , resourcet, semigroups, shakespeare, stdenv, system-fileio
 , system-filepath, template-haskell, text, transformers, wai
-, wai-extra, wai-logger, warp, yaml, yesod, yesod-auth, yesod-core
-, yesod-form, yesod-newsfeed, yesod-static, yesod-test
+, wai-extra, wai-logger, warp, wreq, yaml, yesod, yesod-auth
+, yesod-core, yesod-form, yesod-newsfeed, yesod-static, yesod-test
 }:
 mkDerivation {
   pname = "webapp2";
@@ -19,17 +20,18 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   buildDepends = [
-    aeson asn1-types attoparsec base blaze-builder blaze-html
-    bytestring classy-prelude classy-prelude-conduit
-    classy-prelude-yesod conduit conduit-extra data-default directory
-    email-validate esqueleto exceptions fast-logger file-embed filepath
-    foreign-store highlighter hjsmin http-conduit http-types lens
-    markdown monad-control monad-logger MonadRandom network network-uri
-    old-locale path-pieces pcre-light persistent persistent-postgresql
+    aeson asn1-types attoparsec base bifunctors blaze-builder
+    blaze-html bytestring classy-prelude classy-prelude-conduit
+    classy-prelude-yesod conduit conduit-extra containers data-default
+    directory email-validate esqueleto exceptions fast-logger
+    file-embed filepath foreign-store highlighter hjsmin http-client
+    http-conduit http-types lens lens-aeson markdown monad-control
+    monad-logger MonadRandom mtl network network-uri old-locale
+    path-pieces pcre-light persistent persistent-postgresql
     persistent-template process-extras resourcet semigroups shakespeare
-    system-fileio system-filepath template-haskell text wai wai-extra
-    wai-logger warp yaml yesod yesod-auth yesod-core yesod-form
-    yesod-newsfeed yesod-static
+    system-fileio system-filepath template-haskell text transformers
+    wai wai-extra wai-logger warp wreq yaml yesod yesod-auth yesod-core
+    yesod-form yesod-newsfeed yesod-static
   ];
   testDepends = [
     base classy-prelude hspec lifted-base monad-logger persistent

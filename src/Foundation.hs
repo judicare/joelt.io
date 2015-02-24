@@ -12,6 +12,7 @@ import Settings.Development (development)
 import Text.Blaze.Html.Renderer.String (renderHtml)
 import Text.Hamlet (hamletFile)
 import Text.Jasmine (minifym)
+import Yesod.Auth.Authy
 import Yesod.Core.Types (Logger)
 import Yesod.Default.Util (addStaticContentExternal)
 import qualified Yesod.Core.Unsafe as Unsafe
@@ -123,9 +124,12 @@ instance YesodAuth App where
         postLoginR = do
             (_email, _pw) <- lift . runInputPost $
                 liftA2 (,)
-                    (iopt textField "email")
-                    (iopt textField "password")
-            lift $ loginErrorMessage (AuthR LoginR) "Incorrect credentials"
+                    (ireq textField "email")
+                    (ireq textField "password")
+            result <- verify 406770 _pw
+            case result of
+                Left m -> lift $ loginErrorMessage (AuthR LoginR) m
+                Right e -> liftIO (print e) >> return (toTypedContent ())
 
     authHttpManager = getHttpManager
 
