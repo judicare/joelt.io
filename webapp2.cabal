@@ -29,8 +29,9 @@ library
                      Settings
                      Settings.Development
                      Settings.StaticFiles
-                     Yesod.Text.Markdown
+                     Yesod.Auth.Authy
                      Yesod.Paginate
+                     Yesod.Text.Markdown
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
