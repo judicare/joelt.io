@@ -3,7 +3,7 @@ module Handler.HomeSpec (
     spec
 ) where
 
-import TestImport hiding (singleton)
+import TestImport
 
 spec :: Spec
 spec = withApp $ do
