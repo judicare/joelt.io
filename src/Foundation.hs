@@ -59,11 +59,14 @@ instance Yesod App where
             $(combineStylesheets 'StaticR
                 [ css_normalize_css
                 , css_foundation_css
+                , css_font_awesome_css
                 , css_tipsy_css
                 , css_themes_amelie_css
                 ])
 
             toWidget [julius|$(document).foundation()|]
+
+            addStylesheet (StaticR css_fonts_css)
 
             $(widgetFile "default-layout")
         let hasTitle = not . null . renderHtml $ pageTitle pc
@@ -112,9 +115,7 @@ instance YesodAuth App where
     logoutDest _ = HomeR
 
     getAuthId _ = return $ Just ()
-    maybeAuthId = do
-        s <- lookupSession credsKey
-        return $ () <$ s
+    maybeAuthId = liftM (() <$) (lookupSession credsKey)
 
     authPlugins _app = [AuthPlugin "authy" dispatch render] where
         render tm = $(widgetFile "login")
@@ -126,10 +127,10 @@ instance YesodAuth App where
                 liftA2 (,)
                     (ireq textField "email")
                     (ireq textField "password")
-            result <- verify 406770 _pw
-            case result of
-                Left m -> lift $ loginErrorMessage (AuthR LoginR) m
-                Right e -> liftIO (print e) >> return (toTypedContent ())
+            result <- verify 174274 _pw
+            lift $ case result of
+                Left m -> loginErrorMessage (AuthR LoginR) m
+                Right _ -> fmap toTypedContent $ setCreds True (Creds "magic" "nonsense" [])
 
     authHttpManager = getHttpManager
 

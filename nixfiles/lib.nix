@@ -1,6 +1,11 @@
-{ pkgs }:
+{ pkgs, nodePackages }:
 
-{
+let fetchbower = import <nixpkgs/pkgs/build-support/fetchbower> {
+      inherit (pkgs) stdenv git;
+      inherit (nodePackages) fetch-bower;
+    };
+
+in {
   sourceFilesBySuffices = path: exts:
     let filter = name: type:
       let base = baseNameOf (toString name);
@@ -10,7 +15,7 @@
     in builtins.filterSource filter path;
 
   linkBowerComponents = file:
-  let env = pkgs.callPackage file {}; in ''
+  let env = pkgs.callPackage file { inherit fetchbower; }; in ''
     if ! test -d bower_components; then
       mkdir -p bower_components
       ${pkgs.stdenv.lib.concatStringsSep "\n"

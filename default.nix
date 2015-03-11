@@ -5,7 +5,7 @@ let
   gen = callPackage ./nixfiles/package.nix {
     inherit stdenv;
   };
-  lib = callPackage ./nixfiles/lib.nix {};
+  lib = callPackage ./nixfiles/lib.nix { inherit nodePackages; };
   haskellLib = import <nixpkgs/pkgs/development/haskell-modules/lib.nix> { inherit pkgs; };
   nodePackages = pkgs.callPackage <nixpkgs/pkgs/top-level/node-packages.nix> {
     self = nodePackages;

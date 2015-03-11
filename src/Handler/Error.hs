@@ -14,7 +14,8 @@ otterHandler NotFound = selectRep $ do
         [whamlet|
             <article .bubble .error>
                 <h2 .error-title>Not Found
-                <p>Go back.
+                <p>
+                    <a href="javascript:history.back()">Back
         |]
     provideRep . return $ object ["message" .= ("Not found" :: Text)]
 

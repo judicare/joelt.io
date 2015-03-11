@@ -1,13 +1,9 @@
 <article .bubble .blog-post>
   <h2 .post-title>
     #{postTitle post}
-    \ #
-    <a href=@{ReadPostR (postSlug post)}>##
     $maybe _ <- mai
       \ #
-      <a .edit-link .glyphicon .glyphicon-pencil href=@{EditPostR k}>
-
-  <hr>
+      <a .edit-link .fa .fa-pencil href=@{EditPostR k}>
 
   ^{renderMd (postContent post)}
 

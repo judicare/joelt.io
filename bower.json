@@ -13,6 +13,7 @@
     "jquery": "*",
     "tipsy": "*",
     "foundation": "*",
-    "modernizr": "*"
+    "modernizr": "*",
+    "fontawesome": "*"
   }
 }

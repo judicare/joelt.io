@@ -18,6 +18,7 @@ import qualified Data.Map as M
 import Data.Maybe
 import Data.Text (Text, unpack)
 import Data.Text.Encoding (decodeUtf8)
+import Debug.Trace
 import Network.HTTP.Client (HttpException (..))
 import Network.Wreq
 import Prelude
@@ -35,7 +36,7 @@ data User = User
 -- authyId = "3856637"
 
 url :: [String] -> String
-url path = "https://"
+url path = join traceShow $ "https://"
     ++ appAuthyEndpoint compileTimeAppSettings ++ "/protected/json"
     </> foldr (</>) "" path
     ++ "?api_key=" ++ appAuthyKey compileTimeAppSettings

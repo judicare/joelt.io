@@ -5,6 +5,11 @@ body {
     margin-top: 11px;
     position: relative;
 
+    h1, h2, h3, h4, h5, h6 {
+      text-rendering: optimizeLegibility;
+      font-weight: 600;
+    }
+
     header {
       .dot {
         display: block;
@@ -75,10 +80,10 @@ body {
 
     .bubble {
       background: white;
-      padding: 35px;
+      padding: 45px;
       margin-bottom: 10px;
 
-      &.first-bubble {
+      &.last-bubble {
         padding: 25px;
       }
 

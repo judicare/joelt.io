@@ -7,24 +7,14 @@ body .speech {
       position: relative;
 
       a.post-title {
+        color: #222;
         text-rendering: optimizeLegibility;
         padding: 25px;
         display: block;
-        font-weight: 200;
+        font-weight: 600;
 
-        .comment-bubble {
-          font-size: 70%;
-          padding-top: 6px;
-          color: #bbb;
-          float: right;
-
-          &.commentful {
-            display: inline;
-          }
-
-          .glyphicon {
-            vertical-align: -1px;
-          }
+        &:hover {
+          color: #666;
         }
       }
     }
