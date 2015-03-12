@@ -50,6 +50,11 @@ in
         description = "the AWS configuration";
       };
 
+      authy_key = mkOption {
+        type = types.string;
+        description = "the Authy API key";
+      };
+
       user = mkOption {
         type = with types; uniq string;
         default = "webapp2";
@@ -90,6 +95,10 @@ in
         # AWS
         AWS_ACCESS_KEY_ID = cfg.aws.key;
         AWS_ACCESS_KEY_SECRET = cfg.aws.secret;
+
+        # Authy
+        AUTHY_ENDPOINT = "api.authy.com";
+        AUTHY_KEY = cfg.authy_key;
 
         # database
         PGHOST = cfg.database.host;

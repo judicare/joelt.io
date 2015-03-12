@@ -118,7 +118,7 @@ library
                  , yesod-newsfeed
                  , yesod-static
 
-executable         webapp2
+executable webapp2
     if flag(library-only)
         Buildable: False
 
@@ -130,10 +130,10 @@ executable         webapp2
 
     ghc-options:       -threaded -O2
 
-test-suite test
+test-suite spec
     type:              exitcode-stdio-1.0
     main-is:           Spec.hs
-    hs-source-dirs:    test
+    hs-source-dirs:    tests
     ghc-options:       -Wall -Werror
 
     extensions: NoImplicitPrelude

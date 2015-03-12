@@ -4,11 +4,22 @@
 
   .post-title, .error-title {
     margin-bottom: 25px;
+    margin-top: 0 !important;
 
     .edit-link {
       font-size: 60%;
       vertical-align: 4px;
     }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0.6rem 0 1.2rem;
+  }
+
+  h1, h2, h3 {
+    margin-top: 1.4rem !important;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #eee;
   }
 
   code, pre {

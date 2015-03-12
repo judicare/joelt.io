@@ -45,7 +45,7 @@ renderMd (Markdown m) = markdown defWithHighlight m where
     countLines (Token _ s:ts) =
         -- elemIndices 10 counts the number of newlines (char 10)
         -- in the string
-        length (BS.elemIndices 10 s) + countLines ts
+        length (BS.elemIndices 0x0A s) + countLines ts
     highlight [] = return ()
     highlight (Token t s:ts) = do
         H.span H.! A.class_ (H.toValue $ shortName t) $ toHtml (T.decodeUtf8 s)
