@@ -34,10 +34,10 @@ library
                      Yesod.Text.Markdown
 
     if flag(dev) || flag(library-only)
-        cpp-options:   -DDEVELOPMENT
-        ghc-options:   -Wall -O0 -Werror
+        cpp-options: -DDEVELOPMENT
+        ghc-options: -Wall -O0 -Werror
     else
-        ghc-options:   -Wall -O2 -Werror
+        ghc-options: -Wall -O2 -Werror
 
     extensions: TemplateHaskell
                 QuasiQuotes
@@ -122,19 +122,19 @@ executable webapp2
     if flag(library-only)
         Buildable: False
 
-    main-is:           main.hs
-    hs-source-dirs:    app
-    build-depends:     base
-                     , webapp2
-                     , yesod
+    main-is:        main.hs
+    hs-source-dirs: app
+    build-depends:  base
+                  , webapp2
+                  , yesod
 
-    ghc-options:       -threaded -O2
+    ghc-options:    -threaded -O2
 
 test-suite spec
-    type:              exitcode-stdio-1.0
-    main-is:           Spec.hs
-    hs-source-dirs:    tests
-    ghc-options:       -Wall -Werror
+    type:           exitcode-stdio-1.0
+    main-is:        Spec.hs
+    hs-source-dirs: tests
+    ghc-options:    -Wall -Werror
 
     extensions: NoImplicitPrelude
 
@@ -152,3 +152,10 @@ test-suite spec
                  , yesod
                  , yesod-core
                  , yesod-test
+
+test-suite hlint
+    type:           exitcode-stdio-1.0
+    main-is:        hlint.hs
+    hs-source-dirs: tests
+    ghc-options:    -Wall -Werror
+    build-depends:  base, hlint

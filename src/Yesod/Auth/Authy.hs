@@ -48,10 +48,10 @@ createUser User{..} = liftM (second extractId) $
         extractId resp = fromIntegral
             $ resp ^?! responseBody . key "user" . key "id" . _Integer
         userBody = object ["user" .=
-            (object [ "email" .= decodeUtf8 (toByteString userEmail)
-                    , "cellphone" .= userCellphone
-                    , "country_code" .= userCountryCode
-                    ])
+            object [ "email" .= decodeUtf8 (toByteString userEmail)
+                   , "cellphone" .= userCellphone
+                   , "country_code" .= userCountryCode
+                   ]
             ]
 
 verify :: MonadIO m => Int -> Text -> m (Either Text ())

@@ -130,7 +130,7 @@ instance YesodAuth App where
             result <- verify 174274 _pw
             lift $ case result of
                 Left m -> loginErrorMessage (AuthR LoginR) m
-                Right _ -> fmap toTypedContent $ setCreds True (Creds "magic" "nonsense" [])
+                Right _ -> toTypedContent <$> setCreds True (Creds "magic" "nonsense" [])
 
     authHttpManager = getHttpManager
 

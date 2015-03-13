@@ -15,7 +15,7 @@ module Application
     , db
     ) where
 
-import Control.Monad.Logger (liftLoc)
+import Control.Monad.Logger (liftLoc, runLoggingT)
 import Language.Haskell.TH.Syntax (qLocation)
 import Import hiding ((</>))
 import Network.Wai.Handler.Warp
@@ -26,7 +26,6 @@ import Network.Wai.Middleware.RequestLogger
     ( mkRequestLogger, outputFormat, Destination (Logger), OutputFormat (..)
     , IPAddrSource (..), destination
     )
-import Control.Monad.Logger (runLoggingT)
 import System.Log.FastLogger (newStdoutLoggerSet, defaultBufSize, toLogStr)
 import Database.Persist.Postgresql hiding (LogFunc)
 
@@ -100,12 +99,15 @@ warpSettings foundation =
       defaultSettings
 
 getApplicationDev :: IO (Settings, Application)
-getApplicationDev = do
+getApplicationDev = fmap (\ (a, _, c) -> (a, c)) mkApp
+
+mkApp :: IO (Settings, App, Application)
+mkApp = do
     settings <- getAppSettings
     foundation <- makeFoundation settings
     wsettings <- getDevSettings $ warpSettings foundation
     app <- makeApplication foundation
-    return (wsettings, app)
+    return (wsettings, foundation, app)
 
 getAppSettings :: IO AppSettings
 getAppSettings = loadAppSettings [configSettingsYml] [] useEnv
@@ -134,12 +136,7 @@ appMain = do
     runSettings (warpSettings foundation) app
 
 getApplicationRepl :: IO (Int, App, Application)
-getApplicationRepl = do
-    settings <- getAppSettings
-    foundation <- makeFoundation settings
-    wsettings <- getDevSettings $ warpSettings foundation
-    app1 <- makeApplication foundation
-    return (getPort wsettings, foundation, app1)
+getApplicationRepl = fmap (\ (a, b, c) -> (getPort a, b, c)) mkApp
 
 shutdownApp :: App -> IO ()
 shutdownApp _ = return ()
