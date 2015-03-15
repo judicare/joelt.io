@@ -6,8 +6,8 @@ module Handler.HomeSpec (
 import TestImport
 
 spec :: Spec
-spec = withApp $ do
-    describe "These are some example tests" $ do
+spec = withApp $
+    describe "These are some example tests" $
         it "loads the index and checks it looks right" $ do
             t <- liftIO getCurrentTime
             _ <- runDB $ insert (Post "a test post" "a-test-post" "post contents" t)

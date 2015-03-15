@@ -27,7 +27,11 @@ import Network.Wai.Middleware.RequestLogger
     , IPAddrSource (..), destination
     )
 import System.Log.FastLogger (newStdoutLoggerSet, defaultBufSize, toLogStr)
+#ifdef TESTING
+import Database.Persist.Sqlite
+#else
 import Database.Persist.Postgresql hiding (LogFunc)
+#endif
 
 import Handler.Common
 import Handler.Home
@@ -74,9 +78,15 @@ makeFoundation appSettings = do
         logFunc = messageLoggerSource tempFoundation appLogger
 
     -- Create the database connection pool
+#ifdef TESTING
+    pool <- flip runLoggingT logFunc $ createSqlitePool
+        (sqlDatabase $ appDatabaseConf appSettings)
+        (sqlPoolSize $ appDatabaseConf appSettings)
+#else
     pool <- flip runLoggingT logFunc $ createPostgresqlPool
         (pgConnStr  $ appDatabaseConf appSettings)
         (pgPoolSize $ appDatabaseConf appSettings)
+#endif
 
     -- Perform database migration using our application's logging settings.
     runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc

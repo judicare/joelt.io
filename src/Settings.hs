@@ -1,10 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-#if DEVELOPMENT
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-#endif
-
 module Settings where
 
 import ClassyPrelude.Yesod
@@ -12,7 +8,11 @@ import Control.Exception (throw)
 import Data.Aeson (Result (..), fromJSON, withObject)
 import Data.FileEmbed              (embedFile)
 import Data.Yaml
+#ifdef TESTING
+import Database.Persist.Sqlite     (SqliteConf (..))
+#else
 import Database.Persist.Postgresql (PostgresConf (..))
+#endif
 import Language.Haskell.TH.Syntax
 import Network.Wai.Handler.Warp    (HostPreference)
 import Text.Coffee
@@ -20,12 +20,16 @@ import Text.Hamlet
 import Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
 import Yesod.Default.Util
 
+#ifdef TESTING
+type PersistConf = SqliteConf
+#else
 type PersistConf = PostgresConf
+#endif
 
 data AppSettings = AppSettings
     { appStaticDir              :: String
     -- ^ Directory from which to serve static files.
-    , appDatabaseConf           :: PostgresConf
+    , appDatabaseConf           :: PersistConf
     -- ^ Configuration settings for accessing the database.
     , appRoot                   :: Text
     -- ^ Base for all generated URLs.
@@ -52,11 +56,6 @@ data AppSettings = AppSettings
     , appAuthyKey               :: String
     , appAuthyEndpoint          :: String
     }
-
-#if DEVELOPMENT
-deriving instance Show PostgresConf
-deriving instance Show AppSettings
-#endif
 
 instance FromJSON AppSettings where
     parseJSON = withObject "AppSettings" $ \o -> do

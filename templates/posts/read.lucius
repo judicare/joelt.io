@@ -33,7 +33,7 @@
   }
 
   p, li {
-    font-size: 19px;
+    font-size: 18px;
     line-height: 1.7em;
   }
 

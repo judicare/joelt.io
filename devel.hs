@@ -1,7 +1,6 @@
 {-# LANGUAGE PackageImports #-}
 import "webapp2" Application (getApplicationDev)
-import Control.Concurrent (forkIO)
-import Control.Concurrent (threadDelay)
+import Control.Concurrent (forkIO, threadDelay)
 import Network.Wai.Handler.Warp (runSettings, defaultSettings, setPort)
 import System.Directory (doesFileExist, removeFile)
 import System.Exit (exitSuccess)
