@@ -28,6 +28,9 @@ in (lib.mapAttrs (_: attrs:
           pkgs.haskell-ng.compiler.${ghcVer}.version
           "7.10";
         newestCabal = h.Cabal_1_22_1_1;
+        cabal-install = h.cabal-install.override (pkgs.stdenv.lib.optionalAttrs (!pre710) {
+          Cabal = null;
+        });
       in lib.overrideDerivation
         (haskellLib.overrideCabal
           (haskellLib.appendConfigureFlag bySystem "-fdev")
@@ -35,7 +38,7 @@ in (lib.mapAttrs (_: attrs:
             extraLibraries = (drv.extraLibraries or [])
               ++ pkgs.stdenv.lib.optional pre710 newestCabal;
             buildTools = (drv.buildTools or []) ++ [
-              h.cabal-install /* h.ghc-mod */ h.hlint h.scan
+              cabal-install /* h.ghc-mod */ h.hlint h.scan
               pkgs.postgresql pkgs.nodePackages.bower2nix
             ];
             enableLibraryProfiling = profiling;
