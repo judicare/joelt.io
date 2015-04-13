@@ -119,11 +119,9 @@ in
       '';
       script = ''
         cd ${cfg.stateDir}
-        mkdir -p config
-        mkdir -p static
+        mkdir -p static config
         ln -sfv ${cfg.package}/static/{combined,css,fonts,img,js} static/
-        ln -sfv ${cfg.package}/config/settings.yml config/settings.yml
-        ${cfg.package}/bin/webapp2 ${cfg.environment}
+        ${cfg.package}/bin/webapp2 ${cfg.package}/config/settings.yml
       '';
     };
   };

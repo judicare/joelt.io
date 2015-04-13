@@ -27,7 +27,10 @@ in (lib.mapAttrs (_: attrs:
         pre710 = pkgs.stdenv.lib.versionOlder
           pkgs.haskell-ng.compiler.${ghcVer}.version
           "7.10";
-        newestCabal = h.Cabal_1_22_1_1;
+        newestCabal = with pkgs.stdenv.lib; attrByPath
+          [(last (builtins.filter (hasPrefix "Cabal_") (builtins.attrNames h)))]
+          h.Cabal
+          h;
         cabal-install = h.cabal-install.override (pkgs.stdenv.lib.optionalAttrs (!pre710) {
           Cabal = null;
         });
