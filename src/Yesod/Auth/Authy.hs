@@ -1,65 +1,42 @@
-{-# LANGUAGE RecordWildCards #-}
-
-module Yesod.Auth.Authy (
-    User(..),
-    createUser,
-    verify, url
-) where
+module Yesod.Auth.Authy where
 
 import Control.Exception
 import Control.Lens hiding ((.=))
 import Control.Monad
 import Control.Monad.IO.Class
-import Data.Aeson
 import Data.Aeson.Lens
-import Data.Bifunctor
-import Data.Functor
+import Data.ByteString.Lazy (ByteString)
+import Data.Default
 import qualified Data.Map as M
 import Data.Maybe
 import Data.Text (Text, unpack)
-import Data.Text.Encoding (decodeUtf8)
-import Debug.Trace
-import Network.HTTP.Client (HttpException (..))
-import Network.Wreq
+import Network.Connection
+import Network.HTTP.Client (HttpException (..), ManagerSettings)
+import Network.HTTP.Client.TLS
+import Network.Wreq hiding (get, post)
 import Prelude
 import Settings
 import System.FilePath
-import Text.Email.Validate
 
-data User = User
-          { userEmail :: EmailAddress
-          , userCellphone :: String
-          , userCountryCode :: String
-          }
+-- the Authy sandbox API's certificate is self-signed
+ms :: ManagerSettings
+ms = mkManagerSettings (def { settingDisableCertificateValidation = True }) Nothing
 
--- authyId :: String
--- authyId = "3856637"
+get :: String -> IO (Response ByteString)
+get = getWith (defaults & manager .~ Left ms)
 
 url :: [String] -> String
-url path = join traceShow $ "https://"
+url path = "https://"
     ++ appAuthyEndpoint compileTimeAppSettings ++ "/protected/json"
     </> foldr (</>) "" path
     ++ "?api_key=" ++ appAuthyKey compileTimeAppSettings
 
-createUser :: MonadIO m => User -> m (Either Text Int)
-createUser User{..} = liftM (second extractId) $
-    liftIO . tryHttp $ post (url ["users", "new"]) userBody
-    where
-        extractId resp = fromIntegral
-            $ resp ^?! responseBody . key "user" . key "id" . _Integer
-        userBody = object ["user" .=
-            object [ "email" .= decodeUtf8 (toByteString userEmail)
-                   , "cellphone" .= userCellphone
-                   , "country_code" .= userCountryCode
-                   ]
-            ]
+verify :: (Functor m, MonadIO m) => Int -> Text -> m (Maybe Text)
+verify userId token = fmap (^? (_Left . to translateException)) . liftIO . try
+    $ get (url ["verify", unpack token, show userId])
 
-verify :: MonadIO m => Int -> Text -> m (Either Text ())
-verify userId token = liftM (() <$)
-    $ liftIO . tryHttp $ get (url ["verify", unpack token, show userId])
-
-tryHttp :: IO b -> IO (Either Text b)
-tryHttp = fmap (either (Left . int) Right) . try where
-    int (StatusCodeException _ m _) = fromMaybe "Unknown error" $
-            M.fromList m ^? ix "X-Response-Body-Start" . key "message" . _String
-    int _ = "Unknown error"
+translateException :: HttpException -> Text
+translateException (StatusCodeException _ m _) =
+    fromMaybe "Unknown error" $
+        M.fromList m ^? ix "X-Response-Body-Start" . key "message" . _String
+translateException _ = "Unknown error"

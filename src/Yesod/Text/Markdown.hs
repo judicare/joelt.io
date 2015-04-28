@@ -4,21 +4,12 @@ module Yesod.Text.Markdown where
 
 import Data.Text (Text)
 import Data.Text.Lazy (toStrict, fromStrict)
-import Database.Persist.Sql
 import Prelude
 import Text.Hamlet (hamlet)
 import Text.Markdown (Markdown (Markdown))
 import Yesod.Core (HandlerSite, RenderMessage)
 import Yesod.Core.Widget
 import Yesod.Form
-
-instance PersistField Markdown where
-    toPersistValue (Markdown t) = PersistText $ toStrict t
-    fromPersistValue (PersistText t) = Right $ Markdown $ fromStrict t
-    fromPersistValue _ = Left "Not a PersistText value"
-
-instance PersistFieldSql Markdown where
-    sqlType _ = SqlString
 
 markdownField :: (Monad m, RenderMessage (HandlerSite m) FormMessage) => Field m Markdown
 markdownField = Field

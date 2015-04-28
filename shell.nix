@@ -6,6 +6,7 @@ let
   release = import ./release.nix {};
   pkgs = import <nixpkgs> {};
   lib = pkgs.lib;
+  myLib = import ./nixfiles/lib.nix { inherit pkgs; nodePackages = {}; };
   haskellLib = import <nixpkgs/pkgs/development/haskell-modules/lib.nix> { inherit pkgs; };
 in (lib.mapAttrs (_: attrs:
   lib.mapAttrs (ghcVer: byCompiler:
@@ -42,9 +43,14 @@ in (lib.mapAttrs (_: attrs:
               ++ pkgs.stdenv.lib.optional pre710 newestCabal;
             buildTools = (drv.buildTools or []) ++ [
               cabal-install /* h.ghc-mod */ h.hlint h.scan
+              (myLib.yesod-bin-wrapper h.yesod-bin)
               pkgs.postgresql pkgs.nodePackages.bower2nix
             ];
             enableLibraryProfiling = profiling;
+            configureFlags = [
+              "--enable-coverage"
+              "--hpc-option=--verbosity=0"
+            ];
           })) # /overrideCabal
         (drv: {
           shellHook = ''
@@ -63,7 +69,8 @@ in (lib.mapAttrs (_: attrs:
             ''}
             eval "$compileBuildDriverPhase"
             eval "$configurePhase"
-            ./Setup repl --ghc-options="-O0 -fobject-code" DevelMain
+
+            # ./Setup repl --ghc-options="-O0 -fobject-code" DevelMain
           '';
         })) # /overrideDerivation
       byCompiler)

@@ -7,7 +7,7 @@
 -- | Easy pagination for Yesod.
 module Yesod.Paginate (
     -- *** Paginating
-    paginate, paginateWith,
+    paginateWith,
 
     -- *** Datatypes
     PageConfig (..),
@@ -27,25 +27,15 @@ import Yesod hiding (Value)
 data PageConfig app = PageConfig
     { pageSize :: Int
     , currentPage :: Int
-    , firstPageRoute :: Route app
     , pageRoute :: Int -> Route app
     }
 
 -- | Returned by 'paginate' and friends.
 data Page route r = Page
     { pageResults :: [r] -- ^ Returned entities.
-    , firstPage :: Maybe route -- ^ Link to first page.
     , nextPage :: Maybe route -- ^ Link to next page.
     , previousPage :: Maybe route -- ^ Link to previous page.
-    } deriving (Eq, Read, Show)
-
--- | Paginate a model, given a configuration. This just performs a @SELECT
--- *@.
-paginate :: ( From SqlQuery SqlExpr SqlBackend a
-            , SqlSelect a a1, YesodPersist site
-            , YesodPersistBackend site ~ SqlBackend)
-         => PageConfig app -> HandlerT site IO (Page (Route app) a1)
-paginate c = paginateWith c return
+    }
 
 -- | Paginate a model, given a configuration and an esqueleto query.
 paginateWith :: ( From SqlQuery SqlExpr SqlBackend a1, SqlSelect a a2
@@ -65,7 +55,6 @@ paginateWith c sel = do
     let route = pageRoute c . fromIntegral
 
     return Page { pageResults = take (fromIntegral $ pageSize c) es
-                , firstPage = if cp >= 2 then Just (firstPageRoute c) else Nothing
                 , nextPage = if fromIntegral (length es) == pageSize c + 1
                                  then Just (route $ cp + 1)
                                  else Nothing

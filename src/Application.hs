@@ -7,9 +7,6 @@ module Application
     , appMain
     , develMain
     , makeFoundation
-    -- * for DevelMain
-    , getApplicationRepl
-    , shutdownApp
     -- * for GHCI
     , handler
     , db
@@ -20,8 +17,7 @@ import Language.Haskell.TH.Syntax (qLocation)
 import Import hiding ((</>))
 import Network.Wai.Handler.Warp
     ( Settings, setPort, setHost, setOnException, defaultShouldDisplayException
-    , defaultSettings, runSettings, getPort
-    )
+    , defaultSettings, runSettings)
 import Network.Wai.Middleware.RequestLogger
     ( mkRequestLogger, outputFormat, Destination (Logger), OutputFormat (..)
     , IPAddrSource (..), destination
@@ -144,12 +140,6 @@ appMain = do
 
     -- Run the application with Warp
     runSettings (warpSettings foundation) app
-
-getApplicationRepl :: IO (Int, App, Application)
-getApplicationRepl = fmap (\ (a, b, c) -> (getPort a, b, c)) mkApp
-
-shutdownApp :: App -> IO ()
-shutdownApp _ = return ()
 
 handler :: Handler a -> IO a
 handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h

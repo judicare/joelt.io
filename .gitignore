@@ -6,6 +6,7 @@ result
 static/combined
 static/tmp
 yesod-devel
+tmp
 
 *.o
 *.hi

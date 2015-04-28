@@ -9,6 +9,3 @@ development =
 #else
   False
 #endif
-
-production :: Bool
-production = not development

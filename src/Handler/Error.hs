@@ -1,10 +1,11 @@
 module Handler.Error where
 
-import Data.ByteString.Char8 (unpack)
-import Data.Text             (Text)
-import Prelude
+import ClassyPrelude
 import Text.Lucius
 import Yesod
+
+text :: Text -> Text
+text = id
 
 otterHandler :: Yesod site => ErrorResponse -> HandlerT site IO TypedContent
 otterHandler NotFound = selectRep $ do
@@ -17,7 +18,7 @@ otterHandler NotFound = selectRep $ do
                 <p>
                     <a href="javascript:history.back()">Back
         |]
-    provideRep . return $ object ["message" .= ("Not found" :: Text)]
+    provideRep . return $ object ["message" .= text "Not found"]
 
 otterHandler (PermissionDenied _) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -28,7 +29,7 @@ otterHandler (PermissionDenied _) = selectRep $ do
                 <h2 .error-title>Permission Denied
                 <p>Sorry, that's off-limits.
         |]
-    provideRep . return $ object ["message" .= ("Permission denied" :: Text)]
+    provideRep . return $ object ["message" .= text "Permission denied"]
 
 otterHandler (InternalError e) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -40,7 +41,7 @@ otterHandler (InternalError e) = selectRep $ do
                 <p>
                     <code>#{e}
         |]
-    provideRep . return $ object ["message" .= ("Internal server error" :: Text), "error" .= e]
+    provideRep . return $ object ["message" .= text "Internal server error", "error" .= e]
 
 otterHandler (BadMethod m) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -49,9 +50,10 @@ otterHandler (BadMethod m) = selectRep $ do
         [whamlet|
             <article .bubble .error>
                 <h2 .error-title>Bad Method
-                <p><code>#{unpack m}</code> won't work on this page.
+                <p><code>#{decodeUtf8 m}</code> won't work on this page.
         |]
-    provideRep . return $ object ["message" .= ("Bad method" :: Text), "method" .= show m]
+    provideRep . return $
+        object ["message" .= text "Bad method", "method" .= decodeUtf8 m]
 
 otterHandler (InvalidArgs args) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -64,8 +66,16 @@ otterHandler (InvalidArgs args) = selectRep $ do
                     $forall arg <- args
                         <li>#{arg}
         |]
-    provideRep . return $ object ["message" .= ("Invalid arguments" :: Text), "method" .= show args]
+    provideRep . return $ object
+        [ "message" .= text "Invalid arguments"
+        , "arguments" .= args ]
 
-otterHandler e = error (show e)
-
--- otterHandler _ = error "unhandled"
+otterHandler NotAuthenticated = selectRep $ do
+    provideRep . defaultLayout $ do
+        setTitle "Not Authenticated"
+        toWidget $(luciusFile "templates/posts/read.lucius")
+        [whamlet|
+            <article .bubble .error>
+                <h2 .error-title>Not Authenticated
+        |]
+    provideRep . return $ object ["message" .= text "Not authenticated"]

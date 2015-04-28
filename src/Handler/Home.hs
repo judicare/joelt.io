@@ -37,7 +37,7 @@ getHomeR = getPageR 1
 getPageR :: Int -> Handler Html
 getPageR i = do
     m <- maybeAuthId
-    posts <- paginateWith (PageConfig 5 i HomeR PageR) $ \p -> do
+    posts <- paginateWith (PageConfig 5 i PageR) $ \p -> do
         E.orderBy [E.desc (p E.^. PostCreatedAt)]
         return p
     defaultLayout $ do
