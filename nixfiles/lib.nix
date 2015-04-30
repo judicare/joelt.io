@@ -10,7 +10,8 @@ in {
     let filter = name: type:
       let base = baseNameOf (toString name);
       in (type == "directory" &&
-            (base != "bower_components" && base != "dist" && base != "tmp"))
+            (base != "bower_components" && base != "dist" && base != "tmp" &&
+            !(pkgs.stdenv.lib.hasPrefix "result" base) && base != "yesod-devel"))
          || pkgs.stdenv.lib.any (ext: pkgs.stdenv.lib.hasSuffix ext base) exts;
     in builtins.filterSource filter path;
 
