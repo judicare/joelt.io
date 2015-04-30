@@ -2,7 +2,7 @@ bower_components
 config/client_session_key.aes
 config/magic
 dist
-result
+result*
 static/combined
 static/tmp
 yesod-devel

@@ -119,17 +119,14 @@ instance YesodAuth App where
     loginDest _ = HomeR
     logoutDest _ = HomeR
 
-    getAuthId _ = return $ Just ()
+    authenticate _ = return $ Authenticated ()
     maybeAuthId = fmap void (lookupSession credsKey)
 
     authPlugins app = [AuthPlugin "authy" dispatch render] where
         render tm = $(widgetFile "login")
         dispatch "POST" ["login"] = do
-            (_email, _pw) <- lift . runInputPost $
-                liftA2 (,)
-                    (ireq textField "email")
-                    (ireq textField "password")
-            result <- verify 174274 _pw
+            pw <- lift . runInputPost $ ireq textField "password"
+            result <- verify 174274 pw
             lift $ case result of
                 Just m -> loginErrorMessage (AuthR LoginR) m
                 Nothing -> do
