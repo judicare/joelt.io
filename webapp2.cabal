@@ -76,6 +76,7 @@ library
                  , file-embed
                  , filepath
                  , foreign-store
+                 , ghc
                  , highlighter
                  , hjsmin
                  , http-client
@@ -132,7 +133,7 @@ executable webapp2
 
 test-suite spec
     type:           exitcode-stdio-1.0
-    main-is:        Spec.hs
+    main-is:        main.hs
     hs-source-dirs: tests/spec, src
     ghc-options:    -Wall
 
@@ -176,6 +177,7 @@ test-suite spec
                  , file-embed
                  , filepath
                  , foreign-store
+                 , ghc
                  , highlighter
                  , hjsmin
                  , hspec

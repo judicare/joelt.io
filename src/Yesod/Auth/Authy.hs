@@ -31,7 +31,12 @@ url path = "https://"
     </> foldr (</>) "" path
     ++ "?api_key=" ++ appAuthyKey compileTimeAppSettings
 
-verify :: (Functor m, MonadIO m) => Int -> Text -> m (Maybe Text)
+#if MIN_VERSION_ghc(7,10,0)
+verify :: MonadIO m
+#else
+verify :: (Functor m, MonadIO m)
+#endif
+       => Int -> Text -> m (Maybe Text)
 verify userId token = fmap (^? (_Left . to translateException)) . liftIO . try
     $ get (url ["verify", unpack token, show userId])
 
