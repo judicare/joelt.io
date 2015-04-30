@@ -1,5 +1,5 @@
 { profiling ? false
-, ghc ? "784"
+, ghc ? "7101"
 }:
 
 let

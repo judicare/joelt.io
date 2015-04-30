@@ -6,14 +6,12 @@ let fetchbower = import <nixpkgs/pkgs/build-support/fetchbower> {
     };
 
 in {
-  sourceFilesBySuffices = path: exts:
-    let filter = name: type:
-      let base = baseNameOf (toString name);
-      in (type == "directory" &&
-            (base != "bower_components" && base != "dist" && base != "tmp" &&
-            !(pkgs.stdenv.lib.hasPrefix "result" base) && base != "yesod-devel"))
-         || pkgs.stdenv.lib.any (ext: pkgs.stdenv.lib.hasSuffix ext base) exts;
-    in builtins.filterSource filter path;
+  filterPaths = { exact, glob }: top:
+    builtins.filterSource (name: type:
+      let relativeName = pkgs.lib.removePrefix (builtins.toString top + "/") name; in
+      pkgs.lib.any (x: pkgs.lib.hasPrefix x relativeName) glob
+        || pkgs.lib.elem relativeName exact
+    ) top;
 
   linkBowerComponents = file:
   let env = pkgs.callPackage file { inherit fetchbower; }; in ''
