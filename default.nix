@@ -1,5 +1,5 @@
 # wrapper around generated.nix to add some build specific stuff
-{ stdenv, callPackage, postgresql, darwin, pkgs }:
+{ stdenv, callPackage, postgresql, pkgs }:
 
 let
   gen = callPackage ./nixfiles/package.nix {
@@ -33,8 +33,8 @@ in haskellLib.overrideCabal gen (drv: {
   ]);
 
   postInstall = ''
-    cp -pR static $out/static
-    cp -pR config $out/config
+    cp -RL static config $out
+    rm -rf $out/static/tmp
   '';
 
   preBuild = lib.linkBowerComponents ./nixfiles/bower.nix;

@@ -116,11 +116,12 @@ in
       preStart = ''
         mkdir -p -m 0755 ${cfg.stateDir}
         chown -R ${cfg.user} ${cfg.stateDir}
+        rm -rf ${cfg.stateDir}/*
       '';
       script = ''
         cd ${cfg.stateDir}
         mkdir -p static config
-        ln -sfv ${cfg.package}/static/{combined,css,fonts,img,js} static/
+        ln -sfv ${cfg.package}/static/* static/
         ${cfg.package}/bin/webapp2 ${cfg.package}/config/settings.yml
       '';
     };
