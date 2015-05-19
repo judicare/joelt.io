@@ -1,9 +1,6 @@
 module Handler.Post.Read where
 
-import Control.Lens
 import qualified Data.ByteString as BS
-import qualified Data.Text.Encoding as T
-import Data.Text.Lens
 import Import hiding (head)
 import Prelude (head)
 import qualified Text.Blaze.Html5 as H
@@ -26,11 +23,11 @@ getReadPostR t = do
 renderMd :: Markdown -> Html
 renderMd (Markdown m) = markdown defWithHighlight m where
     defWithHighlight = def { msBlockCodeRenderer = rendered }
-    pickLexer cod = fromMaybe textLexer $ lookup (maybe "text" (view unpacked) cod) fixedLexers
-    fixedLexers = map (\(_,x) -> (head (lAliases x), x)) lexers
+    pickLexer cod = fromMaybe textLexer $ lookup (maybe "text" unpack cod) fixedLexers
+    fixedLexers = map (\ (_,x) -> (head (lAliases x), x)) lexers
     textLexer = Lexer "text" [] [] [] [Match ".*" Text Continue] [dotall]
-    renderer l (tx,_) = case runLexer (pickLexer l) (T.encodeUtf8 tx) of
-        Left es -> [Token Text $ T.encodeUtf8 [st|parse error: #{show es}|]]
+    renderer l (tx,_) = case runLexer (pickLexer l) (encodeUtf8 tx) of
+        Left es -> [Token Text $ encodeUtf8 [st|parse error: #{show es}|]]
         Right ts -> ts
     rendered ah bh = H.figure . decentFormat $ renderer ah bh
     decentFormat ts = H.table H.! A.class_ "highlight-table" $ H.tr $ do
@@ -48,12 +45,12 @@ renderMd (Markdown m) = markdown defWithHighlight m where
         length (BS.elemIndices 0x0A s) + countLines ts
     highlight [] = return ()
     highlight (Token t s:ts) = do
-        H.span H.! A.class_ (H.toValue $ shortName t) $ toHtml (T.decodeUtf8 s)
+        H.span H.! A.class_ (H.toValue $ shortName t) $ toHtml (decodeUtf8 s)
         highlight ts
     lineNos n = lineNos' 1 where
         lineNos' c
             | c - 1 <= n = do
                 toHtml (show c)
-                toHtml ("\n" :: Text)
+                toHtml (asText "\n")
                 lineNos' (c + 1)
             | otherwise = return ()

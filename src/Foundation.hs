@@ -30,7 +30,12 @@ instance HasHttpManager App where
 
 mkMessage "App" "messages" "en"
 
-mkYesodData "App" $(parseRoutesFileNoCheck "config/routes")
+mkYesodData "App" $(parseRoutesFiles
+    [ "config/routes"
+#ifdef TESTING
+    , "config/test-routes"
+#endif
+    ])
 
 type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
 
@@ -114,23 +119,21 @@ instance YesodAuth App where
     loginDest _ = HomeR
     logoutDest _ = HomeR
 
-    getAuthId _ = return $ Just ()
-    maybeAuthId = liftM (() <$) (lookupSession credsKey)
+    authenticate _ = return $ Authenticated ()
+    maybeAuthId = fmap void (lookupSession credsKey)
 
-    authPlugins _app = [AuthPlugin "authy" dispatch render] where
+    authPlugins app = [AuthPlugin "authy" dispatch render] where
         render tm = $(widgetFile "login")
-        dispatch "POST" ["login"] = postLoginR >>= sendResponse
+        dispatch "POST" ["login"] = do
+            pw <- lift . runInputPost $ ireq textField "password"
+            result <- verify 174274 pw
+            lift $ case result of
+                Just m -> loginErrorMessage (AuthR LoginR) m
+                Nothing -> do
+                    setCreds False (Creds "magic" "nonsense" [])
+                    redirect (loginDest app)
         dispatch _ _ = notFound
         login = PluginR "authy" ["login"]
-        postLoginR = do
-            (_email, _pw) <- lift . runInputPost $
-                liftA2 (,)
-                    (ireq textField "email")
-                    (ireq textField "password")
-            result <- verify 174274 _pw
-            lift $ case result of
-                Left m -> loginErrorMessage (AuthR LoginR) m
-                Right _ -> toTypedContent <$> setCreds True (Creds "magic" "nonsense" [])
 
     authHttpManager = getHttpManager
 
@@ -139,3 +142,14 @@ instance RenderMessage App FormMessage where
 
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
+
+#ifdef TESTING
+getBadMethodR, getInternalErrorR, getInvalidArgsR, getNotAuthenticatedR, getNotFoundR,
+    getPermissionDeniedR :: Handler ()
+getBadMethodR = badMethod
+getInternalErrorR = error "getInternalErrorR"
+getInvalidArgsR = invalidArgs ["foo", "bar", "baz"]
+getNotAuthenticatedR = notAuthenticated
+getNotFoundR = notFound
+getPermissionDeniedR = permissionDenied "No, go away"
+#endif

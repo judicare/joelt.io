@@ -1,5 +1,5 @@
 # wrapper around generated.nix to add some build specific stuff
-{ stdenv, callPackage, postgresql, darwin, pkgs }:
+{ stdenv, callPackage, postgresql, pkgs }:
 
 let
   gen = callPackage ./nixfiles/package.nix {
@@ -13,18 +13,28 @@ let
   };
 
 in haskellLib.overrideCabal gen (drv: {
-  src = lib.sourceFilesBySuffices ./. [
-    ".cabal" ".css" ".hamlet" ".hs" ".ico" ".js" ".lucius" ".msg" ".png" ".txt" ".webp"
-    ".yml" "models" "routes"
-  ];
+  src = lib.filterPaths {
+    exact = [ "static" "webapp2.cabal" ];
+    glob  = [ "app"
+              "config"
+              "messages"
+              "src"
+              "static/css"
+              "static/images"
+              "static/img"
+              "static/js"
+              "templates"
+              "tests"
+            ];
+  } ./.;
 
   buildTools = (drv.buildTools or []) ++ (with nodePackages; [
     coffee-script uglify-js
   ]);
 
   postInstall = ''
-    cp -pR static $out/static
-    cp -pR config $out/config
+    cp -RL static config $out
+    rm -rf $out/static/tmp
   '';
 
   preBuild = lib.linkBowerComponents ./nixfiles/bower.nix;

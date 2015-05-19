@@ -1,6 +1,6 @@
 module Handler.Home where
 
-import Blaze.ByteString.Builder.Internal
+import Data.ByteString.Builder
 import qualified Database.Esqueleto as E
 import Import
 import Text.Blaze.Html.Renderer.Text
@@ -37,7 +37,7 @@ getHomeR = getPageR 1
 getPageR :: Int -> Handler Html
 getPageR i = do
     m <- maybeAuthId
-    posts <- paginateWith (PageConfig 5 i HomeR PageR) $ \p -> do
+    posts <- paginateWith (PageConfig 5 i PageR) $ \p -> do
         E.orderBy [E.desc (p E.^. PostCreatedAt)]
         return p
     defaultLayout $ do
@@ -50,8 +50,8 @@ getPageR i = do
 addCommentCounts :: [Entity Post] -> Widget
 addCommentCounts posts = do
     u <- getUrlRenderParams
-    urls <- forM posts $ \(Entity _ post) -> do
-        let v = [hamlet|@{ReadPostR (postSlug post)}|]
-        return ("2", Just . toStrict . renderHtml $ v u)
-    let qs = decodeUtf8 . toByteString $ renderQueryText True urls
+    let urls = map (\(Entity _ post) ->
+                let v = [hamlet|@{ReadPostR (postSlug post)}|]
+                 in ("2", Just . toStrict . renderHtml $ v u)) posts
+        qs = decodeUtf8 . toLazyByteString $ renderQueryText True urls
     addScriptRemote [st|//otters.disqus.com/count-data.js#{qs}|]

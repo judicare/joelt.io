@@ -1,0 +1,6 @@
+/errors/400 InvalidArgsR GET
+/errors/401 NotAuthenticatedR GET
+/errors/403 PermissionDeniedR GET
+/errors/404 NotFoundR GET
+/errors/405 BadMethodR GET
+/errors/500 InternalErrorR GET
