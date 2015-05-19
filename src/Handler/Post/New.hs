@@ -1,9 +1,7 @@
 module Handler.Post.New where
 
-import Control.Lens
-import Data.Char
-import Data.Text.Lens
-import Import hiding (text, toLower)
+import Data.Char (isAlphaNum)
+import Import
 import Yesod.Text.Markdown
 
 postForm :: Maybe Post -> Form Post
@@ -17,7 +15,7 @@ postForm mp extra = do
     where
         bootstrapInput m = m { fsAttrs = [("class", "form-control")] }
         bootstrapTextarea m = m { fsAttrs = [("class", "form-control"), ("rows", "10")] }
-        mkSlug = over text (dasherize . toLower) where
+        mkSlug = omap dasherize . toLower where
             dasherize x | isAlphaNum x = x
                         | otherwise = '-'
 

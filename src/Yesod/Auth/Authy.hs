@@ -1,34 +1,33 @@
 module Yesod.Auth.Authy where
 
-import Control.Exception
-import Control.Lens hiding ((.=))
-import Control.Monad
-import Control.Monad.IO.Class
-import Data.Aeson.Lens
-import Data.ByteString.Lazy (ByteString)
+import ClassyPrelude
+import Data.Aeson
 import Data.Default
-import qualified Data.Map as M
-import Data.Maybe
-import Data.Text (Text, unpack)
 import Network.Connection
-import Network.HTTP.Client (HttpException (..), ManagerSettings)
+import Network.HTTP.Client
 import Network.HTTP.Client.TLS
-import Network.Wreq hiding (get, post)
-import Prelude
 import Settings
-import System.FilePath
 
 -- the Authy sandbox API's certificate is self-signed
 ms :: ManagerSettings
-ms = mkManagerSettings (def { settingDisableCertificateValidation = True }) Nothing
+ms = mkManagerSettings (def { settingDisableCertificateValidation =
+#ifdef TESTING
+         True
+#else
+         False
+#endif
+     }) Nothing
 
-get :: String -> IO (Response ByteString)
-get = getWith (defaults & manager .~ Left ms)
+get :: String -> IO (Response BodyReader)
+get location = do
+    req <- parseUrl location
+    withManager ms $ \ man ->
+        withResponse req man return
 
 url :: [String] -> String
-url path = "https://"
+url pieces = "https://"
     ++ appAuthyEndpoint compileTimeAppSettings ++ "/protected/json"
-    </> foldr (</>) "" path
+    </> foldr (</>) "" pieces
     ++ "?api_key=" ++ appAuthyKey compileTimeAppSettings
 
 #if MIN_VERSION_ghc(7,10,0)
@@ -37,11 +36,21 @@ verify :: MonadIO m
 verify :: (Functor m, MonadIO m)
 #endif
        => Int -> Text -> m (Maybe Text)
-verify userId token = fmap (^? (_Left . to translateException)) . liftIO . try
-    $ get (url ["verify", unpack token, show userId])
+verify userId token = do
+    result <- liftIO . try $ get (url ["verify", unpack token, show userId])
+    return $ case result of
+        Left e -> Just $ translateException e
+        Right _ -> Nothing
 
 translateException :: HttpException -> Text
 translateException (StatusCodeException _ m _) =
-    fromMaybe "Unknown error" $
-        M.fromList m ^? ix "X-Response-Body-Start" . key "message" . _String
+    fromMaybe "Unknown error" msgText
+    where
+        msgText = case msg of
+                      Just (String t) -> Just t
+                      _ -> Nothing
+        msg = lookup "X-Response-Body-Start"
+                >=> decode . fromStrict
+                >=> (lookup "message" :: Object -> Maybe Value)
+                $ m
 translateException _ = "Unknown error"

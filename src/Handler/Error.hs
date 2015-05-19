@@ -4,9 +4,6 @@ import ClassyPrelude
 import Text.Lucius
 import Yesod
 
-text :: Text -> Text
-text = id
-
 otterHandler :: Yesod site => ErrorResponse -> HandlerT site IO TypedContent
 otterHandler NotFound = selectRep $ do
     provideRep . defaultLayout $ do
@@ -18,7 +15,7 @@ otterHandler NotFound = selectRep $ do
                 <p>
                     <a href="javascript:history.back()">Back
         |]
-    provideRep . return $ object ["message" .= text "Not found"]
+    provideRep . return $ object ["message" .= asText "Not found"]
 
 otterHandler (PermissionDenied _) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -29,7 +26,7 @@ otterHandler (PermissionDenied _) = selectRep $ do
                 <h2 .error-title>Permission Denied
                 <p>Sorry, that's off-limits.
         |]
-    provideRep . return $ object ["message" .= text "Permission denied"]
+    provideRep . return $ object ["message" .= asText "Permission denied"]
 
 otterHandler (InternalError e) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -41,7 +38,7 @@ otterHandler (InternalError e) = selectRep $ do
                 <p>
                     <code>#{e}
         |]
-    provideRep . return $ object ["message" .= text "Internal server error", "error" .= e]
+    provideRep . return $ object ["message" .= asText "Internal server error", "error" .= e]
 
 otterHandler (BadMethod m) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -53,7 +50,7 @@ otterHandler (BadMethod m) = selectRep $ do
                 <p><code>#{decodeUtf8 m}</code> won't work on this page.
         |]
     provideRep . return $
-        object ["message" .= text "Bad method", "method" .= decodeUtf8 m]
+        object ["message" .= asText "Bad method", "method" .= decodeUtf8 m]
 
 otterHandler (InvalidArgs args) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -67,7 +64,7 @@ otterHandler (InvalidArgs args) = selectRep $ do
                         <li>#{arg}
         |]
     provideRep . return $ object
-        [ "message" .= text "Invalid arguments"
+        [ "message" .= asText "Invalid arguments"
         , "arguments" .= args ]
 
 otterHandler NotAuthenticated = selectRep $ do
@@ -78,4 +75,4 @@ otterHandler NotAuthenticated = selectRep $ do
             <article .bubble .error>
                 <h2 .error-title>Not Authenticated
         |]
-    provideRep . return $ object ["message" .= text "Not authenticated"]
+    provideRep . return $ object ["message" .= asText "Not authenticated"]

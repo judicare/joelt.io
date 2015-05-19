@@ -2,9 +2,7 @@
 
 module Yesod.Text.Markdown where
 
-import Data.Text (Text)
-import Data.Text.Lazy (toStrict, fromStrict)
-import Prelude
+import ClassyPrelude
 import Text.Hamlet (hamlet)
 import Text.Markdown (Markdown (Markdown))
 import Yesod.Core (HandlerSite, RenderMessage)

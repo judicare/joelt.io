@@ -8,6 +8,9 @@ let
   lib = pkgs.lib;
   myLib = import ./nixfiles/lib.nix { inherit pkgs; nodePackages = {}; };
   haskellLib = import <nixpkgs/pkgs/development/haskell-modules/lib.nix> { inherit pkgs; };
+  hpcWrapper = pkgs.callPackage ./nixfiles/hpc-wrapper {
+    ghcWithPackages = pkgs.haskell-ng.packages.${ghcVer}.ghc.withPackages;
+  };
 
   webapp2-vanilla = pkgs.callPackage ./default.nix {
     inherit (pkgs.haskell-ng.packages.${ghcVer}) callPackage;
@@ -49,9 +52,8 @@ in lib.overrideDerivation
       ];
       enableLibraryProfiling = profiling;
       configureFlags = [
-        "--enable-coverage"
-        "--hpc-option=--verbosity=0"
-      ];
+        "--with-hpc=${hpcWrapper}/bin/hpc"
+      ] ++ lib.optional (!pre710) "--hpc-option=--verbosity=0";
     })) # /overrideCabal
   (drv: {
     shellHook = ''

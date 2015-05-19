@@ -8,8 +8,7 @@ module TestImport
 import Application (makeFoundation)
 import Blaze.ByteString.Builder
 import ClassyPrelude as X
-import Control.Lens
-import Data.Aeson.Lens
+import Data.Aeson
 import Database.Persist as X hiding (get)
 import Database.Persist.Sql
 import Foundation as X
@@ -94,11 +93,8 @@ getJson u = request $ do
 
 bodyHasKey :: Core.ToJSON a => Text -> a -> YesodExample App ()
 bodyHasKey k v = withResponse $ \ res -> liftIO $
-    case simpleBody res ^? key k of
+    case ((decode :: LByteString -> Maybe Object) >=> lookup k) (simpleBody res) of
         Nothing -> expectationFailure ("Body should have key "
                        ++ unpack k
                        ++ ", but no such key was found")
         Just val -> val `shouldBe` Core.toJSON v
-
-text :: Text -> Text
-text a = a

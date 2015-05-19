@@ -4,15 +4,15 @@
 , conduit-extra, connection, containers, data-default, directory
 , esqueleto, exceptions, fast-logger, file-embed, filepath
 , foreign-store, ghc, highlighter, hjsmin, hlint, hspec
-, http-client, http-client-tls, http-conduit, http-types, lens
-, lens-aeson, markdown, monad-control, monad-logger, MonadRandom
-, mtl, network, network-uri, old-locale, path-pieces, pcre-light
-, persistent, persistent-postgresql, persistent-sqlite
-, persistent-template, process-extras, resourcet, semigroups
-, shakespeare, stdenv, system-fileio, system-filepath
-, template-haskell, text, transformers, wai, wai-extra, wai-logger
-, warp, wreq, yaml, yesod, yesod-auth, yesod-core, yesod-form
-, yesod-newsfeed, yesod-static, yesod-test
+, http-client, http-client-tls, http-conduit, http-types, markdown
+, monad-control, monad-logger, MonadRandom, mtl, network
+, network-uri, old-locale, path-pieces, pcre-light, persistent
+, persistent-postgresql, persistent-sqlite, persistent-template
+, process-extras, resourcet, semigroups, shakespeare, stdenv
+, system-fileio, system-filepath, template-haskell, text
+, transformers, wai, wai-extra, wai-logger, warp, yaml, yesod
+, yesod-auth, yesod-core, yesod-form, yesod-newsfeed, yesod-static
+, yesod-test
 }:
 mkDerivation {
   pname = "webapp2";
@@ -26,12 +26,12 @@ mkDerivation {
     classy-prelude-yesod conduit conduit-extra connection containers
     data-default directory esqueleto exceptions fast-logger file-embed
     filepath foreign-store ghc highlighter hjsmin http-client
-    http-client-tls http-conduit http-types lens lens-aeson markdown
-    monad-control monad-logger MonadRandom mtl network network-uri
-    old-locale path-pieces pcre-light persistent persistent-postgresql
+    http-client-tls http-conduit http-types markdown monad-control
+    monad-logger MonadRandom mtl network network-uri old-locale
+    path-pieces pcre-light persistent persistent-postgresql
     persistent-template process-extras resourcet semigroups shakespeare
     system-fileio system-filepath template-haskell text transformers
-    wai wai-extra wai-logger warp wreq yaml yesod yesod-auth yesod-core
+    wai wai-extra wai-logger warp yaml yesod yesod-auth yesod-core
     yesod-form yesod-newsfeed yesod-static
   ];
   testDepends = [
@@ -40,14 +40,13 @@ mkDerivation {
     classy-prelude-yesod conduit conduit-extra connection containers
     data-default directory esqueleto exceptions fast-logger file-embed
     filepath foreign-store ghc highlighter hjsmin hlint hspec
-    http-client http-client-tls http-conduit http-types lens lens-aeson
-    markdown monad-control monad-logger MonadRandom mtl network
-    network-uri old-locale path-pieces pcre-light persistent
-    persistent-sqlite persistent-template process-extras resourcet
-    semigroups shakespeare system-fileio system-filepath
-    template-haskell text transformers wai wai-extra wai-logger warp
-    wreq yaml yesod yesod-auth yesod-core yesod-form yesod-newsfeed
-    yesod-static yesod-test
+    http-client http-client-tls http-conduit http-types markdown
+    monad-control monad-logger MonadRandom mtl network network-uri
+    old-locale path-pieces pcre-light persistent persistent-sqlite
+    persistent-template process-extras resourcet semigroups shakespeare
+    system-fileio system-filepath template-haskell text transformers
+    wai wai-extra wai-logger warp yaml yesod yesod-auth yesod-core
+    yesod-form yesod-newsfeed yesod-static yesod-test
   ];
   license = stdenv.lib.licenses.bsd3;
 }
