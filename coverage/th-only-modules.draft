@@ -1,0 +1,15 @@
+module "Settings.StaticFiles" {
+  tick function "combineSettings" [future];
+  tick function "combineScripts" [future];
+  tick function "combineStylesheets" [future];
+  tick function "uglify" [future];
+  tick "staticFiles (appStaticDir compileTimeAppSettings)" [future];
+}
+
+module "Yesod.Routes.Parse.Extension" {
+  tick function "parseRoutesFiles" [future];
+}
+
+module "Model" {
+  tick at position 8:1-9:56;
+}

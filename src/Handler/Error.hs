@@ -15,18 +15,18 @@ otterHandler NotFound = selectRep $ do
                 <p>
                     <a href="javascript:history.back()">Back
         |]
-    provideRep . return $ object ["message" .= asText "Not found"]
+    provideRep . return $ object ["error" .= asText "Not found"]
 
-otterHandler (PermissionDenied _) = selectRep $ do
+otterHandler (PermissionDenied msg) = selectRep $ do
     provideRep . defaultLayout $ do
         setTitle "Permission Denied"
         toWidget $(luciusFile "templates/posts/read.lucius")
         [whamlet|
             <article .bubble .error>
                 <h2 .error-title>Permission Denied
-                <p>Sorry, that's off-limits.
+                <p>#{msg}
         |]
-    provideRep . return $ object ["message" .= asText "Permission denied"]
+    provideRep . return $ object ["error" .= asText "Permission denied", "message" .= msg]
 
 otterHandler (InternalError e) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -38,7 +38,7 @@ otterHandler (InternalError e) = selectRep $ do
                 <p>
                     <code>#{e}
         |]
-    provideRep . return $ object ["message" .= asText "Internal server error", "error" .= e]
+    provideRep . return $ object ["error" .= asText "Internal server error", "message" .= e]
 
 otterHandler (BadMethod m) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -50,7 +50,7 @@ otterHandler (BadMethod m) = selectRep $ do
                 <p><code>#{decodeUtf8 m}</code> won't work on this page.
         |]
     provideRep . return $
-        object ["message" .= asText "Bad method", "method" .= decodeUtf8 m]
+        object ["error" .= asText "Bad method", "method" .= decodeUtf8 m]
 
 otterHandler (InvalidArgs args) = selectRep $ do
     provideRep . defaultLayout $ do
@@ -64,7 +64,7 @@ otterHandler (InvalidArgs args) = selectRep $ do
                         <li>#{arg}
         |]
     provideRep . return $ object
-        [ "message" .= asText "Invalid arguments"
+        [ "error" .= asText "Invalid arguments"
         , "arguments" .= args ]
 
 otterHandler NotAuthenticated = selectRep $ do
@@ -75,4 +75,4 @@ otterHandler NotAuthenticated = selectRep $ do
             <article .bubble .error>
                 <h2 .error-title>Not Authenticated
         |]
-    provideRep . return $ object ["message" .= asText "Not authenticated"]
+    provideRep . return $ object ["error" .= asText "Not authenticated"]

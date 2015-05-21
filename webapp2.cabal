@@ -132,7 +132,7 @@ test-suite spec
     type:           exitcode-stdio-1.0
     main-is:        main.hs
     hs-source-dirs: tests/spec, src
-    ghc-options:    -Wall
+    ghc-options:    -Wall -O0
 
     cpp-options: -DTESTING
 

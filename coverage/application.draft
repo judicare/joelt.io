@@ -1,0 +1,22 @@
+module "Application" {
+  tick function "getAppSettings" [future];
+  tick function "warpSettings" [future];
+  inside "makeFoundation" {
+    tick "staticDevel" [future];
+    tick "App {..}" [future];
+    tick function "tempFoundation" [future];
+    tick "tempFoundation" [future];
+    tick "appLogger" [future];
+    tick "(mkFoundation $ error \"connPool forced in tempFoundation\")" [future];
+    tick "logFunc" [future];
+  }
+  tick function "handler" [future];
+  tick function "db" [future];
+  tick function "makeApplication" [future];
+  tick function "mkApp" [future];
+  tick function "getApplicationDev" [future];
+  tick function "develMain" [future];
+  tick function "appMain" [future];
+  tick "mkYesodDispatch \"App\" resourcesApp" [future];
+}
+

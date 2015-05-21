@@ -1,5 +1,5 @@
 # wrapper around generated.nix to add some build specific stuff
-{ stdenv, callPackage, postgresql, pkgs }:
+{ stdenv, callPackage, pkgs }:
 
 let
   gen = callPackage ./nixfiles/package.nix {
@@ -37,5 +37,17 @@ in haskellLib.overrideCabal gen (drv: {
     rm -rf $out/static/tmp
   '';
 
-  preBuild = lib.linkBowerComponents ./nixfiles/bower.nix;
+  preBuild = let webp = pkgs.imagemagick_light.override {
+    inherit (pkgs) libpng libwebp;
+  }; in
+  lib.linkBowerComponents ./nixfiles/bower.nix + ''
+    if [ -z "$IN_NIX_SHELL" ]; then
+      for file in $(find static -name "*.png"); do
+        if test ! -f "$file".webp; then
+          echo converting $file to webp
+          ${webp}/bin/convert $file -define webp:lossless=true $file.webp
+        fi
+      done
+    fi
+  '';
 })

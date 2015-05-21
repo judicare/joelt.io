@@ -8,10 +8,12 @@
       <a #head href=@{HomeR}>
         joelt.io
         <span .arrow>
-      <a href="https://github.com/joelteon" .dot #github data-tipsy title="I'm on GitHub!">github
-      <a href="http://www.linkedin.com/pub/joel-taylor/6a/691/988/" .dot #linkedin data-tipsy title="I'm on LinkedIn!">linkedin
-      $maybe _ <- mai
-        <a href=@{NewPostR} .dot #new-post data-tipsy title="New post">new post
+      <div #dots>
+        <span .up-arrow>
+        <a href="https://github.com/joelteon" .dot #github data-tipsy title="I'm on GitHub!">github
+        <a href="http://www.linkedin.com/pub/joel-taylor/6a/691/988/" .dot #linkedin data-tipsy title="I'm on LinkedIn!">linkedin
+        $maybe _ <- mai
+          <a href=@{NewPostR} .dot #new-post data-tipsy title="New post">new post
     ^{widget}
     <footer>
       Talk to me: <a href="mailto:me@joelt.io">me@joelt.io</a>.

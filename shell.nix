@@ -8,12 +8,16 @@ let
   lib = pkgs.lib;
   myLib = import ./nixfiles/lib.nix { inherit pkgs; nodePackages = {}; };
   haskellLib = import <nixpkgs/pkgs/development/haskell-modules/lib.nix> { inherit pkgs; };
+  haskellPackages = pkgs.haskell-ng.packages.${ghcVer}.override {
+    overrides = pkgs.config.haskellPackageOverrides or (_: _: {});
+  };
+
   hpcWrapper = pkgs.callPackage ./nixfiles/hpc-wrapper {
-    ghcWithPackages = pkgs.haskell-ng.packages.${ghcVer}.ghc.withPackages;
+    ghcWithPackages = haskellPackages.ghc.withPackages;
   };
 
   webapp2-vanilla = pkgs.callPackage ./default.nix {
-    inherit (pkgs.haskell-ng.packages.${ghcVer}) callPackage;
+    inherit (haskellPackages) callPackage;
   };
 
   webapp2-dev = webapp2-vanilla.overrideScope (self: super: {
@@ -22,16 +26,16 @@ let
     });
   });
 
-  h = pkgs.haskell-ng.packages.${ghcVer}.override {
-    overrides = self: super: {
-      mkDerivation = expr: super.mkDerivation (expr // {
-        enableLibraryProfiling = profiling;
-      });
-    };
+  h = haskellPackages.override {
+    overrides = self: super:
+      (pkgs.config.haskellPackageOverrides or (_: _: {})) self super
+      // {
+        mkDerivation = expr: super.mkDerivation (expr // {
+          enableLibraryProfiling = profiling;
+        });
+      };
   };
-  pre710 = pkgs.stdenv.lib.versionOlder
-    pkgs.haskell-ng.compiler.${ghcVer}.version
-    "7.10";
+  pre710 = pkgs.stdenv.lib.versionOlder haskellPackages.ghc.version "7.10";
   newestCabal = with pkgs.stdenv.lib; attrByPath
     [(last (builtins.filter (hasPrefix "Cabal_") (builtins.attrNames h)))]
     h.Cabal
@@ -52,8 +56,9 @@ in lib.overrideDerivation
       ];
       enableLibraryProfiling = profiling;
       configureFlags = [
+        # "--enable-coverage"
         "--with-hpc=${hpcWrapper}/bin/hpc"
-      ] ++ lib.optional (!pre710) "--hpc-option=--verbosity=0";
+      ];
     })) # /overrideCabal
   (drv: {
     shellHook = ''

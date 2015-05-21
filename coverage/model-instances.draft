@@ -1,0 +1,4 @@
+module "Model.Instances" {
+  tick function "fromPathPiece" [future];
+  tick function "sqlType" [future];
+}

@@ -15,15 +15,18 @@ postForm mp extra = do
     where
         bootstrapInput m = m { fsAttrs = [("class", "form-control")] }
         bootstrapTextarea m = m { fsAttrs = [("class", "form-control"), ("rows", "10")] }
-        mkSlug = omap dasherize . toLower where
-            dasherize x | isAlphaNum x = x
-                        | otherwise = '-'
+        mkSlug = squash . omap dasherize . toLower where
+            dasherize x = if isAlphaNum x then x else '-'
+            squash = ofoldr (\ e m -> if (headMay m, e) == (Just '-', '-')
+                                then m
+                                else e `cons` m) mempty
 
 getNewPostR :: Handler Html
 getNewPostR = do
     _ <- requireAuthId
     ((_, widget), enctype) <- runFormPost $ postForm Nothing
-    let target = NewPostR in defaultLayout $(widgetFile "posts/form-wrapper")
+    let target = NewPostR
+    defaultLayout $(widgetFile "posts/form-wrapper")
 
 postNewPostR :: Handler Html
 postNewPostR = do
@@ -33,4 +36,6 @@ postNewPostR = do
         FormSuccess post -> do
             _ <- runDB $ insert post
             redirect $ ReadPostR (postSlug post)
-        _ -> let target = NewPostR in defaultLayout $(widgetFile "posts/form-wrapper")
+        _ -> do
+            let target = NewPostR
+            defaultLayout $(widgetFile "posts/form-wrapper")

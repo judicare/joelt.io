@@ -1,0 +1,25 @@
+module "Foundation" {
+  tick "appStatic" [future];
+  tick "appHttpManager" [future];
+
+  tick "mkMessage \"App\" \"messages\" \"en\"" [future];
+  tick at position 33:1-38:6;
+
+  tick function "unsafeHandler" [future];
+  tick function "renderMessage" [future];
+  tick function "authHttpManager" [future];
+  tick function "getHttpManager" [future];
+  tick function "getDBRunner" [future];
+  tick function "addStaticContent" [future];
+
+  inside "authPlugins" {
+    tick "(Creds \"magic\" \"nonsense\" [])" [future];
+    tick "app" [future];
+  }
+  inside "urlRenderOverride" {
+    tick "y" [future];
+  }
+  inside "makeSessionBackend" {
+    tick "(120 * 60)" [future];
+  }
+}

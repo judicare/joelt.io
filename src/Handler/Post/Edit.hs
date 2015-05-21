@@ -8,7 +8,8 @@ getEditPostR pid = do
     _ <- requireAuthId
     old <- runDB $ get404 pid
     ((_, widget), enctype) <- runFormPost $ postForm (Just old)
-    let target = EditPostR pid in defaultLayout $(widgetFile "posts/form-wrapper")
+    let target = EditPostR pid
+    defaultLayout $(widgetFile "posts/form-wrapper")
 
 postEditPostR :: PostId -> Handler Html
 postEditPostR pid = do
@@ -19,4 +20,6 @@ postEditPostR pid = do
         FormSuccess post -> do
             _ <- runDB $ replace pid post
             redirect $ ReadPostR (postSlug post)
-        _ -> let target = EditPostR pid in defaultLayout $(widgetFile "posts/form-wrapper")
+        _ -> do
+            let target = EditPostR pid
+            defaultLayout $(widgetFile "posts/form-wrapper")

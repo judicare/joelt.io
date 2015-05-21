@@ -1,8 +1,12 @@
 #{extra}
-<div .form-group>
+<div .form-group :isJust (fvErrors tview):.error>
   <label for=#{fvId tview}>^{fvLabel tview}
-  ^{fvInput tview}
+    ^{fvInput tview}
+  $maybe err <- fvErrors tview
+    <small .error>^{err}
 
-<div .form-group>
+<div .form-group :isJust (fvErrors ctview):.error>
   <label for=#{fvId ctview}>^{fvLabel ctview}
-  ^{fvInput ctview}
+    ^{fvInput ctview}
+  $maybe err <- fvErrors ctview
+    <small .error>^{err}

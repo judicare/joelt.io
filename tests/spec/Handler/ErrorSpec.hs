@@ -22,7 +22,7 @@ spec = withApp $ do
         it "gives a 401 in JSON" $ do
             getJson NotAuthenticatedR
             statusIs 401
-            bodyHasKey "message" $ asText "Not authenticated"
+            bodyHasKey "error" $ asText "Not authenticated"
 
     describe "PermissionDenied" $ do
         it "gives a 403" $ do
@@ -32,7 +32,9 @@ spec = withApp $ do
         it "gives a 403 in JSON" $ do
             getJson PermissionDeniedR
             statusIs 403
-            bodyHasKey "message" $ asText "Permission denied"
+            printBody
+            bodyHasKey "error" $ asText "Permission denied"
+            bodyHasKey "message" $ asText "No, go away"
 
     describe "NotFound" $ do
         it "gives a 404" $ do
@@ -42,7 +44,7 @@ spec = withApp $ do
         it "gives a 404 in JSON" $ do
             getJson NotFoundR
             statusIs 404
-            bodyHasKey "message" $ asText "Not found"
+            bodyHasKey "error" $ asText "Not found"
 
     describe "BadMethod" $ do
         it "gives a 405" $ do
@@ -62,4 +64,4 @@ spec = withApp $ do
         it "gives a 500 in JSON" $ do
             getJson InternalErrorR
             statusIs 500
-            bodyHasKey "error" $ asText "getInternalErrorR"
+            bodyHasKey "error" $ asText "Internal server error"

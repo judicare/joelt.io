@@ -8,7 +8,7 @@ import TestImport
 spec :: Spec
 spec = withApp $
     describe "New post" $ do
-        it "creates" $ do
+        it "creates a post" $ do
             login
 
             get NewPostR
@@ -20,6 +20,17 @@ spec = withApp $
                 setMethod "POST"
             assertRedirectedTo (ReadPostR "title")
 
-        it "denies unauthenticated" $ do
+        it "performs validation" $ do
+            login
+
+            get NewPostR
+            request $ do
+                addToken
+                setUrl NewPostR
+                setMethod "POST"
+            statusIs 200
+            htmlAnyContain ".error" "Value is required"
+
+        it "rejects unauthenticated users" $ do
             get NewPostR
             assertRedirectedTo (AuthR LoginR)

@@ -11,42 +11,50 @@ body {
     }
 
     header {
-      .dot {
-        display: block;
-        width: 32px;
-        height: 32px;
-        margin: 8px;
-        background-size: 64px 96px;
-        background-repeat: no-repeat;
-        text-indent: -9999px;
-        opacity: 0.2;
-        background-image: url(@{StaticR img_icons_png});
+      #dots {
+        background: white;
+        padding: 10px;
+        width: 52px;
+        margin-left: -2px;
+        margin-top: 11px;
+        position: relative;
 
-        &:hover {
-          opacity: 1;
+        .up-arrow {
+          border: 10px solid transparent;
+          border-right-color: white;
+          display: block;
+          position: absolute;
+          left: -19px;
+          top: 17px;
         }
 
-        &#github {
-          margin-top: 5px;
+        .dot {
+          display: block;
+          width: 32px;
+          height: 32px;
+          margin-bottom: 10px;
+          background-size: 32px 32px;
+          background-repeat: no-repeat;
+          text-indent: -9999px;
 
-          &:hover {
-            background-position: -32px 0;
+          &:last-child {
+            margin-bottom: 0;
           }
-        }
-
-        &#linkedin {
-          background-position: 0 -32px;
 
           &:hover {
-            background-position: -32px -32px;
+            opacity: 1;
           }
-        }
 
-        &#new-post {
-          background-position: 0 -64px;
+          &#github {
+            background-image: url(@{StaticR img_github_alt_png});
+          }
 
-          &:hover {
-            background-position: -32px -64px;
+          &#linkedin {
+            background-image: url(@{StaticR img_linkedin_png});
+          }
+
+          &#new-post {
+            background-image: url(@{StaticR img_newpost_png});
           }
         }
       }
@@ -73,7 +81,7 @@ body {
           display: block;
           position: absolute;
           left: 14px;
-          top: 39px;
+          top: 41px;
         }
       }
     }
@@ -101,6 +109,12 @@ body {
   }
 }
 
+footer {
+  padding: 10px 20px 20px;
+  font-size: 13px;
+  color: #666;
+}
+
 @media (min-width: 900px) {
   .row {
     max-width: 860px;
@@ -112,6 +126,15 @@ body {
         position: absolute;
         left: -48px;
         width: 64px;
+
+        #dots {
+          .up-arrow {
+            left: 15px;
+            top: -19px;
+            border-bottom-color: white;
+            border-right-color: transparent;
+          }
+        }
 
         #head {
           margin-bottom: 0;
@@ -130,25 +153,56 @@ body {
 
 @media (max-width: 899px) {
   body .speech header {
-    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: -2px;
 
-    #head, .dot {
+    #head, #dots, .dot {
       float: left;
     }
 
-    .dot#github {
-      margin-top: 8px;
-      margin-left: 12px;
+    .dot {
+      margin-right: 10px;
+      margin-bottom: 0;
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
 
-    .dot#twitter {
-      margin-left: 6px;
+    #dots {
+      width: auto;
+      height: 52px;
+      margin-left: 16px;
+      margin-top: -2px;
+    }
+
+    #head {
+      .arrow {
+        left: 29px;
+      }
     }
   }
 }
 
-footer {
-  padding: 10px 20px 20px;
-  font-size: 13px;
-  color: #666;
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body .speech header {
+    #head {
+      background-image: url(@{StaticR img_otter_2x_png});
+    }
+
+    #dots .dot {
+      &#github {
+        background-image: url(@{StaticR img_github_alt_2x_png});
+      }
+
+      &#linkedin {
+        background-image: url(@{StaticR img_linkedin_2x_png});
+      }
+
+      &#new-post {
+        background-image: url(@{StaticR img_newpost_2x_png});
+      }
+    }
+  }
 }
