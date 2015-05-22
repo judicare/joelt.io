@@ -11,6 +11,10 @@ let
     self = nodePackages;
     generated = ./nixfiles/node-packages-generated.nix;
   };
+  perlPackages = import <nixpkgs/pkgs/top-level/perl-packages.nix> {
+    inherit pkgs;
+    overrides = import ./nixfiles/perl-packages.nix pkgs;
+  };
 
 in haskellLib.overrideCabal gen (drv: {
   src = lib.filterPaths {
@@ -28,9 +32,10 @@ in haskellLib.overrideCabal gen (drv: {
             ];
   } ./.;
 
-  buildTools = (drv.buildTools or []) ++ (with nodePackages; [
-    coffee-script uglify-js
-  ]);
+  buildTools = (drv.buildTools or []) ++ [
+    nodePackages.coffee-script nodePackages.uglify-js
+    perlPackages.AppSqitch
+  ];
 
   postInstall = ''
     cp -RL static config $out
