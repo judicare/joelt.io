@@ -68,7 +68,6 @@ in lib.overrideDerivation
 
       ${drv.preBuild}
       eval "$setupCompilerEnvironmentPhase"
-      eval "$jailbreakPhase"
 
       ${pkgs.stdenv.lib.optionalString pre710 ''
         # force building with newer cabal library, see
