@@ -2,6 +2,6 @@
 
 BEGIN;
 
-DROP SCHEMA webapp2;
+DROP TABLE posts;
 
 COMMIT;

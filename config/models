@@ -1,7 +1,7 @@
-Post
-  title Text
-  slug Text
-  content Markdown
+Post sql=posts
+  title Text sqltype=TEXT
+  slug Text sqltype=TEXT
+  content Markdown sqltype=TEXT
   createdAt UTCTime
   UniquePost slug
   deriving Show

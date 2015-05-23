@@ -84,6 +84,7 @@ makeFoundation appSettings = do
 #endif
 
     -- Perform database migration using our application's logging settings.
+    -- Only in test, sqitch handles production
     runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
     -- Return the foundation
