@@ -91,6 +91,7 @@ in
         HOME = "/homeless-shelter";
         PORT = toString cfg.http.port;
         APPROOT = cfg.http.approot;
+        STATICROOT = cfg.http.staticroot;
 
         # AWS
         AWS_ACCESS_KEY_ID = cfg.aws.key;

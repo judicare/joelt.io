@@ -77,8 +77,12 @@ instance Yesod App where
         let hasTitle = not . null . renderHtml $ pageTitle pc
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
+#ifndef DEVELOPMENT
     urlRenderOverride y (StaticR s) =
-        Just $ uncurry (joinPath y [st|#{appRoot (appSettings y)}/s|]) $ renderRoute s
+        Just $ uncurry (joinPath y (appStaticRoot (appSettings y)))
+             $ renderRoute s
+#endif
+
     urlRenderOverride _ _ = Nothing
 
     authRoute _ = Just $ AuthR LoginR

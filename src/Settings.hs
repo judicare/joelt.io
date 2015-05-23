@@ -33,6 +33,8 @@ data AppSettings = AppSettings
     -- ^ Configuration settings for accessing the database.
     , appRoot                   :: Text
     -- ^ Base for all generated URLs.
+    , appStaticRoot             :: Text
+    -- ^ Base for all generated URLs.
     , appHost                   :: HostPreference
     -- ^ Host/interface the server should bind to.
     , appPort                   :: Int
@@ -66,6 +68,7 @@ instance FromJSON AppSettings where
         appStaticDir              <- o .: "static-dir"
         appDatabaseConf           <- o .: "database"
         appRoot                   <- o .: "approot"
+        appStaticRoot             <- o .: "staticroot"
         appHost                   <- fromString <$> o .: "host"
         appPort                   <- o .: "port"
         appIpFromHeader           <- o .: "ip-from-header"
