@@ -14,24 +14,22 @@ pkgs: with pkgs.perlPackages; rec {
       sha256 = "1w2x5w5pbkd1dbqpwl19z1kj0sxma5mz6df0hslhc8x3m6ypg1gp";
     };
     buildInputs = [
-      CaptureTiny ConfigGitLike ClassXSAccessor DateTime DBI EncodeLocale FileHomeDir
-      HashMerge IOPager IPCSystemSimple libintl_perl Moo namespaceautoclean PathClass
-      PerlIOutf8_strict StringFormatter StringShellQuote SubExporter TemplateTiny TestDeep
+      BHooksEndOfScope CaptureTiny ClassLoad ClassMethodModifiers ClassSingleton
+      ClassXSAccessor Clone ConfigGitLike DataOptList DateTime DateTimeLocale
+      DateTimeTimeZone DBDPg DBI DevelGlobalDestruction DevelStackTrace EncodeLocale
+      ExporterTiny FileHomeDir FileWhich HashMerge ImportInto IOPager IPCSystemSimple
+      libintl_perl ListMoreUtils ModuleImplementation ModuleRuntime Moo MooXTypesMooseLike
+      namespaceautoclean namespaceclean PackageStash ParamsUtil ParamsValidate PathClass
+      PathClass PerlIOutf8_strict RoleTiny strictures StringFormatter StringShellQuote
+      SubExporter SubExporterProgressive SubIdentify SubInstall TemplateTiny TestDeep
       TestDir TestException TestFile TestFileContents TestMockModule TestNoWarnings
-      Throwable TryTiny TypeTiny TypeTinyXS URIdb
+      Throwable TryTiny TypeTiny TypeTinyXS URI URIdb URINested
       pkgs.makeWrapper
     ];
 
     perlPostHook = ''
-      wrapProgram $out/bin/sqitch --prefix PERL5LIB : ${
-        pkgs.lib.makePerlPath (buildInputs ++ [
-          BHooksEndOfScope ClassLoad ClassMethodModifiers DataOptList
-          DevelGlobalDestruction ExporterTiny FileWhich ImportInto ListMoreUtils
-          ModuleImplementation ModuleRuntime MooXTypesMooseLike namespaceclean
-          PackageStash ParamsUtil PathClass RoleTiny strictures SubExporterProgressive
-          SubIdentify SubInstall URI URINested
-        ])
-      }:$out/lib/perl5/site_perl
+      wrapProgram $out/bin/sqitch \
+        --prefix PERL5LIB : ${pkgs.lib.makePerlPath buildInputs}:$out/lib/perl5/site_perl
     '';
   };
 }
