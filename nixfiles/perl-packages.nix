@@ -31,5 +31,7 @@ pkgs: with pkgs.perlPackages; rec {
       wrapProgram $out/bin/sqitch \
         --prefix PERL5LIB : ${pkgs.lib.makePerlPath buildInputs}:$out/lib/perl5/site_perl
     '';
+
+    doCheck = false; # tries to determine home directory in tests
   };
 }

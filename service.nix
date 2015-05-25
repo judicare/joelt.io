@@ -55,6 +55,11 @@ in
         description = "the Authy API key";
       };
 
+      authy_userid = mkOption {
+        type = types.int;
+        description = "the Authy user ID";
+      };
+
       user = mkOption {
         type = with types; uniq string;
         default = "webapp2";
@@ -100,6 +105,7 @@ in
         # Authy
         AUTHY_ENDPOINT = "api.authy.com";
         AUTHY_KEY = cfg.authy_key;
+        AUTHY_USERID = builtins.toString cfg.authy_userid;
 
         # database
         PGHOST = cfg.database.host;
@@ -107,7 +113,11 @@ in
         PGUSER = cfg.database.user;
         PGPASS = cfg.database.password;
         PGDATABASE = cfg.database.name;
+
+        MIGRATEPASS = cfg.database.migrationPassword;
       };
+
+      path = [ pkgs.sudo config.services.postgresql.package cfg.package.tools.sqitch ];
 
       serviceConfig = {
         User = cfg.user;
@@ -115,9 +125,22 @@ in
       };
 
       preStart = ''
+        if [ -z "$(sudo psql postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$PGDATABASE'")" ]; then
+          sudo createdb "$PGDATABASE" || exit 1
+        fi
+
+        cat ${./nixfiles/database-init.sql} \
+          | sudo psql postgres \
+              -v PGPASS="$PGPASS" -v PGUSER="$PGUSER" \
+              -v MIGRATEPASS="$MIGRATEPASS" -v PGDATABASE="$PGDATABASE" \
+              -v ON_ERROR_STOP=1 --single-transaction
+
         mkdir -p -m 0755 ${cfg.stateDir}
         chown -R ${cfg.user} ${cfg.stateDir}
         rm -rf ${cfg.stateDir}/*
+
+        HOME=/var/empty sqitch --top-dir ${cfg.package}/migrate --engine pg \
+          deploy "db:pg://migrate:$MIGRATEPASS@$PGHOST:$PGPORT/$PGDATABASE"
       '';
       script = ''
         cd ${cfg.stateDir}

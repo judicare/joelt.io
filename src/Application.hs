@@ -77,15 +77,15 @@ makeFoundation appSettings = do
     pool <- flip runLoggingT logFunc $ createSqlitePool
         (sqlDatabase $ appDatabaseConf appSettings)
         (sqlPoolSize $ appDatabaseConf appSettings)
+
+    -- Perform database migration using our application's logging settings.
+    -- Only in test, sqitch handles production
+    runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 #else
     pool <- flip runLoggingT logFunc $ createPostgresqlPool
         (pgConnStr  $ appDatabaseConf appSettings)
         (pgPoolSize $ appDatabaseConf appSettings)
 #endif
-
-    -- Perform database migration using our application's logging settings.
-    -- Only in test, sqitch handles production
-    runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
     -- Return the foundation
     return $ mkFoundation pool

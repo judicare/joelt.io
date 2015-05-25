@@ -1,6 +1,7 @@
 module Yesod.Auth.Authy where
 
 import ClassyPrelude
+import Control.Monad.Reader
 import Data.Aeson
 import Data.Default
 import Network.Connection
@@ -21,23 +22,24 @@ ms = mkManagerSettings (def { settingDisableCertificateValidation =
 get :: String -> IO (Response BodyReader)
 get location = do
     req <- parseUrl location
+    liftIO (print req)
     withManager ms $ \ man ->
         withResponse req man return
 
-url :: [String] -> String
-url pieces = "https://"
-    ++ appAuthyEndpoint compileTimeAppSettings ++ "/protected/json"
-    </> foldr (</>) "" pieces
-    ++ "?api_key=" ++ appAuthyKey compileTimeAppSettings
+url :: MonadReader AppSettings m => [String] -> m String
+url pieces = do
+    endpoint <- asks appAuthyEndpoint
+    key <- asks appAuthyKey
+    return $ "https://"
+        ++ endpoint ++ "/protected/json"
+        </> foldr (</>) "" pieces
+        ++ "?api_key=" ++ key
 
-#if MIN_VERSION_ghc(7,10,0)
-verify :: MonadIO m
-#else
-verify :: (Functor m, MonadIO m)
-#endif
-       => Int -> Text -> m (Maybe Text)
+verify :: (MonadIO m, MonadReader AppSettings m)
+       => Integer -> Text -> m (Maybe Text)
 verify userId token = do
-    result <- liftIO . try $ get (url ["verify", unpack token, show userId])
+    uri <- url ["verify", unpack token, show userId]
+    result <- liftIO . try $ get uri
     return $ case result of
         Left e -> Just $ translateException e
         Right _ -> Nothing

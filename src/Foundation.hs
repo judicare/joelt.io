@@ -130,7 +130,8 @@ instance YesodAuth App where
         render tm = $(widgetFile "login")
         dispatch "POST" ["login"] = do
             pw <- lift . runInputPost $ ireq textField "password"
-            result <- verify 174274 pw
+            let userId = appAuthyUserId (appSettings app)
+            result <- runReaderT (verify userId pw) (appSettings app)
             lift $ case result of
                 Just m -> loginErrorMessage (AuthR LoginR) m
                 Nothing -> do

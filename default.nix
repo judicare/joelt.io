@@ -22,6 +22,7 @@ in haskellLib.overrideCabal gen (drv: {
     glob  = [ "app"
               "config"
               "messages"
+              "migrate"
               "src"
               "static/css"
               "static/images"
@@ -38,7 +39,7 @@ in haskellLib.overrideCabal gen (drv: {
   ];
 
   postInstall = ''
-    cp -RL static config $out
+    cp -RL static config migrate $out
     rm -rf $out/static/tmp
   '';
 
@@ -55,4 +56,6 @@ in haskellLib.overrideCabal gen (drv: {
       done
     fi
   '';
+
+  passthru.tools.sqitch = perlPackages.AppSqitch;
 })

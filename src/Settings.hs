@@ -1,5 +1,4 @@
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE StandaloneDeriving #-}
 
 module Settings where
 
@@ -55,6 +54,7 @@ data AppSettings = AppSettings
     -- Example app-specific configuration values.
     , appAuthyKey               :: String
     , appAuthyEndpoint          :: String
+    , appAuthyUserId            :: Integer
     }
 
 instance FromJSON AppSettings where
@@ -80,6 +80,7 @@ instance FromJSON AppSettings where
 
         appAuthyKey               <- o .: "authy-key"
         appAuthyEndpoint          <- o .: "authy-endpoint"
+        appAuthyUserId            <- o .: "authy-userid"
 
         return AppSettings {..}
 
