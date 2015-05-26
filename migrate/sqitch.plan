@@ -3,3 +3,4 @@
 %uri=https://github.com/joelteon/joelt.io
 
 schema 2015-05-22T08:00:02Z Joel <joelteon@Toothless> # Create initial schema
+delete-posts [schema] 2015-05-26T05:46:04Z Joel <joelteon@Toothless> # grant delete to webapp

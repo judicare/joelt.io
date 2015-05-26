@@ -25,6 +25,7 @@ in haskellLib.overrideCabal gen (drv: {
               "migrate"
               "src"
               "static/css"
+              "static/fonts"
               "static/images"
               "static/img"
               "static/js"

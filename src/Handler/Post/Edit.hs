@@ -1,6 +1,6 @@
 module Handler.Post.Edit where
 
-import Handler.Post.New
+import Handler.Post.Forms
 import Import
 
 getEditPostR :: PostId -> Handler Html

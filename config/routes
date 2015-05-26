@@ -11,3 +11,4 @@
 /r/#Text ReadPostR GET
 /entries/#Text ReadLegacyR GET
 /e/#PostId EditPostR GET POST
+/d/#PostId DeletePostR POST

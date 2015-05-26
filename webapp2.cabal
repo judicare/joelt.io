@@ -19,7 +19,9 @@ library
                      Handler.Common
                      Handler.Error
                      Handler.Home
+                     Handler.Post.Delete
                      Handler.Post.Edit
+                     Handler.Post.Forms
                      Handler.Post.New
                      Handler.Post.Read
                      Import

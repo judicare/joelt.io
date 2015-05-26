@@ -7,6 +7,9 @@ $(document).ready ->
     if e.keyCode in [39, 76]
       goTo($("#pfor").attr("href"))
 
+  $("[data-confirm]").on "click", ->
+    confirm($(this).attr("data-confirm"))
+
   $("[data-tipsy]").tipsy
     opacity: 1
     gravity: ->

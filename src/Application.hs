@@ -31,6 +31,7 @@ import Database.Persist.Postgresql hiding (LogFunc)
 
 import Handler.Common
 import Handler.Home
+import Handler.Post.Delete
 import Handler.Post.Edit
 import Handler.Post.New
 import Handler.Post.Read
