@@ -10,10 +10,10 @@
         <span .arrow>
       <div #dots>
         <span .up-arrow>
-        <a href="https://github.com/joelteon" .dot #github data-tipsy title="I'm on GitHub!">github
-        <a href="http://www.linkedin.com/pub/joel-taylor/6a/691/988/" .dot #linkedin data-tipsy title="I'm on LinkedIn!">linkedin
+        <a href="https://github.com/joelteon" .dot #github data-tipsy title=_{MsgGithub}>_{MsgGithub}
+        <a href="http://www.linkedin.com/pub/joel-taylor/6a/691/988/" .dot #linkedin data-tipsy title=_{MsgLinkedIn}>_{MsgLinkedIn}
         $maybe _ <- mai
-          <a href=@{NewPostR} .dot #new-post data-tipsy title="New post">new post
+          <a href=@{NewPostR} .dot #new-post data-tipsy title=_{MsgNewPost}>_{MsgNewPost}
     ^{widget}
     <footer>
-      Talk to me: <a href="mailto:me@joelt.io">me@joelt.io</a>.
+      _{MsgTalk} <a href="mailto:me@joelt.io">me@joelt.io</a>.

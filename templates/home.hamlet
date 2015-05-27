@@ -6,13 +6,13 @@ $forall Entity _ post <- pageResults posts
 <article .bubble .last-bubble>
   <h5 .site-title>
     $maybe _ <- m
-      Hi buddy, nice website.
+      _{MsgHiFriend}
     $nothing
-      I’m Joel, a functional programmer with a colorful head.
+      _{MsgIntro}
 
 <p .pages>
   $maybe p <- previousPage posts
-    <a href=@{p} #pback>← back
+    <a href=@{p} #pback>← _{MsgBack}
 
   $case (previousPage posts, nextPage posts)
     $of (Just _, Just _)
@@ -20,4 +20,4 @@ $forall Entity _ post <- pageResults posts
     $of _
 
   $maybe n <- nextPage posts
-    <a href=@{n} #pfor>forward →
+    <a href=@{n} #pfor>_{MsgForward} →
