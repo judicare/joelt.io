@@ -1,0 +1,16 @@
+$maybe Message msg <- mmsg
+  <div #message data-alert .callout .alert>
+    #{msg}
+    <button tabindex=0 href=# .close-button onclick="javascript:hideMessage()">&times;
+
+<article .bubble .last-bubble>
+  <h5 .site-title>
+    $maybe User u <- mu
+      Today your username is #{u}
+    $nothing
+      I’m Jude, a functional programmer with a colorful head.
+
+$forall e <- es
+  <article .bubble .preview-bubble>
+    <h3 .post-preview>
+      <a .post-title href="/r/#{essaySlug e}">#{essayTitle e}

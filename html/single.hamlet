@@ -1,0 +1,13 @@
+<article .bubble .blog-post>
+  <h1 .post-title>
+    #{essayTitle e}
+    $maybe _ <- mu
+      \ #
+      <a .edit-link .fa .fa-pencil href="/e/#{essaySlug e}">
+      \ #
+      <form .delete-form method=post action="/d/#{essaySlug e}">
+        <input type=hidden name=_method value=DELETE>
+        <button type=submit .fa .fa-trash-o
+                data-confirm="Are you sure you want to delete this post?">
+
+  ^{const (renderMd (essayContent e))}

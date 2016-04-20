@@ -1,0 +1,3 @@
+^{foundationField "Title" "title" view}
+^{foundationField "Content" "content" view}
+<button type=submit .button>Commit
