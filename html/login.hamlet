@@ -1,0 +1,11 @@
+<article .bubble>
+  <h3 .form-title>Log in
+  <form role=form method=post action=/in>
+    <div .row>
+      <div .large-6 .columns>
+        ^{foundationField "Username" "username" view}
+
+      <div .large-6 .columns>
+        ^{foundationField "Password" "password" view}
+
+    <button type=submit .button .tiny>Try it
