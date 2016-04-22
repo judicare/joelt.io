@@ -17,11 +17,13 @@ staticFiles = map (first ("s/" <>))
     , ("js/all.js",           $(embedFile "js/all.js"))
     , ("favicon.ico",         $(embedFile "img/favicon.ico"))
 
-    , ("img/linkedin@2x.png", $(embedFile "img/linkedin@2x.png"))
     , ("img/github@2x.png",   $(embedFile "img/github@2x.png"))
-    , ("img/otter@2x.png",    $(embedFile "img/otter@2x.png"))
-    , ("img/linkedin.png",    $(embedFile "img/linkedin.png"))
     , ("img/github.png",      $(embedFile "img/github.png"))
+    , ("img/linkedin@2x.png", $(embedFile "img/linkedin@2x.png"))
+    , ("img/linkedin.png",    $(embedFile "img/linkedin.png"))
+    , ("img/newpost@2x.png",  $(embedFile "img/newpost@2x.png"))
+    , ("img/newpost.png",     $(embedFile "img/newpost.png"))
+    , ("img/otter@2x.png",    $(embedFile "img/otter@2x.png"))
     , ("img/otter.png",       $(embedFile "img/otter.png"))
 
     , ("fonts/fontawesome-webfont.woff2",

@@ -6,12 +6,12 @@ module Pages.Home where
 
 import Pages.Prelude
 
-home :: Session -> DB -> Endpoint
-home s db = method "GET" $ \ _ -> do
-    mu <- get s KUser
-    mmsg <- get s KMessage
-    clear s KMessage
-    es <- query db GetAll
-    return $ respDefaultLayout $ do
+home :: Endpoint
+home = method "GET" $ do
+    mu <- get KUser
+    mmsg <- get KMessage
+    clear KMessage
+    es <- query GetAll
+    respDefaultLayout $ do
         setTitle "Home"
         render $(hamletFile "html/home.hamlet")

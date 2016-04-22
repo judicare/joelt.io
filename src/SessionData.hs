@@ -14,7 +14,7 @@ class Serialize a => SessionData a where
     sessionKey :: proxy a -> ByteString
 
 data User = User Text deriving Show
-data Message = Message Text
+data Message = Message Text Bool
 
 pattern KUser :: Proxy User
 pattern KUser = Proxy
@@ -27,8 +27,9 @@ instance Serialize User where
     get = User . decodeUtf8 <$> S.get
 
 instance Serialize Message where
-    put (Message t) = S.put (encodeUtf8 t)
-    get = Message . decodeUtf8 <$> S.get
+    put (Message t b) = S.put (encodeUtf8 t) >> S.put b
+    get = Message <$> fmap decodeUtf8 S.get
+                  <*> S.get
 
 instance SessionData User where sessionKey _ = "user"
 instance SessionData Message where sessionKey _ = "message"

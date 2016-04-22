@@ -1,30 +1,47 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 module HTMLRendering where
 
 import Control.Monad.Writer
 import Data.ByteString.Lazy          (ByteString)
+import Data.Maybe
 import Data.Text                     (Text, pack)
 import Network.URI
 import Text.Blaze.Html.Renderer.Utf8
 import Text.Hamlet
 
--- | Convenience to allow do-notation for rendering
 newtype Stylesheet = Stylesheet { unStylesheet :: FilePath }
 
-type PageWriter = Writer (HtmlUrl URI, Last Text, [Stylesheet]) ()
+-- | Convenience to allow do-notation for rendering
+type PageWriter = Writer Page ()
+
+data Page = Page
+          { pageHtml        :: HtmlUrl URI
+          , pageTitle       :: Last Text
+          , pageStylesheets :: [Stylesheet]
+          , pageLoggedIn    :: Last Bool
+          }
+
+instance Monoid Page where
+    mempty = Page mempty mempty mempty mempty
+    mappend (Page a b c d) (Page a' b' c' d') =
+        Page (a <> a') (b <> b') (c <> c') (d <> d')
 
 -- | Perform rendering
 render :: HtmlUrl URI -> PageWriter
-render t = tell (t, mempty, mempty)
+render t = tell $ mempty { pageHtml = t }
 
 setTitle :: Text -> PageWriter
-setTitle t = tell (mempty, Last (Just t), mempty)
+setTitle t = tell $ mempty { pageTitle = Last (Just t) }
 
 addStyleSheet :: FilePath -> PageWriter
-addStyleSheet s = tell (mempty, mempty, [Stylesheet s])
+addStyleSheet s = tell $ mempty { pageStylesheets = [Stylesheet s] }
+
+setLoggedIn :: PageWriter
+setLoggedIn = tell $ mempty { pageLoggedIn = Last $ Just True }
 
 htmlRender :: ((URI -> t -> Text) -> Html) -> ByteString
 htmlRender x = renderHtml $ x myUrlRenderer
@@ -46,11 +63,11 @@ defaultLayout ham = htmlRender [hamlet|
         <link rel="shortcut icon" href="/s/favicon.ico">
 
         <title>jude.bio
-            $maybe t <- getLast mtitle
-                \ » #{t}
+          $maybe t <- getLast pageTitle
+            \ » #{t}
 
-        $forall Stylesheet s <- sheets
-            <link rel="stylesheet" href="/s/#{s}">
+        $forall Stylesheet s <- pageStylesheets
+          <link rel="stylesheet" href="/s/#{s}">
 
         <script src="/s/js/all.js">
 
@@ -67,11 +84,13 @@ defaultLayout ham = htmlRender [hamlet|
                 <span .up-arrow>
                 <a href="https://github.com/pikajude" .dot #github data-tipsy title="I'm on GitHub!">I'm on GitHub!
                 <a href="http://www.linkedin.com/pub/joel-taylor/6a/691/988/" .dot #linkedin data-tipsy title="I'm on LinkedIn!">I'm on LinkedIn!
-            ^{page}
+                $if fromMaybe False (getLast pageLoggedIn)
+                  <a href="/n" .dot #new-post title="Make a new post">New post
+            ^{pageHtml}
             <footer>
               Talk to me: <a href="mailto:me@jude.bio">me@jude.bio</a>.
     |]
     where
-        (page, mtitle, sheets) = execWriter $ do
+        Page{..} = execWriter $ do
             addStyleSheet "css/all.css"
             ham

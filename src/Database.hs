@@ -115,8 +115,13 @@ delete e = do
     case getOne (essays @= e) of
         Nothing -> return False
         Just _ -> do
-            put $ ds { essays = Data.IxSet.deleteIx e essays }
+            put $ ds { essays = Data.IxSet.deleteIx e essays
+                     , redirectMap = deleteAll (To e) redirectMap
+                     }
             return True
+    where
+        deleteAll ix set = Data.List.foldr (\ a b -> Data.IxSet.delete a . b) id
+                              (toList $ set @= ix) set
 
 makeAcidic ''Database [ 'getAll, 'selectSlugRedirect, 'selectSlug
                       , 'replaceSlug

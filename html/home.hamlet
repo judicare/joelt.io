@@ -1,5 +1,5 @@
-$maybe Message msg <- mmsg
-  <div #message data-alert .callout .alert>
+$maybe Message msg b <- mmsg
+  <div #message data-alert .callout :b:.alert :not b:.success>
     #{msg}
     <button tabindex=0 href=# .close-button onclick="javascript:hideMessage()">&times;
 

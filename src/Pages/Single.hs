@@ -18,12 +18,12 @@ import           Text.Highlighter            hiding (Single)
 import           Text.Markdown
 import           Text.Regex.PCRE.Light
 
-single :: Text -> Session -> DB -> Endpoint
-single slug sess db = method "GET" $ \ _ -> do
-    mu <- get sess KUser
-    Just er <- query db $ SelectSlugRedirect $ EssaySlug slug
-    return $ case er of
-        Left (EssaySlug sl) -> redirectTo $ "/r/" <> encodeUtf8 sl
+single :: Text -> Endpoint
+single slug = method "GET" $ do
+    mu <- get KUser
+    Just er <- query $ SelectSlugRedirect $ EssaySlug slug
+    case er of
+        Left (EssaySlug sl) -> return $ redirectTo $ "/r/" <> encodeUtf8 sl
         Right e -> respDefaultLayout $ do
             setTitle $ unTitle $ essayTitle e
             render $(hamletFile "html/single.hamlet")

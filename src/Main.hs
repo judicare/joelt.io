@@ -6,6 +6,7 @@
 module Main where
 
 import           Control.Monad
+import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Data.Acid
 import           Data.ByteString                           (ByteString)
@@ -22,11 +23,13 @@ import           Network.Wai.Middleware.MethodOverridePost
 import           Network.Wai.Middleware.RequestLogger
 import           Network.Wai.Session
 import           Network.Wai.Session.ClientSession
+import           Pages.Delete
 import           Pages.Edit
 import           Pages.Home
 import           Pages.Login
 import           Pages.New
-import           Pages.Prelude                             (method)
+import           Pages.Prelude                             (PageEnv (..),
+                                                            method)
 import           Pages.Single
 import           Prelude                                   hiding (lookup)
 import qualified Prelude
@@ -50,21 +53,23 @@ main = do
             Just session = lookup vaultKey (vault req)
             path = decodePathInfo (rawPathInfo req)
 
-        canonPath path req $ \ resp -> do
+        canonPath path req $ \ resp ->
             case path of
                 ("s":_) -> serveStatic req resp
                 _ -> do
                     let responses = execWriter $ case path of
-                            []          -> home session database
-                            ["in"]      -> login session
-                            ["r", slug] -> single slug session database
-                            ["n"]       -> new session database
-                            ["e", slug] -> edit slug session database
+                            []          -> home
+                            ["in"]      -> login
+                            ["out"]     -> logout
+                            ["n"]       -> new
+                            ["r", slug] -> single slug
+                            ["e", slug] -> edit slug
+                            ["d", slug] -> Pages.Delete.delete slug
 
-                            _           -> method (requestMethod req) $ \ _ -> return $ responseLBS notFound404 [] "Not found"
+                            _           -> method (requestMethod req) $ return $ responseLBS notFound404 [] "Not found"
 
                     (resp =<<) $ case Prelude.lookup (requestMethod req) responses of
-                        Just f -> f req
+                        Just f -> runReaderT f $ PageEnv database session req
                         Nothing -> return $ responseLBS methodNotAllowed405 [] "Not allowed"
     where
         canonPath ps req f

@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ViewPatterns      #-}
 
@@ -8,7 +9,6 @@ module Pages.Form (
 
 import           Control.Monad
 import           Control.Monad.IO.Class
-import qualified Data.ByteString.Lazy        as LB
 import           Data.Char
 import           Data.Maybe
 import qualified Data.Text                   as T
@@ -21,18 +21,20 @@ import qualified Text.Blaze.Html5.Attributes as A
 import           Text.Digestive              as X
 import qualified Text.Digestive.Blaze.Html5  as H
 
-postFormEnv :: Request -> Text -> Form v IO a -> IO (View v, Maybe a)
-postFormEnv req name form = do
-    reqBody <- parseRequestBody lbsBackEnd req
+postFormEnv :: (MonadReader PageEnv m, MonadIO m)
+            => Text -> Form v m a -> m (View v, Maybe a)
+postFormEnv name form = do
+    req <- asks peReq
+    reqBody <- liftIO $ parseRequestBody lbsBackEnd req
     postForm name form (\ _ -> envMaker reqBody)
     where
-        envMaker :: ([Param], [File LB.ByteString]) -> IO (X.Env IO)
+        -- envMaker :: ([Param], [File LB.ByteString]) -> IO (X.Env IO)
         envMaker (params, _) = return $ \ path ->
             return . map (TextInput . decodeUtf8) . maybeToList $
                 lookup (encodeUtf8 $ T.intercalate "." path) params
 
-essayForm :: Maybe Essay -> DB -> Form Text IO Essay
-essayForm mEssay db = monadic $ do
+essayForm :: Maybe Essay -> Form Text (ReaderT PageEnv IO) Essay
+essayForm mEssay = monadic $ do
     t <- liftIO getCurrentTime
     return $ (\ title content -> Essay
         (EssayTitle title)
@@ -49,7 +51,7 @@ essayForm mEssay db = monadic $ do
             | isJust mEssay = id
             | otherwise = validateM $ \ t -> do
                 let slug = mkSlug t
-                existing <- query db $ SelectSlug (EssaySlug slug)
+                existing <- query $ SelectSlug (EssaySlug slug)
                 case existing of
                     Nothing -> return (return t)
                     Just{} -> return $ Error "This title conflicts with an existing title"
