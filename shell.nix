@@ -16,10 +16,9 @@ let
     exec java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
   '';
 
-  drv = pkgs.haskell.lib.addBuildDepends (haskellPackages.callPackage f {})
-    [ haskellPackages.cabal-install pkgs.nodePackages.bower yuicompressor
-      haskellPackages.ghc-mod
-    ];
+  drv = pkgs.haskell.lib.addBuildTools (haskellPackages.callPackage f {})
+    [ pkgs.nodePackages.bower yuicompressor
+      haskellPackages.cabal-install haskellPackages.hlint ];
 
 in
 

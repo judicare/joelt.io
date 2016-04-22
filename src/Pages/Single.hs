@@ -19,12 +19,14 @@ import           Text.Markdown
 import           Text.Regex.PCRE.Light
 
 single :: Text -> Session -> DB -> Endpoint
-single slug sess db = method "GET" $ \ _ resp -> do
+single slug sess db = method "GET" $ \ _ -> do
     mu <- get sess KUser
-    Just e <- query db $ SelectSlug $ EssaySlug slug
-    resp $ respDefaultLayout $ do
-        setTitle $ unTitle $ essayTitle e
-        render $(hamletFile "html/single.hamlet")
+    Just er <- query db $ SelectSlugRedirect $ EssaySlug slug
+    return $ case er of
+        Left (EssaySlug sl) -> redirectTo $ "/r/" <> encodeUtf8 sl
+        Right e -> respDefaultLayout $ do
+            setTitle $ unTitle $ essayTitle e
+            render $(hamletFile "html/single.hamlet")
 
 renderMd :: EssayContent -> Html
 renderMd (EssayContent m) = markdown defWithHighlight (fromStrict m) where

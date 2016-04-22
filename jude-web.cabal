@@ -20,6 +20,12 @@ flag production
   manual: True
   description: Enable production build
 
+executable mkpassword
+  main-is:             Main.hs
+  hs-source-dirs:      mkpassword
+  build-depends:       base, bytestring, directory, haskeline, pwstore-fast, utf8-string
+  ghc-options:         -Wall -Werror -O2
+
 executable jude-web
   main-is:             Main.hs
   -- other-modules:       
@@ -31,6 +37,7 @@ executable jude-web
                      , bytestring
                      , cereal
                      , clientsession
+                     , containers
                      , cookie
                      , digestive-functors
                      , digestive-functors-blaze
@@ -42,6 +49,7 @@ executable jude-web
                      , mtl
                      , network-uri
                      , pcre-light
+                     , pwstore-fast
                      , safecopy
                      , shakespeare
                      , template-haskell

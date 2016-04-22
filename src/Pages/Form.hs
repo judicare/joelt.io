@@ -12,8 +12,8 @@ import qualified Data.ByteString.Lazy        as LB
 import           Data.Char
 import           Data.Maybe
 import qualified Data.Text                   as T
+import           Data.Text.Encoding
 import           Data.Time
-import           Debug.Trace
 import           Network.Wai.Parse
 import           Pages.Prelude
 import qualified Text.Blaze.Html5            as H hiding (label)
@@ -27,7 +27,9 @@ postFormEnv req name form = do
     postForm name form (\ _ -> envMaker reqBody)
     where
         envMaker :: ([Param], [File LB.ByteString]) -> IO (X.Env IO)
-        envMaker (params, _) = return $ \ path -> return . maybeToList $ lookup (T.intercalate "." path) params
+        envMaker (params, _) = return $ \ path ->
+            return . map (TextInput . decodeUtf8) . maybeToList $
+                lookup (encodeUtf8 $ T.intercalate "." path) params
 
 essayForm :: Maybe Essay -> DB -> Form Text IO Essay
 essayForm mEssay db = monadic $ do
