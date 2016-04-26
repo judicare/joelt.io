@@ -18,6 +18,11 @@ genAttrs supportedCompilers (compiler:
       build = haskellPackages.callPackage ./default.nix {};
       bowerPkgs = pkgs.callPackage ./bower.nix {};
 
+      yuicompressor = pkgs.writeScriptBin "yuicompressor" ''
+        #!${pkgs.stdenv.shell}
+        exec ${pkgs.openjdk}/bin/java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
+      '';
+
       tarball = with pkgs; releaseTools.sourceTarball rec {
         name = build.pname;
         version = build.version;
@@ -27,7 +32,7 @@ genAttrs supportedCompilers (compiler:
         postUnpack = ''
           # Clean up when building from a working tree.
           if [[ -d $sourceRoot/.git ]]; then
-            git -C $sourceRoot clean -fdx
+            git -C $sourceRoot clean -fdx -e important-secret
           fi
         '';
 
@@ -48,7 +53,8 @@ genAttrs supportedCompilers (compiler:
       };
 
     in pkgs.haskell.lib.overrideCabal build (drv: {
-      configureFlags = [ "-fopt" ];
+      configureFlags = [ "-fproduction" ];
+      buildTools = (drv.buildTools or []) ++ [ yuicompressor ];
       doHaddock = false;
       enableSharedExecutables = false;
       enableSharedLibraries = false;

@@ -13,7 +13,7 @@ let
 
   yuicompressor = pkgs.writeScriptBin "yuicompressor" ''
     #!${pkgs.stdenv.shell}
-    exec java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
+    exec ${pkgs.openjdk}/bin/java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
   '';
 
   drv = pkgs.haskell.lib.addBuildTools (haskellPackages.callPackage f {})
