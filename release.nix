@@ -42,6 +42,10 @@ genAttrs supportedCompilers (compiler:
             name="$(jq -r .name $pkg/.bower.json)"
             cp -RL "$pkg" bower_components/"$name"
           done
+
+          if ! -f important-secret; then
+            echo -n phony > important-secret
+          fi
         '';
 
         distPhase = ''
