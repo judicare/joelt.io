@@ -28,7 +28,7 @@ executable mkpassword
   default-language:    Haskell2010
 
   if flag(production)
-    buildable:         false
+    buildable:         False
 
 executable jude-web
   main-is:             Main.hs
