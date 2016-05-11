@@ -1,6 +1,9 @@
 {-# LANGUAGE CPP                        #-}
+{-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
@@ -14,7 +17,7 @@ import Control.Monad.Reader
 import Control.Monad.State
 import Data.Acid
 import Data.Data            hiding (Proxy)
-import Data.IxSet
+import Data.IxSet.Typed
 import Data.List
 import Data.Ord
 import Data.SafeCopy
@@ -23,8 +26,8 @@ import Data.Time
 import Text.Blaze
 
 data Database = Database
-              { essays      :: IxSet Essay
-              , redirectMap :: IxSet Redirect
+              { essays      :: IxSet '[EssaySlug] Essay
+              , redirectMap :: IxSet '[From, To] Redirect
               }
 
 data Essay = Essay
@@ -34,8 +37,8 @@ data Essay = Essay
            , essayCreatedAt :: EssayCreatedAt
            } deriving (INSTANCES)
 
-instance Indexable Essay where
-    empty = ixSet [ ixFun indexEssay ]
+instance Indexable '[EssaySlug] Essay where
+    indices = ixList (ixFun indexEssay)
         where indexEssay Essay{..} = [ essaySlug ]
 
 newtype EssayTitle = EssayTitle { unTitle :: Text }
@@ -55,8 +58,8 @@ data Redirect = Redirect
 newtype From = From EssaySlug deriving (INSTANCES)
 newtype To = To EssaySlug deriving (INSTANCES)
 
-instance Indexable Redirect where
-    empty = ixSet [ ixFun indexFrom, ixFun indexTo ]
+instance Indexable '[From, To] Redirect where
+    indices = ixList (ixFun indexFrom) (ixFun indexTo)
         where
             indexFrom Redirect{..} = [ from ]
             indexTo Redirect{..} = [ to ]
@@ -93,7 +96,7 @@ replaceSlug oldSlug e = do
     ds@Database{..} <- get
     let newRedirect = if essaySlug e == oldSlug
                           then id
-                          else Data.IxSet.insert
+                          else Data.IxSet.Typed.insert
                             (Redirect (From oldSlug)
                                       (To $ essaySlug e))
     put $ ds { essays = updateIx oldSlug e essays
@@ -105,7 +108,7 @@ insert e = do
     ds@Database{..} <- get
     case getOne (essays @= essaySlug e) of
         Nothing -> do
-            put $ ds { essays = Data.IxSet.insert e essays }
+            put $ ds { essays = Data.IxSet.Typed.insert e essays }
             return True
         Just _ -> return False
 
@@ -115,12 +118,12 @@ delete e = do
     case getOne (essays @= e) of
         Nothing -> return False
         Just _ -> do
-            put $ ds { essays = Data.IxSet.deleteIx e essays
+            put $ ds { essays = Data.IxSet.Typed.deleteIx e essays
                      , redirectMap = deleteAll (To e) redirectMap
                      }
             return True
     where
-        deleteAll ix set = Data.List.foldr (\ a b -> Data.IxSet.delete a . b) id
+        deleteAll ix set = Data.List.foldr (\ a b -> Data.IxSet.Typed.delete a . b) id
                               (toList $ set @= ix) set
 
 makeAcidic ''Database [ 'getAll, 'selectSlugRedirect, 'selectSlug

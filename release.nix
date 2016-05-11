@@ -43,7 +43,7 @@ genAttrs supportedCompilers (compiler:
             cp -RL "$pkg" bower_components/"$name"
           done
 
-          if ! -f important-secret; then
+          if ! [ -f important-secret ]; then
             echo -n phony > important-secret
           fi
         '';
@@ -58,7 +58,7 @@ genAttrs supportedCompilers (compiler:
 
     in pkgs.haskell.lib.overrideCabal build (drv: {
       configureFlags = [ "-fproduction" ];
-      buildTools = (drv.buildTools or []) ++ [ yuicompressor ];
+      buildTools = (drv.buildTools or []) ++ [ yuicompressor pkgs.openjdk ];
       doHaddock = false;
       enableSharedExecutables = false;
       enableSharedLibraries = false;

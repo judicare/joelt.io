@@ -48,7 +48,7 @@ executable jude-web
                      , file-embed
                      , highlighter
                      , http-types
-                     , ixset
+                     , ixset-typed
                      , markdown
                      , mtl
                      , network-uri
