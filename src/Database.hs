@@ -28,7 +28,7 @@ import Text.Blaze
 data Database = Database
               { essays      :: IxSet '[EssaySlug] Essay
               , redirectMap :: IxSet '[From, To] Redirect
-              }
+              } deriving Show
 
 data Essay = Essay
            { essayTitle     :: EssayTitle
@@ -73,6 +73,9 @@ deriveSafeCopy 0 'base ''EssayCreatedAt
 deriveSafeCopy 0 'base ''Redirect
 deriveSafeCopy 0 'base ''To
 deriveSafeCopy 0 'base ''From
+
+dump :: Query Database Database
+dump = ask
 
 getAll :: Query Database [Essay]
 getAll = do
@@ -127,5 +130,5 @@ delete e = do
                               (toList $ set @= ix) set
 
 makeAcidic ''Database [ 'getAll, 'selectSlugRedirect, 'selectSlug
-                      , 'replaceSlug
+                      , 'replaceSlug, 'dump
                       , 'Database.insert, 'Database.delete]

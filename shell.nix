@@ -18,7 +18,7 @@ let
 
   drv = pkgs.haskell.lib.addBuildTools (haskellPackages.callPackage f {})
     [ pkgs.nodePackages.bower yuicompressor
-      haskellPackages.hlint ];
+      haskellPackages.hlint /* haskellPackages.ghc-mod */ ];
 
 in
 

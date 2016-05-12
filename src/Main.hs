@@ -2,18 +2,24 @@
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 module Main where
 
+import           Control.Concurrent
 import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Data.Acid
+import           Data.Acid.Remote
 import           Data.ByteString                           (ByteString)
+import           Data.FileEmbed
 import           Data.Maybe
+import           Data.Set                                  (fromList)
 import           Data.Text.Encoding
 import           Data.Vault.Lazy
 import           Database
+import           Network
 import           Network.HTTP.Types.Status
 import           Network.Wai
 import           Network.Wai.Handler.Warp
@@ -43,11 +49,19 @@ import           Web.Routes.Base
 import           Data.Acid.Core                            (MethodState)
 #endif
 
+runDBServer :: AcidState Database -> IO ()
+runDBServer = acidServer
+    (sharedSecretCheck $ fromList [$(embedFile "important-secret")])
+    (UnixSocket "/var/run/jude-db.sock")
+
 main :: IO ()
 main = do
     port <- (fromMaybe 8000 . (>>= readMaybe)) <$> lookupEnv "PORT"
     (vaultKey, middlewares) <- getMiddlewares
+
     database <- openLocalStateFrom "db" (Database mempty mempty)
+    forkIO $ runDBServer database
+
     run port $ middlewares $ \ req -> do
         let session :: Session IO ByteString ByteString
             Just session = lookup vaultKey (vault req)
@@ -73,7 +87,7 @@ main = do
                         Nothing -> return $ responseLBS methodNotAllowed405 [] "Not allowed"
     where
         canonPath ps req f
-            | notElem mempty ps = f
+            | mempty `notElem` ps = f
             | otherwise = \ resp -> resp
                 $ responseLBS movedPermanently301
                     [("Location", fromMaybe "" (getApprootMay req)
@@ -83,7 +97,7 @@ main = do
             ef <- envFallback
             skey <- newKey
             k <- getDefaultKey
-            return . ((,) skey) $
+            return . (,) skey $
                      methodOverridePost
                    . ef
                    . gzip def

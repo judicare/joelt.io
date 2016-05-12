@@ -20,6 +20,22 @@ flag production
   manual: True
   description: Enable production build
 
+executable db-tool
+  main-is:             Main.hs
+  hs-source-dirs:      db-tool, src
+  build-depends:       base
+                     , acid-state
+                     , blaze-markup
+                     , file-embed
+                     , ixset-typed
+                     , mtl
+                     , network
+                     , safecopy
+                     , text
+                     , time
+  ghc-options:         -Wall -Werror -O2
+  default-language:    Haskell2010
+
 executable mkpassword
   main-is:             Main.hs
   hs-source-dirs:      mkpassword
@@ -51,6 +67,7 @@ executable jude-web
                      , ixset-typed
                      , markdown
                      , mtl
+                     , network
                      , network-uri
                      , pcre-light
                      , pwstore-fast
