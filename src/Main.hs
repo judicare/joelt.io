@@ -60,7 +60,7 @@ main = do
     (vaultKey, middlewares) <- getMiddlewares
 
     database <- openLocalStateFrom "db" (Database mempty mempty)
-    forkIO $ runDBServer database
+    _ <- forkIO $ runDBServer database
 
     run port $ middlewares $ \ req -> do
         let session :: Session IO ByteString ByteString
