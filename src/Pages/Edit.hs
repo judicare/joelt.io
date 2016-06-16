@@ -6,10 +6,10 @@ module Pages.Edit where
 import Pages.Form
 import Pages.Prelude
 
-edit :: Text -> Endpoint
+edit :: EssaySlug -> Endpoint
 edit slug = do
     method "GET" $ requireAuth $ \ _ -> do
-        ese <- query $ SelectSlug $ EssaySlug slug
+        ese <- query $ SelectSlug slug
         case ese of
             Nothing -> return $ responseLBS notFound404 [] "Not found"
             Just e -> do
@@ -20,7 +20,7 @@ edit slug = do
                     render $(hamletFile "html/edit.hamlet")
 
     method "PATCH" $ requireAuth $ \ _ -> do
-        ese <- query $ SelectSlug $ EssaySlug slug
+        ese <- query $ SelectSlug slug
         case ese of
             Nothing -> return $ responseLBS notFound404 [] "Not found"
             Just e -> do
@@ -32,5 +32,5 @@ edit slug = do
                             setTitle $ "Editing " <> unTitle (essayTitle e)
                             render $(hamletFile "html/edit.hamlet")
                     Just r -> do
-                        update $ ReplaceSlug (EssaySlug slug) r
+                        update $ ReplaceSlug slug r
                         return $ redirectTo $ "/r/" <> encodeUtf8 (unSlug $ essaySlug r)

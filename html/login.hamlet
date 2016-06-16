@@ -1,6 +1,6 @@
 <article .bubble>
   <h3 .form-title>Log in
-  <form role=form method=post action=/in>
+  <form role=form method=post action=@{In}>
     <div .row>
       <div .large-6 .columns>
         ^{foundationField "Username" "username" view}

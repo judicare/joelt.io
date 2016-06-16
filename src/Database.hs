@@ -24,6 +24,7 @@ import Data.SafeCopy
 import Data.Text
 import Data.Time
 import Text.Blaze
+import Web.Routes
 
 data Database = Database
               { essays      :: IxSet '[EssaySlug] Essay
@@ -49,6 +50,10 @@ newtype EssayContent = EssayContent { unContent :: Text }
                        deriving (HTML_INSTANCES)
 newtype EssayCreatedAt = EssayCreatedAt { unCreatedAt :: UTCTime }
                          deriving (INSTANCES)
+
+instance PathInfo EssaySlug where
+    toPathSegments = toPathSegments . unSlug
+    fromPathSegments = fmap EssaySlug fromPathSegments
 
 data Redirect = Redirect
               { from :: From
@@ -80,7 +85,7 @@ dump = ask
 getAll :: Query Database [Essay]
 getAll = do
     Database essays _ <- ask
-    return $ sortBy (comparing essayCreatedAt) $ toList essays
+    return $ sortBy (flip (comparing essayCreatedAt)) $ toList essays
 
 selectSlugRedirect :: EssaySlug -> Query Database (Maybe (Either EssaySlug Essay))
 selectSlugRedirect slug = do

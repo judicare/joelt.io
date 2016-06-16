@@ -12,6 +12,8 @@ import Data.Text                     (Text, pack)
 import Network.URI
 import Text.Blaze.Html.Renderer.Utf8
 import Text.Hamlet
+import URLs
+import Web.Routes
 
 newtype Stylesheet = Stylesheet { unStylesheet :: FilePath }
 
@@ -19,7 +21,7 @@ newtype Stylesheet = Stylesheet { unStylesheet :: FilePath }
 type PageWriter = Writer Page ()
 
 data Page = Page
-          { pageHtml        :: HtmlUrl URI
+          { pageHtml        :: HtmlUrl SiteMap
           , pageTitle       :: Last Text
           , pageStylesheets :: [Stylesheet]
           , pageLoggedIn    :: Last Bool
@@ -31,7 +33,7 @@ instance Monoid Page where
         Page (a <> a') (b <> b') (c <> c') (d <> d')
 
 -- | Perform rendering
-render :: HtmlUrl URI -> PageWriter
+render :: HtmlUrl SiteMap -> PageWriter
 render t = tell $ mempty { pageHtml = t }
 
 setTitle :: Text -> PageWriter
@@ -43,11 +45,11 @@ addStyleSheet s = tell $ mempty { pageStylesheets = [Stylesheet s] }
 setLoggedIn :: PageWriter
 setLoggedIn = tell $ mempty { pageLoggedIn = Last $ Just True }
 
-htmlRender :: ((URI -> t -> Text) -> Html) -> ByteString
+htmlRender :: ((SiteMap -> t -> Text) -> Html) -> ByteString
 htmlRender x = renderHtml $ x myUrlRenderer
 
-myUrlRenderer :: URI -> t -> Text
-myUrlRenderer uri _ = pack ("/" <> show uri)
+myUrlRenderer :: SiteMap -> t -> Text
+myUrlRenderer uri _ = toPathInfo uri
 
 -- | Render a page with the default layout
 defaultLayout :: PageWriter -> ByteString

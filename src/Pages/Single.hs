@@ -18,10 +18,10 @@ import           Text.Highlighter            hiding (Single)
 import           Text.Markdown
 import           Text.Regex.PCRE.Light
 
-single :: Text -> Endpoint
+single :: EssaySlug -> Endpoint
 single slug = method "GET" $ do
     mu <- get KUser
-    Just er <- query $ SelectSlugRedirect $ EssaySlug slug
+    Just er <- query $ SelectSlugRedirect slug
     case er of
         Left (EssaySlug sl) -> return $ redirectTo $ "/r/" <> encodeUtf8 sl
         Right e -> respDefaultLayout $ do

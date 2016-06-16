@@ -4,9 +4,9 @@ module Pages.Delete where
 
 import Pages.Prelude
 
-delete :: Text -> Endpoint
+delete :: EssaySlug -> Endpoint
 delete slug = method "DELETE" $ requireAuth $ \ _ -> do
-    deleted <- update $ Delete $ EssaySlug slug
+    deleted <- update $ Delete slug
     if deleted
         then do
             put KMessage $ Message "All good." False

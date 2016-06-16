@@ -19,6 +19,7 @@ import           Data.Set                                  (fromList)
 import           Data.Text.Encoding
 import           Data.Vault.Lazy
 import           Database
+import           Debug.Trace
 import           Network
 import           Network.HTTP.Types.Status
 import           Network.Wai
@@ -42,9 +43,10 @@ import qualified Prelude
 import           StaticFiles
 import           System.Environment
 import           Text.Read                                 hiding (lift)
+import           URLs
 import           Web.ClientSession
 import           Web.Cookie
-import           Web.Routes.Base
+import           Web.Routes
 #ifndef PRODUCTION
 import           Data.Acid.Core                            (MethodState)
 #endif
@@ -65,22 +67,24 @@ main = do
     run port $ middlewares $ \ req -> do
         let session :: Session IO ByteString ByteString
             Just session = lookup vaultKey (vault req)
-            path = decodePathInfo (rawPathInfo req)
+            path' = decodePathInfo (rawPathInfo req)
 
-        canonPath path req $ \ resp ->
+        canonPath path' req $ \ resp ->
+            let path = if null path' then [""] else path' in
             case path of
                 ("s":_) -> serveStatic req resp
                 _ -> do
-                    let responses = execWriter $ case path of
-                            []          -> home
-                            ["in"]      -> login
-                            ["out"]     -> logout
-                            ["n"]       -> new
-                            ["r", slug] -> single slug
-                            ["e", slug] -> edit slug
-                            ["d", slug] -> Pages.Delete.delete slug
+                    let responses = execWriter $ case parseSegments fromPathSegments path of
+                            Left _      -> method (requestMethod req) $ return $ responseLBS notFound404 [] "Not found"
 
-                            _           -> method (requestMethod req) $ return $ responseLBS notFound404 [] "Not found"
+                            Right x     -> case x of
+                                Home     -> home
+                                In       -> login
+                                Out      -> logout
+                                N        -> new
+                                (R slug) -> single slug
+                                (E slug) -> edit slug
+                                (D slug) -> Pages.Delete.delete slug
 
                     (resp =<<) $ case Prelude.lookup (requestMethod req) responses of
                         Just f -> runReaderT f $ PageEnv database session req

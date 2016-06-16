@@ -27,6 +27,7 @@ import qualified Network.Wai.Session
 import           SessionData               as X hiding (clear, get, put)
 import qualified SessionData               as S
 import           Text.Hamlet               as X
+import           URLs                      as X
 
 type Session = Network.Wai.Session.Session IO ByteString ByteString
 
