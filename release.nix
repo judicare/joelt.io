@@ -16,7 +16,11 @@ genAttrs supportedCompilers (compiler:
         else pkgs.haskell.packages.${compiler};
 
       build = haskellPackages.callPackage ./default.nix {};
-      bowerPkgs = pkgs.callPackage ./bower.nix {};
+      bowerPkgs = pkgs.buildBowerComponents {
+        name = "jude.bio";
+        src = pkgs.writeTextDir "bower.json" (builtins.readFile ./bower.json);
+        generated = ./bower.nix;
+      };
 
       yuicompressor = pkgs.writeScriptBin "yuicompressor" ''
         #!${pkgs.stdenv.shell}
@@ -37,11 +41,7 @@ genAttrs supportedCompilers (compiler:
         '';
 
         preDist = ''
-          mkdir -p bower_components
-          for pkg in ${bowerPkgs}/packages/*/*; do
-            name="$(jq -r .name $pkg/.bower.json)"
-            cp -RL "$pkg" bower_components/"$name"
-          done
+          cp -RL ${bowerPkgs}/bower_components bower_components
 
           if ! [ -f important-secret ]; then
             echo -n phony > important-secret

@@ -16,9 +16,18 @@ let
     exec ${pkgs.openjdk}/bin/java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
   '';
 
-  drv = pkgs.haskell.lib.addBuildTools (haskellPackages.callPackage f {})
-    [ pkgs.nodePackages.bower yuicompressor
-      haskellPackages.hlint /* haskellPackages.ghc-mod */ ];
+  bowerPkgs = pkgs.buildBowerComponents {
+    name = "jude.bio";
+    src = pkgs.writeTextDir "bower.json" (builtins.readFile ./bower.json);
+    generated = ./bower.nix;
+  };
+
+  drv = pkgs.haskell.lib.overrideCabal (haskellPackages.callPackage f {}) (drv: {
+    buildTools = [ pkgs.nodePackages.bower yuicompressor ];
+    shellHook = ''
+      ln -sfv ${bowerPkgs}/bower_components .
+    '';
+  });
 
 in
 

@@ -8,8 +8,7 @@ module HTMLRendering where
 import Control.Monad.Writer
 import Data.ByteString.Lazy          (ByteString)
 import Data.Maybe
-import Data.Text                     (Text, pack)
-import Network.URI
+import Data.Text                     (Text)
 import Text.Blaze.Html.Renderer.Utf8
 import Text.Hamlet
 import URLs

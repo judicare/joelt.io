@@ -1,11 +1,8 @@
-{-# OPTIONS_GHC -ddump-splices #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module URLs where
 
-import Data.Text
 import Database
-import Web.Routes
 import Web.Routes.TH
 
 data SiteMap = Home

@@ -42,7 +42,6 @@ executable jude-web
                      , markdown
                      , mtl
                      , network
-                     , network-uri
                      , pcre-light
                      , pwstore-fast
                      , safecopy
@@ -84,6 +83,7 @@ executable db-tool
                      , safecopy
                      , text
                      , time
+                     , web-routes
   ghc-options:         -Wall -Werror -O2
   default-language:    Haskell2010
 

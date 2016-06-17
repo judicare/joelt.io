@@ -19,7 +19,6 @@ import           Data.Set                                  (fromList)
 import           Data.Text.Encoding
 import           Data.Vault.Lazy
 import           Database
-import           Debug.Trace
 import           Network
 import           Network.HTTP.Types.Status
 import           Network.Wai
