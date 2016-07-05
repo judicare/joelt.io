@@ -26,6 +26,7 @@ executable jude-web
   -- other-extensions:    
   build-depends:       base
                      , acid-state
+                     , base64-bytestring
                      , blaze-html
                      , blaze-markup
                      , bytestring
@@ -33,6 +34,7 @@ executable jude-web
                      , clientsession
                      , containers
                      , cookie
+                     , cryptohash
                      , digestive-functors
                      , digestive-functors-blaze
                      , file-embed
@@ -40,9 +42,11 @@ executable jude-web
                      , http-types
                      , ixset-typed
                      , markdown
+                     , mime-types
                      , mtl
                      , network
                      , pcre-light
+                     , process-extras
                      , pwstore-fast
                      , safecopy
                      , shakespeare

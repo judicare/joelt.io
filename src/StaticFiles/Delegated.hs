@@ -4,42 +4,37 @@
 
 module StaticFiles.Delegated where
 
-import qualified Data.ByteString                as B
+import           Crypto.Hash.MD5                (hashlazy)
+import qualified Data.ByteString.Base64         as B64
 import           Data.ByteString.Lazy
+import qualified Data.ByteString.Lazy           as BL
+import qualified Data.Text                      as T
+import qualified Data.Text.Encoding             as T
+import qualified Data.Text.Lazy                 as LT
 import           Data.Text.Lazy.Encoding
 import           Prelude                        hiding (readFile)
-import           Text.Lucius
-#ifdef PRODUCTION
-import qualified Data.Text.Lazy                 as T (unpack)
 import           System.Exit
 import           System.Process.ByteString.Lazy
-#endif
 
-allCss :: IO B.ByteString
-allCss = do
-    normalizeCss <- readFile "bower_components/foundation-sites/dist/foundation.css"
-    fontAwesomeCss <- readFile "bower_components/font-awesome/css/font-awesome.css"
-    let full = mconcat
-            [ normalizeCss, fontAwesomeCss
-            , cssToBs $(luciusFile "css/all.lucius")
-            , cssToBs $(luciusFile "css/form.lucius")
-            , cssToBs $(luciusFile "css/home.lucius")
-            , cssToBs $(luciusFile "css/single.lucius")
-            ]
-    toStrict <$>
-#ifdef PRODUCTION
-        minify full
-#else
-        pure full
-#endif
-    where
-        cssToBs c = encodeUtf8 (renderCss $ c id)
-
-#ifdef PRODUCTION
-minify :: ByteString -> IO ByteString
-minify input = do
-    (exit, stdout, stderr) <- readProcessWithExitCode "yuicompressor" ["--type", "css"] input
+fetchCss :: IO (T.Text, ByteString)
+fetchCss = do
+    a <- BL.readFile "css/all.scss"
+    (exit, stdout, stderr) <- readProcessWithExitCode "sass" (args ++ extraArgs) a
     case exit of
-        ExitSuccess -> return stdout
-        ExitFailure _ -> die $ T.unpack $ decodeUtf8 stderr
+        ExitSuccess -> return $ etag stdout
+        ExitFailure _ -> die $ LT.unpack $ decodeUtf8 stderr
+    where
+        args = [ "--scss"
+               , "-Icss"
+               , "-Ibower_components/foundation-sites/scss"
+               , "-Ibower_components/font-awesome/scss"
+               ]
+#ifdef PRODUCTION
+        extraArgs = ["--style", "compact"]
+#else
+        extraArgs = []
 #endif
+
+etag :: ByteString -> (T.Text, ByteString)
+etag s = (hash s, s) where
+    hash = T.take 8 . T.decodeUtf8 . B64.encode . hashlazy

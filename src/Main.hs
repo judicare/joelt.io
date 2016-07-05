@@ -22,6 +22,7 @@ import           Database
 import           Network
 import           Network.HTTP.Types.Status
 import           Network.Wai
+import           Network.Wai.Application.Static
 import           Network.Wai.Handler.Warp
 import           Network.Wai.Middleware.Approot
 import           Network.Wai.Middleware.Gzip
@@ -43,6 +44,7 @@ import           StaticFiles
 import           System.Environment
 import           Text.Read                                 hiding (lift)
 import           URLs
+import           WaiAppStatic.Storage.Embedded
 import           Web.ClientSession
 import           Web.Cookie
 import           Web.Routes
@@ -53,7 +55,9 @@ import           Data.Acid.Core                            (MethodState)
 runDBServer :: AcidState Database -> IO ()
 runDBServer = acidServer
     (sharedSecretCheck $ fromList [$(embedFile "important-secret")])
-    (UnixSocket "/var/run/jude-db.sock")
+    (UnixSocket "jude-db.sock")
+
+serveStatic = staticApp $(mkSettings mkEmbedded)
 
 main :: IO ()
 main = do

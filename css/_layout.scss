@@ -8,6 +8,10 @@ body {
       margin-top: 68px;
       position: relative;
 
+      @media (max-width: 899px) {
+        margin-top: 11px;
+      }
+
       h1, h2, h3, h4, h5, h6 {
         text-rendering: optimizeLegibility;
         font-weight: 600;
@@ -100,6 +104,10 @@ body {
           position: absolute;
           left: 26px;
           top: 41px;
+
+          @media (min-width: 40em) {
+            left: 31px;
+          }
         }
       }
 
@@ -133,20 +141,8 @@ footer {
   color: #666;
 }
 
-@media (max-width: 899px) {
-  body .row .speech {
-    margin-top: 11px;
-  }
-}
-
-@media (min-width: 40em) {
-  body .row .speech header .arrow {
-    left: 31px;
-  }
-}
-
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  body .speech header {
+  body .row .speech header {
     #head {
       background-image: url(/s/img/otter@2x.png);
     }
@@ -165,28 +161,4 @@ footer {
       }
     }
   }
-}
-
-.nf {
-  color: #2e659c;
-}
-
-.kr {
-  color: #397460;
-}
-
-.o, .ow {
-  color: #8f4e8b;
-}
-
-.kt, .mi, .nb {
-  color: #4f4371;
-}
-
-.s {
-  color: #366354;
-}
-
-.cm, .c1 {
-  color: #666;
 }

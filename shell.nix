@@ -11,11 +11,6 @@ let
                        then pkgs.haskellPackages
                        else pkgs.haskell.packages.${compiler};
 
-  yuicompressor = pkgs.writeScriptBin "yuicompressor" ''
-    #!${pkgs.stdenv.shell}
-    exec ${pkgs.openjdk}/bin/java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
-  '';
-
   bowerPkgs = pkgs.buildBowerComponents {
     name = "jude.bio";
     src = pkgs.writeTextDir "bower.json" (builtins.readFile ./bower.json);
@@ -23,7 +18,7 @@ let
   };
 
   drv = pkgs.haskell.lib.overrideCabal (haskellPackages.callPackage f {}) (drv: {
-    buildTools = [ pkgs.nodePackages.bower yuicompressor ];
+    buildTools = [ pkgs.nodePackages.bower pkgs.sass ];
     shellHook = ''
       ln -sfv ${bowerPkgs}/bower_components .
     '';
