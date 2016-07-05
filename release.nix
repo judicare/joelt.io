@@ -22,11 +22,6 @@ genAttrs supportedCompilers (compiler:
         generated = ./bower.nix;
       };
 
-      yuicompressor = pkgs.writeScriptBin "yuicompressor" ''
-        #!${pkgs.stdenv.shell}
-        exec ${pkgs.openjdk}/bin/java -jar ${pkgs.yuicompressor}/lib/yuicompressor.jar "$@"
-      '';
-
       tarball = with pkgs; releaseTools.sourceTarball rec {
         name = build.pname;
         version = build.version;
@@ -58,7 +53,7 @@ genAttrs supportedCompilers (compiler:
 
     in pkgs.haskell.lib.overrideCabal build (drv: {
       configureFlags = [ "-fproduction" ];
-      buildTools = (drv.buildTools or []) ++ [ yuicompressor pkgs.openjdk ];
+      buildTools = (drv.buildTools or []) ++ [ pkgs.sass ];
       doHaddock = false;
       enableSharedExecutables = false;
       enableSharedLibraries = false;

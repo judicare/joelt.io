@@ -57,6 +57,7 @@ runDBServer = acidServer
     (sharedSecretCheck $ fromList [$(embedFile "important-secret")])
     (UnixSocket "jude-db.sock")
 
+serveStatic :: Application
 serveStatic = staticApp $(mkSettings mkEmbedded)
 
 main :: IO ()
