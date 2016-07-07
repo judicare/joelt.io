@@ -8,7 +8,7 @@ import qualified Data.ByteString.Lazy          as BL
 import           Data.FileEmbed
 import           Data.Monoid
 import           Network.Mime
-import           StaticFiles.Delegated         (etag, fetchCss)
+import           StaticFiles.Delegated
 import           WaiAppStatic.Storage.Embedded
 
 mkEmbedded :: IO [EmbeddableEntry]
@@ -44,7 +44,8 @@ mkEmbedded = do
 embeddedCss :: IO EmbeddableEntry
 embeddedCss = do
 #ifdef PRODUCTION
-    content <- Left <$> fetchCss
+    (a,b) <- fetchCss
+    content <- Left . ((,) a) <$> cssnano b
 #else
     let content = Right [|fetchCss|]
 #endif

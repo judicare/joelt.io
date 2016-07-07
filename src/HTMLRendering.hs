@@ -70,8 +70,6 @@ defaultLayout ham = htmlRender [hamlet|
         $forall Stylesheet s <- pageStylesheets
           <link rel="stylesheet" href="/s/#{s}">
 
-        <script src="/s/js/all.js">
-
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         \<![endif]-->
@@ -84,12 +82,14 @@ defaultLayout ham = htmlRender [hamlet|
               <div #dots>
                 <span .up-arrow>
                 <a href="https://github.com/pikajude" .dot #github data-tipsy title="I'm on GitHub!">I'm on GitHub!
-                <a href="http://www.linkedin.com/pub/joel-taylor/6a/691/988/" .dot #linkedin data-tipsy title="I'm on LinkedIn!">I'm on LinkedIn!
+                <a href="http://www.linkedin.com/in/pikajude" .dot #linkedin data-tipsy title="I'm on LinkedIn!">I'm on LinkedIn!
                 $if fromMaybe False (getLast pageLoggedIn)
                   <a href="/n" .dot #new-post title="Make a new post">New post
             ^{pageHtml}
             <footer>
               Talk to me: <a href="mailto:me@jude.bio">me@jude.bio</a>.
+
+        <script src="/s/js/all.js">
     |]
     where
         Page{..} = execWriter $ do

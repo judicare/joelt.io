@@ -19,7 +19,12 @@ genAttrs supportedCompilers (compiler:
       bowerPkgs = pkgs.buildBowerComponents {
         name = "jude.bio";
         src = pkgs.writeTextDir "bower.json" (builtins.readFile ./bower.json);
-        generated = ./bower.nix;
+        generated = ./generated/bower.nix;
+      };
+
+      nodePkgs = pkgs.nodePackages.override {
+        generated = ./generated/node-packages.nix;
+        self = nodePkgs;
       };
 
       tarball = with pkgs; releaseTools.sourceTarball rec {
@@ -53,7 +58,7 @@ genAttrs supportedCompilers (compiler:
 
     in pkgs.haskell.lib.overrideCabal build (drv: {
       configureFlags = [ "-fproduction" ];
-      buildTools = (drv.buildTools or []) ++ [ pkgs.sass ];
+      buildTools = (drv.buildTools or []) ++ [ pkgs.sass nodePkgs.cssnano-cli ];
       doHaddock = false;
       enableSharedExecutables = false;
       enableSharedLibraries = false;

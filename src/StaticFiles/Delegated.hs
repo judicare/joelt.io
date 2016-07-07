@@ -35,6 +35,13 @@ fetchCss = do
         extraArgs = []
 #endif
 
+cssnano :: ByteString -> IO ByteString
+cssnano input = do
+    (exit, stdout, stderr) <- readProcessWithExitCode "cssnano" [] input
+    case exit of
+        ExitSuccess -> return stdout
+        ExitFailure _ -> die $ LT.unpack $ decodeUtf8 stderr
+
 etag :: ByteString -> (T.Text, ByteString)
 etag s = (hash s, s) where
     hash = T.take 8 . T.decodeUtf8 . B64.encode . hashlazy

@@ -14,11 +14,16 @@ let
   bowerPkgs = pkgs.buildBowerComponents {
     name = "jude.bio";
     src = pkgs.writeTextDir "bower.json" (builtins.readFile ./bower.json);
-    generated = ./bower.nix;
+    generated = ./generated/bower.nix;
+  };
+
+  nodePkgs = pkgs.nodePackages.override {
+    generated = ./generated/node-packages.nix;
+    self = nodePkgs;
   };
 
   drv = pkgs.haskell.lib.overrideCabal (haskellPackages.callPackage f {}) (drv: {
-    buildTools = [ pkgs.nodePackages.bower pkgs.sass ];
+    buildTools = [ pkgs.nodePackages.bower pkgs.sass nodePkgs.cssnano-cli ];
     shellHook = ''
       ln -sfv ${bowerPkgs}/bower_components .
     '';
