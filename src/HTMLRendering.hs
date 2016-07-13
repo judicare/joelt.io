@@ -68,7 +68,7 @@ defaultLayout ham = htmlRender [hamlet|
             \ » #{t}
 
         $forall Stylesheet s <- pageStylesheets
-          <link rel="stylesheet" href="/s/#{s}">
+          <link rel="stylesheet" href="/s/#{s}" type="text/css">
 
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
