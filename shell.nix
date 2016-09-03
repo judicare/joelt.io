@@ -17,10 +17,7 @@ let
     generated = ./generated/bower.nix;
   };
 
-  nodePkgs = pkgs.nodePackages.override {
-    generated = ./generated/node-packages.nix;
-    self = nodePkgs;
-  };
+  nodePkgs = pkgs.callPackage ./generated/node-composition.nix {};
 
   drv = pkgs.haskell.lib.overrideCabal (haskellPackages.callPackage f {}) (drv: {
     buildTools = [ pkgs.nodePackages.bower pkgs.sass nodePkgs.cssnano-cli ];

@@ -22,10 +22,7 @@ genAttrs supportedCompilers (compiler:
         generated = ./generated/bower.nix;
       };
 
-      nodePkgs = pkgs.nodePackages.override {
-        generated = ./generated/node-packages.nix;
-        self = nodePkgs;
-      };
+      nodePkgs = pkgs.callPackage ./generated/node-composition.nix {};
 
       tarball = with pkgs; releaseTools.sourceTarball rec {
         name = build.pname;
