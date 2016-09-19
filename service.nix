@@ -75,7 +75,6 @@ in
         Restart = "on-failure";
         RestartSec = 5;
         StartLimitInterval = "1min";
-        WorkingDirectory = cfg.stateDir;
       };
 
       preStart = ''
@@ -84,6 +83,7 @@ in
       '';
 
       script = ''
+        cd ${cfg.stateDir}
         ${cfg.package}/bin/jude-web +RTS -N
       '';
     };
