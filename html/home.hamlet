@@ -10,7 +10,7 @@ $maybe Message msg b <- mmsg
     $nothing
       I’m Jude, a functional programmer with a colorful head.
 
-$forall e <- es
+$forall Entity _ e <- es
   <article .bubble .preview-bubble>
     <h3 .post-preview>
       <a .post-title href=@{R (essaySlug e)}>#{essayTitle e}

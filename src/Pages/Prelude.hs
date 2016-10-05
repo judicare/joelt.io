@@ -7,34 +7,33 @@ module Pages.Prelude (
     module X
 ) where
 
-import           Control.Monad             as X
-import           Control.Monad.Reader      as X
+import           Control.Monad               as X
+import           Control.Monad.Reader        as X
+import           Control.Monad.Trans.Control (MonadBaseControl)
 import           Control.Monad.Writer
-import qualified Data.Acid                 as A
-import           Data.Acid.Core            (MethodState)
-import           Data.ByteString           as X (ByteString)
-import           Data.Maybe                as X
-import           Data.Monoid               as X ((<>))
-import           Data.Text                 as X (Text)
-import           Data.Text.Encoding        as X
-import           Database                  as X
-import           HTMLRendering             as X
+import           Data.ByteString             as X (ByteString)
+import           Data.Maybe                  as X
+import           Data.Monoid                 as X ((<>))
+import           Data.Pool                   (Pool)
+import           Data.Text                   as X (Text)
+import           Data.Text.Encoding          as X
+import           Database                    as X hiding (redirectTo)
+import           Database.Persist.Sql        as X hiding (In, get)
+import           HTMLRendering               as X
 import           Network.HTTP.Types.Method
-import           Network.HTTP.Types.Status as X
-import           Network.Wai               as X
-import           Network.Wai.Session       as X hiding (Session)
+import           Network.HTTP.Types.Status   as X
+import           Network.Wai                 as X
+import           Network.Wai.Session         as X hiding (Session)
 import qualified Network.Wai.Session
-import           SessionData               as X hiding (clear, get, put)
-import qualified SessionData               as S
-import           Text.Hamlet               as X
-import           URLs                      as X
+import           SessionData                 as X hiding (clear, get, put)
+import qualified SessionData                 as S
+import           Text.Hamlet                 as X
+import           URLs                        as X
 
 type Session = Network.Wai.Session.Session IO ByteString ByteString
 
-type DB = A.AcidState Database
-
 data PageEnv = PageEnv
-             { peDB      :: DB
+             { peDB      :: Pool SqlBackend
              , peSession :: Session
              , peReq     :: Request
              }
@@ -64,19 +63,11 @@ requireAuth f = do
             return $ redirectTo "/"
         Just x -> f x
 
-query :: (A.QueryEvent event, MonadIO m, MonadReader PageEnv m,
-          Data.Acid.Core.MethodState event ~ Database)
-      => event -> m (A.EventResult event)
-query f = do
-    db <- asks peDB
-    liftIO $ A.query db f
-
-update :: (A.UpdateEvent event, MonadIO m, MonadReader PageEnv m,
-           Data.Acid.Core.MethodState event ~ Database)
-       => event -> m (A.EventResult event)
-update f = do
-    db <- asks peDB
-    liftIO $ A.update db f
+runDB :: (MonadBaseControl IO m, MonadReader PageEnv m)
+      => ReaderT SqlBackend m b -> m b
+runDB act = do
+    pool <- asks peDB
+    runSqlPool act pool
 
 get :: (SessionData a, MonadIO m, MonadReader PageEnv m)
     => proxy a -> m (Maybe a)

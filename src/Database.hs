@@ -1,31 +1,31 @@
-{-# LANGUAGE CPP                        #-}
-{-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE DeriveDataTypeable         #-}
-{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-#define INSTANCES Data, Eq, Ord, Show
-#define HTML_INSTANCES INSTANCES, ToMarkup
-
 module Database where
 
-import Control.Monad.Reader
-import Control.Monad.State
-import Data.Acid
-import Data.Data            hiding (Proxy)
-import Data.IxSet.Typed
-import Data.List
-import Data.Ord
-import Data.SafeCopy
 import Data.Text
 import Data.Time
-import Text.Blaze
-import Web.Routes
+import Database.Persist.TH
 
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+Essay
+    title Text
+    slug Text
+    content Text
+    createdAt UTCTime
+    UniqueEssay slug
+
+Redirect
+    from Text
+    to Text
+    UniqueRedirect from
+|]
+
+{-
 data Database = Database
               { essays      :: IxSet '[EssaySlug] Essay
               , redirectMap :: IxSet '[From, To] Redirect
@@ -92,7 +92,7 @@ selectSlugRedirect slug = do
     Database{..} <- ask
     case getOne $ redirectMap @= From slug of
         Just (Redirect _ (To t)) -> return $ Just $ Left t
-        Nothing -> fmap (fmap Right) $ selectSlug slug
+        Nothing                  -> fmap (fmap Right) $ selectSlug slug
 
 selectSlug :: EssaySlug -> Query Database (Maybe Essay)
 selectSlug slug = do
@@ -137,3 +137,4 @@ delete e = do
 makeAcidic ''Database [ 'getAll, 'selectSlugRedirect, 'selectSlug
                       , 'replaceSlug, 'dump
                       , 'Database.insert, 'Database.delete]
+-}

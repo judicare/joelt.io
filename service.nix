@@ -63,6 +63,8 @@ in
 
     systemd.services.jude-web = {
       wantedBy = [ "multi-user.target" ];
+      requires = [ "jude-web-init.service" ];
+      after = [ "jude-web-init.service" ];
       description = "Run the jude-web server";
       environment = {
         PORT = toString cfg.http.port;
@@ -76,11 +78,6 @@ in
         RestartSec = 5;
         StartLimitInterval = "1min";
       };
-
-      preStart = ''
-        mkdir -p -m 0755 ${cfg.stateDir}
-        chown -R ${cfg.user.name} ${cfg.stateDir}
-      '';
 
       script = ''
         cd ${cfg.stateDir}

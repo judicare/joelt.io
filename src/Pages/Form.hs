@@ -14,6 +14,7 @@ import           Data.Maybe
 import qualified Data.Text                   as T
 import           Data.Text.Encoding
 import           Data.Time
+import           Database.Persist
 import           Network.Wai.Parse
 import           Pages.Prelude
 import qualified Text.Blaze.Html5            as H hiding (label)
@@ -37,21 +38,21 @@ essayForm :: Maybe Essay -> Form Text (ReaderT PageEnv IO) Essay
 essayForm mEssay = monadic $ do
     t <- liftIO getCurrentTime
     return $ (\ title content -> Essay
-        (EssayTitle title)
-        (EssaySlug $ mkSlug title)
-        (EssayContent content)
-        (fromMaybe (EssayCreatedAt t) (essayCreatedAt <$> mEssay)))
+        title
+        (mkSlug title)
+        content
+        (fromMaybe t (essayCreatedAt <$> mEssay)))
             <$> "title" .: validateSlug (checkNotNull (text mtitle))
             <*> "content" .: checkNotNull (text mcontent)
     where
-        mtitle = unTitle . essayTitle <$> mEssay
-        mcontent = unContent . essayContent <$> mEssay
+        mtitle = essayTitle <$> mEssay
+        mcontent = essayContent <$> mEssay
         checkNotNull = check "Can't be empty!" (/= mempty)
         validateSlug
             | isJust mEssay = id
             | otherwise = validateM $ \ t -> do
                 let slug = mkSlug t
-                existing <- query $ SelectSlug (EssaySlug slug)
+                existing <- runDB $ getBy (UniqueEssay slug)
                 case existing of
                     Nothing -> return (return t)
                     Just{} -> return $ Error "This title conflicts with an existing title"
@@ -71,5 +72,5 @@ foundationField t r (fmap H.toHtml -> v) _ = H.div H.! A.class_ dclass $ do
     where
         dclass = H.toValue ("form-group" ++ (if not (null (errors r v)) then " error" else "") :: String)
         tagger "password" = H.inputPassword "password"
-        tagger "content" = H.inputTextArea (Just 10) Nothing "content"
-        tagger t' = H.inputText t'
+        tagger "content"  = H.inputTextArea (Just 10) Nothing "content"
+        tagger t'         = H.inputText t'

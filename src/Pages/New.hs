@@ -23,5 +23,5 @@ new = do
                 let form = $(hamletFile "html/_form.hamlet")
                 render $(hamletFile "html/new.hamlet")
             Just e -> do
-                _ <- update $ Insert e
-                return $ redirectTo $ "/r/" <> encodeUtf8 (unSlug (essaySlug e))
+                _ <- runDB $ insert e
+                return $ redirectTo $ "/r/" <> encodeUtf8 (essaySlug e)

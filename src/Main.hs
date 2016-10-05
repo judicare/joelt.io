@@ -6,20 +6,16 @@
 
 module Main where
 
-import           Control.Concurrent
 import           Control.Monad
+import qualified Control.Monad.Logger                      as L
 import           Control.Monad.Reader
 import           Control.Monad.Writer
-import           Data.Acid
-import           Data.Acid.Remote
 import           Data.ByteString                           (ByteString)
-import           Data.FileEmbed
 import           Data.Maybe
-import           Data.Set                                  (fromList)
 import           Data.Text.Encoding
 import           Data.Vault.Lazy
 import           Database
-import           Network
+import           Database.Persist.Postgresql               hiding (In)
 import           Network.HTTP.Types.Status
 import           Network.Wai
 import           Network.Wai.Application.Static
@@ -48,14 +44,6 @@ import           WaiAppStatic.Storage.Embedded
 import           Web.ClientSession
 import           Web.Cookie
 import           Web.Routes
-#ifndef PRODUCTION
-import           Data.Acid.Core                            (MethodState)
-#endif
-
-runDBServer :: AcidState Database -> IO ()
-runDBServer = acidServer
-    (sharedSecretCheck $ fromList [$(embedFile "important-secret")])
-    (UnixSocket "jude-db.sock")
 
 serveStatic :: Application
 serveStatic = staticApp $(mkSettings mkEmbedded)
@@ -65,8 +53,10 @@ main = do
     port <- (fromMaybe 8000 . (>>= readMaybe)) <$> lookupEnv "PORT"
     (vaultKey, middlewares) <- getMiddlewares
 
-    database <- openLocalStateFrom "db" (Database mempty mempty)
-    _ <- forkIO $ runDBServer database
+    database <- L.runStderrLoggingT $ do
+        pool <- createPostgresqlPool "" 10
+        runSqlPool (runMigration migrateAll) pool
+        return pool
 
     run port $ middlewares $ \ req -> do
         let session :: Session IO ByteString ByteString
@@ -114,22 +104,4 @@ main = do
                    . logStdout
 #else
                    . logStdoutDev
-#endif
-
-#ifndef PRODUCTION
-runDB :: (QueryEvent event, MethodState event ~ Database)
-      => event -> IO (EventResult event)
-runDB k = do
-    s <- openLocalStateFrom "db" (Database mempty mempty)
-    m <- query s k
-    closeAcidState s
-    return m
-
-execDB :: (UpdateEvent event, MethodState event ~ Database)
-       => event -> IO (EventResult event)
-execDB k = do
-    s <- openLocalStateFrom "db" (Database mempty mempty)
-    q <- update s k
-    closeAcidState s
-    return q
 #endif

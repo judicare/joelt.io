@@ -14,22 +14,27 @@ import           Pages.Prelude
 import           Text.Blaze.Html
 import qualified Text.Blaze.Html5            as H
 import qualified Text.Blaze.Html5.Attributes as A
-import           Text.Highlighter            hiding (Single)
+import           Text.Highlighter            hiding (Entity, Single)
 import           Text.Markdown
 import           Text.Regex.PCRE.Light
 
-single :: EssaySlug -> Endpoint
+single :: Text -> Endpoint
 single slug = method "GET" $ do
     mu <- get KUser
-    Just er <- query $ SelectSlugRedirect slug
+    er <- runDB $ do
+        redirect <- getBy $ UniqueRedirect slug
+        case redirect of
+            Just (Entity _ (Redirect _ r)) -> return $ Just $ Left r
+            Nothing           -> fmap Right <$> getBy (UniqueEssay slug)
     case er of
-        Left (EssaySlug sl) -> return $ redirectTo $ "/r/" <> encodeUtf8 sl
-        Right e -> respDefaultLayout $ do
-            setTitle $ unTitle $ essayTitle e
+        Nothing -> return $ responseLBS notFound404 [] "Not found"
+        Just (Left sl) -> return $ redirectTo $ "/r/" <> encodeUtf8 sl
+        Just (Right (Entity _ e)) -> respDefaultLayout $ do
+            setTitle $ essayTitle e
             render $(hamletFile "html/single.hamlet")
 
-renderMd :: EssayContent -> Html
-renderMd (EssayContent m) = markdown defWithHighlight (fromStrict m) where
+renderMd :: Text -> Html
+renderMd m = markdown defWithHighlight (fromStrict m) where
     defWithHighlight = def { msBlockCodeRenderer = rendered }
     pickLexer cod = fromMaybe textLexer $ lookup (maybe "text" unpack cod) fixedLexers
     fixedLexers = map (\ (_,x) -> (head (lAliases x), x)) lexers
