@@ -1,5 +1,5 @@
 { lib, haskell, buildBowerComponents, callPackage, writeTextDir, nodePackages, sass
-, compiler ? "ghc801" }:
+, compiler ? "ghc801", secret ? "fake secret" }:
 
 let
   bowerPkgs = buildBowerComponents {
@@ -25,6 +25,9 @@ let
     isLibrary = false;
     preBuild = ''
       ln -sfv ${bowerPkgs}/bower_components .
+      if [ ! -f important-secret ]; then
+        ln -sfv ${writeTextDir "important-secret" secret}/* .
+      fi
     '';
     shellHook = preBuild;
   });
