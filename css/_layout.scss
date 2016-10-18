@@ -1,3 +1,7 @@
+@function static($path) {
+  @return url("#{$static_prefix}#{$path}");
+}
+
 body {
   background: #eee;
 
@@ -67,15 +71,15 @@ body {
             }
 
             &#github {
-              background-image: url(/s/img/github.png);
+              background-image: static("img/github.png");
             }
 
             &#linkedin {
-              background-image: url(/s/img/linkedin.png);
+              background-image: static("img/linkedin.png");
             }
 
             &#new-post {
-              background-image: url(/s/img/newpost.png);
+              background-image: static("img/newpost.png");
             }
           }
         }
@@ -83,7 +87,7 @@ body {
         #head {
           background-position: center left;
           background-repeat: no-repeat;
-          background-image: url(/s/img/otter.png);
+          background-image: static("img/otter.png");
           background-size: 48px 37px;
           width: 48px;
           height: 48px;
@@ -144,20 +148,20 @@ footer {
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body .row .speech header {
     #head {
-      background-image: url(/s/img/otter@2x.png);
+      background-image: static("img/otter@2x.png");
     }
 
     #dots .dot {
       &#github {
-        background-image: url(/s/img/github@2x.png);
+        background-image: static("img/github@2x.png");
       }
 
       &#linkedin {
-        background-image: url(/s/img/linkedin@2x.png);
+        background-image: static("img/linkedin@2x.png");
       }
 
       &#new-post {
-        background-image: url(/s/img/newpost@2x.png);
+        background-image: static("img/newpost@2x.png");
       }
     }
   }

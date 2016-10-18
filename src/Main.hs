@@ -79,6 +79,7 @@ main = do
                                 (R slug) -> single slug
                                 (E slug) -> edit slug
                                 (D slug) -> Pages.Delete.delete slug
+                                S{}      -> error "unreachable"
 
                     (resp =<<) $ case Prelude.lookup (requestMethod req) responses of
                         Just f -> runReaderT f $ PageEnv database session req

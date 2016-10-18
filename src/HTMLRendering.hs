@@ -8,7 +8,7 @@ module HTMLRendering where
 import Control.Monad.Writer
 import Data.ByteString.Lazy          (ByteString)
 import Data.Maybe
-import Data.Text                     (Text)
+import Data.Text                     (Text, pack)
 import Text.Blaze.Html.Renderer.Utf8
 import Text.Hamlet
 import URLs
@@ -48,7 +48,8 @@ htmlRender :: ((SiteMap -> t -> Text) -> Html) -> ByteString
 htmlRender x = renderHtml $ x myUrlRenderer
 
 myUrlRenderer :: SiteMap -> t -> Text
-myUrlRenderer uri _ = toPathInfo uri
+myUrlRenderer (S p) _ = staticPrefix <> pack p
+myUrlRenderer uri _   = toPathInfo uri
 
 -- | Render a page with the default layout
 defaultLayout :: PageWriter -> ByteString
@@ -61,14 +62,14 @@ defaultLayout ham = htmlRender [hamlet|
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <link rel="shortcut icon" href="/s/favicon.ico">
+        <link rel="shortcut icon" href=@{S "favicon.ico"}>
 
         <title>jude.bio
           $maybe t <- getLast pageTitle
             \ » #{t}
 
         $forall Stylesheet s <- pageStylesheets
-          <link rel="stylesheet" href="/s/#{s}" type="text/css">
+          <link rel="stylesheet" href=@{S s} type="text/css">
 
         \<!--[if lt IE 9]>
         \<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -89,7 +90,7 @@ defaultLayout ham = htmlRender [hamlet|
             <footer>
               Talk to me: <a href="mailto:me@jude.bio">me@jude.bio</a>.
 
-        <script src="/s/js/all.js">
+        <script src=@{S "js/all.js"}>
     |]
     where
         Page{..} = execWriter $ do
