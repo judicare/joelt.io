@@ -29,6 +29,7 @@ let
         ln -sfv ${writeTextDir "important-secret" secret}/* .
       fi
     '';
+    version = "${drv.version}-${lib.substring 0 7 (lib.commitIdFromGitRepo ./.git)}";
     shellHook = preBuild;
   });
 
