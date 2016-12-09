@@ -1,1 +1,1 @@
-{ compiler ? "ghc801" }: (import <nixpkgs> {}).callPackage ./. { inherit compiler; }
+../try-reflex/shell.nix

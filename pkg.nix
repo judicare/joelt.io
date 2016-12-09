@@ -1,13 +1,6 @@
-{ mkDerivation, base, base64-bytestring, blaze-html, blaze-markup
-, bytestring, cereal, clientsession, containers, cookie, cryptohash
-, digestive-functors, digestive-functors-blaze, directory
-, file-embed, haskeline, highlighter, http-types, markdown
-, mime-types, monad-control, monad-logger, mtl, network, pcre-light
-, persistent, persistent-postgresql, persistent-template
-, process-extras, pwstore-fast, resource-pool, shakespeare, stdenv
-, template-haskell, text, time, transformers, utf8-string, vault
-, wai, wai-app-static, wai-extra, wai-session
-, wai-session-clientsession, warp, web-routes, web-routes-th
+{ mkDerivation, aeson, base, markdown, monad-logger, mtl
+, persistent, persistent-postgresql, persistent-template, servant
+, servant-server, stdenv, text, time, wai-websockets, warp
 }:
 mkDerivation {
   pname = "jude-web";
@@ -16,15 +9,9 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    base base64-bytestring blaze-html blaze-markup bytestring cereal
-    clientsession containers cookie cryptohash digestive-functors
-    digestive-functors-blaze directory file-embed haskeline highlighter
-    http-types markdown mime-types monad-control monad-logger mtl
-    network pcre-light persistent persistent-postgresql
-    persistent-template process-extras pwstore-fast resource-pool
-    shakespeare template-haskell text time transformers utf8-string
-    vault wai wai-app-static wai-extra wai-session
-    wai-session-clientsession warp web-routes web-routes-th
+    aeson base markdown monad-logger mtl persistent
+    persistent-postgresql persistent-template servant servant-server
+    text time wai-websockets warp
   ];
   license = stdenv.lib.licenses.mit;
 }

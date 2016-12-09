@@ -10,14 +10,16 @@ let
 
   nodePkgs = callPackage ./generated/node-composition.nix {};
 
-  pkg = haskell.packages."${compiler}".callPackage ./pkg.nix {};
+  packages = haskell.packages."${compiler}";
+
+  pkg = packages.callPackage ./pkg.nix {};
 
   inShell = lib.inNixShell;
 
   releasePkg = haskell.lib.overrideCabal pkg (drv: rec {
     buildTools = (drv.buildTools or [])
       ++ [ sass nodePkgs.cssnano-cli ]
-      ++ lib.optional inShell nodePackages.bower;
+      ++ lib.optionals inShell [ nodePackages.bower packages.cabal-install packages.haddocset ];
     doHaddock = false;
     configureFlags = [ "-fproduction" ];
     enableSharedExecutables = false;

@@ -1,108 +1,60 @@
-{-# LANGUAGE CPP               #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE TemplateHaskell   #-}
 
 module Main where
 
-import           Control.Monad
-import qualified Control.Monad.Logger                      as L
-import           Control.Monad.Reader
-import           Control.Monad.Writer
-import           Data.ByteString                           (ByteString)
-import           Data.Maybe
-import           Data.Text.Encoding
-import           Data.Vault.Lazy
-import           Database
-import           Database.Persist.Postgresql               hiding (In)
-import           Network.HTTP.Types.Status
-import           Network.Wai
-import           Network.Wai.Application.Static
-import           Network.Wai.Handler.Warp
-import           Network.Wai.Middleware.Approot
-import           Network.Wai.Middleware.Gzip
-import           Network.Wai.Middleware.MethodOverridePost
-import           Network.Wai.Middleware.RequestLogger
-import           Network.Wai.Session
-import           Network.Wai.Session.ClientSession
-import           Pages.Delete
-import           Pages.Edit
-import           Pages.Home
-import           Pages.Login
-import           Pages.New
-import           Pages.Prelude                             (PageEnv (..),
-                                                            method)
-import           Pages.Single
-import           Prelude                                   hiding (lookup)
-import qualified Prelude
-import           StaticFiles
-import           System.Environment
-import           Text.Read                                 hiding (lift)
-import           URLs
-import           WaiAppStatic.Storage.Embedded
-import           Web.ClientSession
-import           Web.Cookie
-import           Web.Routes
-
-serveStatic :: Application
-serveStatic = staticApp $(mkSettings mkEmbedded)
+import API
+import Control.Monad.IO.Class
+import Control.Monad.Logger           (runStderrLoggingT)
+import Control.Monad.Reader
+import Data.Aeson                     (decode, encode)
+import Data.Text                      (Text)
+import Database
+import Database.Persist
+import Database.Persist.Postgresql
+import Network.HTTP.Types             (status400)
+import Network.Wai
+import Network.Wai.Handler.Warp       (run)
+import Network.Wai.Handler.WebSockets
+import Network.WebSockets
+import Servant
 
 main :: IO ()
 main = do
-    port <- (fromMaybe 8000 . (>>= readMaybe)) <$> lookupEnv "PORT"
-    (vaultKey, middlewares) <- getMiddlewares
-
-    database <- L.runStderrLoggingT $ do
+    db <- runStderrLoggingT $ do
         pool <- createPostgresqlPool "" 10
         runSqlPool (runMigration migrateAll) pool
         return pool
 
-    run port $ middlewares $ \ req -> do
-        let session :: Session IO ByteString ByteString
-            Just session = lookup vaultKey (vault req)
-            path' = decodePathInfo (rawPathInfo req)
-
-        canonPath path' req $ \ resp ->
-            let path = if null path' then [""] else path' in
-            case path of
-                ("s":_) -> serveStatic req resp
-                _ -> do
-                    let responses = execWriter $ case parseSegments fromPathSegments path of
-                            Left _      -> method (requestMethod req) $ return $ responseLBS notFound404 [] "Not found"
-
-                            Right x     -> case x of
-                                Home     -> home
-                                In       -> login
-                                Out      -> logout
-                                N        -> new
-                                (R slug) -> single slug
-                                (E slug) -> edit slug
-                                (D slug) -> Pages.Delete.delete slug
-                                S{}      -> error "unreachable"
-
-                    (resp =<<) $ case Prelude.lookup (requestMethod req) responses of
-                        Just f -> runReaderT f $ PageEnv database session req
-                        Nothing -> return $ responseLBS methodNotAllowed405 [] "Not allowed"
+    run 3000 $ websocketsOr defaultConnectionOptions (wsApp db) backupApp
     where
-        canonPath ps req f
-            | mempty `notElem` ps = f
-            | otherwise = \ resp -> resp
-                $ responseLBS movedPermanently301
-                    [("Location", fromMaybe "" (getApprootMay req)
-                               <> encodeUtf8 (encodePathInfo (filter (/= mempty) ps) [])
-                               <> rawQueryString req)] ""
-        getMiddlewares = do
-            ef <- envFallback
-            skey <- newKey
-            k <- getDefaultKey
-            return . (,) skey $
-                     methodOverridePost
-                   . ef
-                   . gzip def
-                   . withSession (clientsessionStore k) "_SESSION" (def { setCookiePath = Just "/" }) skey
-#ifdef PRODUCTION
-                   . logStdout
-#else
-                   . logStdoutDev
-#endif
+        wsApp pool pc = do
+            conn <- acceptRequest pc
+            fix $ \ f -> do
+                bs <- receiveData conn
+                print bs
+                let Just val = decode bs
+                res <- runReaderT (respondTo val) pool
+                sendBinaryData conn $ encode res
+                f
+        backupApp _ = ($ responseLBS status400 [] "Not allowed")
+
+respondTo (RHome n) = do
+    page <- runDB $ paginate n 5
+    return $ HomeR $ (\ (Entity _ p) -> Preview (postTitle p) (postSlug p)) <$> page
+
+respondTo (RSingle t) = do
+    Just (Entity _ post) <- runDB $ getBy $ UniquePost t
+    return $ SingleR post
+
+runDB m = liftIO . runSqlPersistMPool m =<< ask
+
+paginate page limit = do
+    xs <- selectList [] [ Desc PostCreatedAt
+                        , OffsetBy (fromIntegral (page - 1) * limit)
+                        , LimitTo (fromIntegral limit + 1)]
+    let nextPage = if length xs > limit then Just (page + 1) else Nothing
+        prevPage = if page == 1 then Nothing else Just (page - 1)
+        previews = take limit xs
+    return $ Page prevPage nextPage previews
