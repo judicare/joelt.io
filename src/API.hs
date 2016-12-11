@@ -7,6 +7,7 @@
 module API where
 
 import           API.TH
+import           Control.Lens.TH
 import           Control.Monad       (guard)
 import           Data.Aeson
 import           Data.Aeson.TH
@@ -14,13 +15,19 @@ import qualified Data.HashMap.Strict as H
 import           Data.Text
 import           Database
 
-data Response = HomeR (Page Preview)
-              | SingleR Post
-              | NothingR
+data Response = PageR ResponsePage
+              | AuthR (Maybe Text)
               deriving Show
+
+data ResponsePage = HomeR (Page Preview)
+                  | SingleR Post
+                  | NewR
+                  deriving Show
 
 data Request = RHome Integer
              | RSingle Text
+             | RNew
+             | RAuthenticated
              deriving Show
 
 data Preview = Preview
@@ -42,3 +49,8 @@ deriveJSON jsonOptions ''Page
 deriveJSON jsonOptions ''Post
 deriveJSON jsonOptions ''Request
 deriveJSON jsonOptions ''Response
+deriveJSON jsonOptions ''ResponsePage
+
+makePrisms ''Request
+makePrisms ''Response
+makePrisms ''ResponsePage

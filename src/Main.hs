@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 module Main where
 
@@ -15,10 +16,13 @@ import Database.Persist
 import Database.Persist.Postgresql
 import Network.HTTP.Types             (status400)
 import Network.Wai
+import Network.Wai.Application.Static
 import Network.Wai.Handler.Warp       (run)
 import Network.Wai.Handler.WebSockets
 import Network.WebSockets
 import Servant
+import StaticFiles
+import WaiAppStatic.Storage.Embedded
 
 main :: IO ()
 main = do
@@ -38,15 +42,19 @@ main = do
                 res <- runReaderT (respondTo val) pool
                 sendBinaryData conn $ encode res
                 f
-        backupApp _ = ($ responseLBS status400 [] "Not allowed")
+        backupApp = staticApp $(mkSettings mkEmbedded)
 
 respondTo (RHome n) = do
     page <- runDB $ paginate n 5
-    return $ HomeR $ (\ (Entity _ p) -> Preview (postTitle p) (postSlug p)) <$> page
+    return $ PageR $ HomeR $ (\ (Entity _ p) -> Preview (postTitle p) (postSlug p)) <$> page
 
 respondTo (RSingle t) = do
     Just (Entity _ post) <- runDB $ getBy $ UniquePost t
-    return $ SingleR post
+    return $ PageR $ SingleR post
+
+respondTo RNew = return $ PageR NewR
+
+respondTo RAuthenticated = return $ AuthR $ Just "foobar"
 
 runDB m = liftIO . runSqlPersistMPool m =<< ask
 

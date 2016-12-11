@@ -24,7 +24,9 @@ executable jude-web
   main-is:             Main.hs
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base, aeson, http-types, markdown, monad-logger, mtl, persistent, persistent-postgresql, persistent-template, servant, servant-server, text, time, wai, wai-websockets, warp, websockets, unordered-containers
+  build-depends:       base, aeson, base64-bytestring, bytestring, cryptonite, file-embed,
+    http-types, lens, markdown, mime-types, monad-logger, mtl, persistent, persistent-postgresql,
+    persistent-template, process-extras, servant, servant-server, text, time, wai, wai-app-static, wai-websockets, warp, websockets, unordered-containers
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -threaded -with-rtsopts=-T
@@ -35,19 +37,3 @@ executable jude-web
     build-depends:     process-extras
   else
     ghc-options:       -Wall -O0
-
-  if impl(ghcjs)
-    buildable: False
-  else
-    buildable: True
-
-executable frontend
-  main-is:             Frontend.hs
-  hs-source-dirs:      src
-  build-depends:       base, aeson, bytestring, markdown, reflex-dom, persistent, persistent-template, text, time, unordered-containers
-  default-language:    Haskell2010
-
-  if impl(ghcjs)
-    buildable: True
-  else
-    buildable: False
