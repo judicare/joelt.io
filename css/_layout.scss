@@ -99,6 +99,10 @@ body {
           &:hover {
             opacity: 1;
           }
+
+          &.loading {
+            background-image: static("img/loading.gif");
+          }
         }
 
         .arrow {
@@ -149,6 +153,10 @@ footer {
   body .row .speech header {
     #head {
       background-image: static("img/otter@2x.png");
+
+      &.loading {
+        background-image: static("img/loading@2x.gif");
+      }
     }
 
     #dots .dot {

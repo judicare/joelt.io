@@ -26,6 +26,8 @@ mkEmbedded = do
            , toEmbedded "img/newpost.png"     $(embedFile "img/newpost.png")
            , toEmbedded "img/otter@2x.png"    $(embedFile "img/otter@2x.png")
            , toEmbedded "img/otter.png"       $(embedFile "img/otter.png")
+           , toEmbedded "img/loading@2x.gif"  $(embedFile "img/loading@2x.gif")
+           , toEmbedded "img/loading.gif"     $(embedFile "img/loading.gif")
 
            , toEmbedded "fonts/fontawesome-webfont.woff2"
                $(embedFile "bower_components/font-awesome/fonts/fontawesome-webfont.woff2")

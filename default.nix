@@ -1,5 +1,5 @@
 { lib, haskell, buildBowerComponents, callPackage, writeTextDir, nodePackages, sass
-, compiler ? "ghc801", secret ? "fake secret" }:
+, compiler ? "ghc801", password ? "fake secret" }:
 
 let
   bowerPkgs = buildBowerComponents {
@@ -26,10 +26,8 @@ let
     enableSharedLibraries = false;
     isLibrary = false;
     preBuild = ''
+      export PASSWORD=${builtins.toJSON password}
       ln -sfv ${bowerPkgs}/bower_components .
-      if [ ! -f important-secret ]; then
-        ln -sfv ${writeTextDir "important-secret" secret}/* .
-      fi
     '';
     version = "${drv.version}-${lib.substring 0 7 (lib.commitIdFromGitRepo ./.git)}";
     shellHook = preBuild;

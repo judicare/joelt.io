@@ -4,12 +4,10 @@
 module StaticFiles.Delegated where
 
 import           Crypto.Hash                    (Digest, MD5, hashlazy)
-import qualified Data.ByteString.Base64         as B64
 import           Data.ByteString.Lazy
 import qualified Data.ByteString.Lazy           as BL
 import           Data.Monoid
 import qualified Data.Text                      as T
-import qualified Data.Text.Encoding             as T
 import qualified Data.Text.Lazy                 as LT
 import           Data.Text.Lazy.Encoding
 import           Prelude                        hiding (readFile)
@@ -25,7 +23,7 @@ fetchCss = do
         ExitSuccess   -> return $ etag stdout
         ExitFailure _ -> die $ LT.unpack $ decodeUtf8 stderr
     where
-        staticPrefix = "/s/"
+        staticPrefix = "/"
         args = [ "--scss"
                , "-Icss"
                , "-Ibower_components/foundation-sites/scss"

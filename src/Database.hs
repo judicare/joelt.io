@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
@@ -9,16 +10,15 @@ module Database where
 
 import Data.Text           (Text)
 import Data.Time           (UTCTime)
-import Database.Persist
 import Database.Persist.TH
-import Text.Markdown       (Markdown)
+import GHC.Generics        (Generic)
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Post
+Essay
     title Text
     slug Text
     content Text
     createdAt UTCTime
-    UniquePost slug
-    deriving Show
+    UniqueEssay slug
+    deriving Show Generic
 |]
