@@ -1,0 +1,37 @@
+diff --git a/default.nix b/default.nix
+index 37e071b..e4e6339 100644
+--- a/default.nix
++++ b/default.nix
+@@ -8,12 +8,6 @@ let nixpkgs = nixpkgsFunc ({
+       config = {
+         allowUnfree = true;
+         allowBroken = true; # GHCJS is marked broken in 011c149ed5e5a336c3039f0b9d4303020cff1d86
+-        packageOverrides = pkgs: rec {
+-          mercurial = pkgs.mercurial.override {
+-            hg-git = "";
+-            dulwich = "";
+-          };
+-        };
+       } // (if config == null then {} else config);
+     } // (
+       if system == null then {} else { inherit system; }
+@@ -307,7 +315,9 @@ in let this = rec {
+   ghc7_8 = overrideForGhc7_8 (extendHaskellPackages nixpkgs.pkgs.haskell.packages.ghc784);
+   stage2Script = nixpkgs.runCommand "stage2.nix" {
+     buildCommand = ''
+-      ${nixpkgs.path}/pkgs/development/compilers/ghcjs/gen-stage2.rb "${sources.ghcjs-boot}" >"$out"
++      cp ${nixpkgs.path}/pkgs/development/compilers/ghcjs/gen-stage2.rb .
++      patchShebangs .
++      ./gen-stage2.rb "${sources.ghcjs-boot}" >"$out"
+     '';
+     buildInputs = with nixpkgs; [
+       ruby cabal2nix
+@@ -329,7 +323,7 @@ in let this = rec {
+       '';
+     };
+   };
+-  ghcjsCompiler = (overrideCabal (ghc.callPackage "${nixpkgs.path}/pkgs/development/compilers/ghcjs" {
++  ghcjsCompiler = (overrideCabal (ghc.callPackage "${nixpkgs.path}/pkgs/development/compilers/ghcjs/base.nix" {
+     bootPkgs = ghc;
+     ghcjsBootSrc = sources.ghcjs-boot;
+     shims = sources.shims;
