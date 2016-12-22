@@ -11,12 +11,12 @@ let
     sha256 = "0j71p477xnv0i2b2qd7n0jggqwl8mqaq8fn7pjl9rl89p12kxi6g";
   };
 
-  reflex = pkgs.runCommand "reflex" {} ''
+  reflex = pkgs.runCommand "reflex" {} (''
     mkdir -p $out
     cp -R ${reflex-unpatched}/* $out/
     cd $out
-    patch -p1 < ${./eval.patch}
-  '';
+    patch -p1 < ${./support/eval.patch}
+  '');
 
   inherit (nixpkgs) pkgs;
 
@@ -25,7 +25,8 @@ let
     else pkgs.haskell.packages."${compiler}";
 
   reflex-platform = pkgs.callPackage reflex {
-    nixpkgsFunc = import <nixpkgs>;
+    nixpkgsFunc = import nixpkgs.pkgs.path;
+    # inherit config;
   };
 
   inherit (pkgs) lib;
@@ -37,8 +38,8 @@ let
   filterHsSource = builtins.filterSource (path: type: !(
     baseNameOf path == ".git" ||
     baseNameOf path == "dist" ||
-    baseNameOf path == "bower_components")
-  );
+    baseNameOf path == "bower_components"
+  ));
 
   nodePkgs = pkgs.callPackage ./backend/generated/node-composition.nix {};
 
@@ -72,7 +73,7 @@ let
       ln -sfv ${backendSrc}/src backend-src
     '';
     postInstall = ''
-      cp ${./index.override.html} $out/bin/frontend.jsexe/index.override.html;
+      cp ${./support/index.override.html} $out/bin/frontend.jsexe/index.override.html;
     '';
     version = "${drv.version}-${versionTag}";
   });

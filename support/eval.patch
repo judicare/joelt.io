@@ -20,7 +20,7 @@ index 37e071b..e4e6339 100644
    stage2Script = nixpkgs.runCommand "stage2.nix" {
      buildCommand = ''
 -      ${nixpkgs.path}/pkgs/development/compilers/ghcjs/gen-stage2.rb "${sources.ghcjs-boot}" >"$out"
-+      cp ${nixpkgs.path}/pkgs/development/compilers/ghcjs/gen-stage2.rb .
++      cp ${builtins.toPath "${nixpkgs.path}/pkgs/development/compilers/ghcjs/gen-stage2.rb"} .
 +      patchShebangs .
 +      ./gen-stage2.rb "${sources.ghcjs-boot}" >"$out"
      '';
