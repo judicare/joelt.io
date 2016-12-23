@@ -32,6 +32,12 @@ let
   inherit (pkgs) lib;
   inherit (lib) inNixShell;
 
+  closureZip = pkgs.fetchzip {
+    url = "http://dl.google.com/closure-compiler/compiler-20161201.tar.gz";
+    sha256 = "1rnjvc7myz45gngpwxcfqksry76g63xqdj1bil23ccb4sc38zk74";
+    stripRoot = false;
+  };
+
   backendSrc = filterHsSource ./backend;
   frontendSrc = filterHsSource ./frontend;
 
@@ -72,8 +78,15 @@ let
       rm -f backend-src
       ln -sfv ${backendSrc}/src backend-src
     '';
+    buildTools = (drv.buildTools or []) ++ [ pkgs.openjdk ];
     postInstall = ''
       cp ${./support/index.override.html} $out/bin/frontend.jsexe/index.override.html;
+      cd $out/bin/frontend.jsexe
+      for file in $(find . -name '*.js'); do
+        echo >&2 "Minifying $file"
+        cat "$file" | java -jar ${closureZip}/closure-compiler-v20161201.jar > "$file.tmp"
+        mv "$file.tmp" "$file"
+      done
     '';
     version = "${drv.version}-${versionTag}";
   });

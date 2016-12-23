@@ -117,8 +117,10 @@ main = mainWidgetWithHead' (wHead, \ () -> do
         wHead titleDyn = do
             elAttr "link" ("rel" =: "stylesheet"
                         <> "href" =: "https://static.jude.bio/css/all.css")
-                $ text ""
+                $ return ()
             elAttr "link" ("rel" =: "shortcut icon" <> "href" =: "https://static.jude.bio/favicon.ico")
+                $ return ()
+            elAttr "meta" ("name" =: "viewport" <> "content" =: "width=device-width,initial-scale=1")
                 $ return ()
             el "title" $ dynText $ ffor titleDyn $ maybe "jude.bio" ("jude.bio » " <>)
 
