@@ -4,19 +4,19 @@
 }:
 
 let
-  reflex-unpatched = pkgs.fetchgit {
+  reflex = pkgs.fetchgit {
     url = "https://github.com/reflex-frp/reflex-platform";
-    rev = "0398516c2d3dab9c214fc41c2ad5a2d9a940a716";
+    rev = "cb37f01ff479306b60544a6af6f6f6e7cf3746e6";
     fetchSubmodules = true;
-    sha256 = "0j71p477xnv0i2b2qd7n0jggqwl8mqaq8fn7pjl9rl89p12kxi6g";
+    sha256 = "1gkpifiywi1adad9d6v7a178zhs8slq6gq2sqryqnisc93glvww2";
   };
 
-  reflex = pkgs.runCommand "reflex" {} (''
-    mkdir -p $out
-    cp -R ${reflex-unpatched}/* $out/
-    cd $out
-    patch -p1 < ${./support/eval.patch}
-  '');
+  # reflex = pkgs.runCommand "reflex" {} (''
+  #   mkdir -p $out
+  #   cp -R ${reflex-unpatched}/* $out/
+  #   cd $out
+  #   patch -p1 < ${./support/eval.patch}
+  # '');
 
   inherit (nixpkgs) pkgs;
 
@@ -51,11 +51,17 @@ let
 
   bowerPkgs = pkgs.buildBowerComponents {
     name = "jude.bio";
-    src = pkgs.writeTextDir "bower.json" (builtins.readFile "${backendSrc}/bower.json");
-    generated = "${backendSrc}/generated/bower.nix";
+    src = pkgs.writeTextDir "bower.json" (builtins.readFile ./backend/bower.json);
+    generated = ./backend/generated/bower.nix;
   };
 
-  backendBase = haskellPackages.callPackage (reflex-platform.cabal2nixResult backendSrc) {};
+  backendBase = haskellPackages.callPackage (
+    pkgs.stdenv.lib.overrideDerivation (reflex-platform.cabal2nixResult backendSrc) (drv: {
+      buildCommand = ''
+        cabal2nix file://"${backendSrc}" -fproduction >"$out"
+      '';
+    })
+  ) {};
   frontendBase = reflex-platform.ghcjs.callPackage (reflex-platform.cabal2nixResult frontendSrc) {};
 
   versionTag = lib.substring 0 7 (lib.commitIdFromGitRepo ./.git);

@@ -21,10 +21,9 @@ renderMd m = markdown defWithHighlight (fromStrict m) where
     pickLexer cod = fromMaybe textLexer $ lookup (maybe "text" unpack cod) fixedLexers
     fixedLexers = map (\ (_,x) -> (head (lAliases x), x)) lexers
     textLexer = Lexer "text" [] [] [] [Match ".*" Text Continue] [dotall]
-    renderer l (tx,_) = [Token Text (encodeUtf8 tx)]
-    -- renderer l (tx,_) = case runLexer (pickLexer l) (encodeUtf8 tx) of
-    --     Left es -> [Token Text $ encodeUtf8 $ "parse error: " <> pack (show es)]
-    --     Right ts -> ts
+    renderer l (tx,_) = case runLexer (pickLexer l) (encodeUtf8 tx) of
+        Left es -> [Token Text $ encodeUtf8 $ "parse error: " <> pack (show es)]
+        Right ts -> ts
     rendered ah bh = H.figure . decentFormat $ renderer ah bh
     decentFormat ts = H.table H.! A.class_ "highlight-table" $ H.tr $ do
         H.td H.! A.class_ "linenos" $

@@ -10,31 +10,27 @@
 
 module Main where
 
-import           API
-import           Control.Lens                  (preview, (^?))
-import           Control.Lens.Prism
-import           Control.Monad
-import           Control.Monad.Trans
-import           Data.Maybe
-import           Data.Monoid
-import           Data.Serialize                (decode, encode)
-import           Data.Text                     (Text, pack)
-import qualified Data.Text.Lazy                as LT
-import           Data.Text.Read                (decimal)
-import           Database
-import           GHCJS.DOM                     (currentWindow)
-import           GHCJS.DOM.Document
-import           GHCJS.DOM.Element
-import           GHCJS.DOM.Node
-import           GHCJS.DOM.Storage
-import           GHCJS.DOM.Window              (getLocalStorage)
-import           Reflex.Dom
-import           RenderMD
-import           Router
-import           Text.Blaze.Html.Renderer.Text (renderHtml)
-import           Text.Markdown
-import           Text.Parsec
-import           Web.Routes.PathInfo
+import API
+import Control.Lens        (preview, (^?))
+import Control.Lens.Prism
+import Control.Monad
+import Control.Monad.Trans
+import Data.Maybe
+import Data.Monoid
+import Data.Serialize      (decode, encode)
+import Data.Text           (Text, pack)
+import Data.Text.Read      (decimal)
+import Database
+import GHCJS.DOM           (currentWindow)
+import GHCJS.DOM.Document
+import GHCJS.DOM.Element
+import GHCJS.DOM.Node
+import GHCJS.DOM.Storage
+import GHCJS.DOM.Window    (getLocalStorage)
+import Reflex.Dom
+import Router
+import Text.Parsec
+import Web.Routes.PathInfo
 
 instance PathInfo API.Request where
     toPathSegments RHome       = []
@@ -188,7 +184,7 @@ page authDyn (SingleR post) = elClass "article" "bubble blog-post" $ do
     par <- lift askParent
     Just doc <- getOwnerDocument par
     Just e <- createElement doc (Just "div" :: Maybe Text)
-    setInnerHTML e $ Just $ LT.toStrict $ renderHtml $ renderMd $ essayContent post
+    setInnerHTML e $ Just $ essayContent post
     placeRawElement e
     return never
 
