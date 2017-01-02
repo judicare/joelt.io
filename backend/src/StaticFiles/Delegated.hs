@@ -23,15 +23,16 @@ fetchCss = do
         ExitSuccess   -> return $ etag stdout
         ExitFailure _ -> die $ LT.unpack $ decodeUtf8 stderr
     where
-        staticPrefix = "/"
         args = [ "--scss"
                , "-Icss"
                , "-Ibower_components/foundation-sites/scss"
                , "-Ibower_components/font-awesome/scss"
                ]
 #ifdef PRODUCTION
+        staticPrefix = "/"
         extraArgs = ["--style", "compact"]
 #else
+        staticPrefix = "/s/"
         extraArgs = []
 #endif
 

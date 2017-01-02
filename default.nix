@@ -4,19 +4,18 @@
 }:
 
 let
-  reflex = pkgs.fetchgit {
+  reflex-unpatched = pkgs.fetchgit {
     url = "https://github.com/reflex-frp/reflex-platform";
     rev = "cb37f01ff479306b60544a6af6f6f6e7cf3746e6";
     fetchSubmodules = true;
     sha256 = "1gkpifiywi1adad9d6v7a178zhs8slq6gq2sqryqnisc93glvww2";
   };
 
-  # reflex = pkgs.runCommand "reflex" {} (''
-  #   mkdir -p $out
-  #   cp -R ${reflex-unpatched}/* $out/
-  #   cd $out
-  #   patch -p1 < ${./support/eval.patch}
-  # '');
+  reflex = pkgs.runCommand "reflex" {} ''
+    mkdir -p $out
+    cp -R ${reflex-unpatched}/* $out
+    sed -i '/doHaddock/d' "$out/default.nix"
+  '';
 
   inherit (nixpkgs) pkgs;
 
@@ -62,7 +61,16 @@ let
       '';
     })
   ) {};
-  frontendBase = reflex-platform.ghcjs.callPackage (reflex-platform.cabal2nixResult frontendSrc) {};
+  frontendBase = with pkgs.haskell.lib; (reflex-platform.ghcjs.override {
+    overrides = self: super: {
+      text = overrideCabal super.text (drv: {
+        prePatch = ''
+          # haddock parse error
+          sed -i '9d' Data/JSString/Text.hs
+        '';
+      });
+    };
+  }).callPackage (reflex-platform.cabal2nixResult frontendSrc) {};
 
   versionTag = lib.substring 0 7 (lib.commitIdFromGitRepo ./.git);
 

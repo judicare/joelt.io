@@ -1,25 +1,27 @@
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs             #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell     #-}
 
 module Main where
 
 import API
 import Control.Lens
+import Control.Monad.Catch            (catch)
 import Control.Monad.IO.Class
 import Control.Monad.Logger           (runStderrLoggingT)
 import Control.Monad.Reader
-import Control.Monad.RWS
+import Control.Monad.RWS              hiding (listen)
 import Crypto.Cipher.AES              (AES256)
 import Crypto.Cipher.Types
 import Crypto.Error
 import Crypto.PasswordStore
 import Data.ByteArray.Encoding
 import Data.ByteString                (ByteString)
-import Data.Pool                      (Pool)
+import Data.Map                       (fromList)
 import Data.Serialize                 (decode, encode)
 import Data.Text.Encoding
 import Data.Text.Lazy                 (toStrict)
@@ -34,11 +36,8 @@ import Network.WebSockets
 import RenderMD
 import StaticFiles
 import Text.Blaze.Html.Renderer.Text  (renderHtml)
+import Text.Digestive                 (viewErrors)
 import WaiAppStatic.Storage.Embedded
-
-data Client a = Client
-              { pool     :: Pool a
-              } deriving Show
 
 data ClientState = ClientState
                  { _authed :: Bool }
@@ -57,13 +56,13 @@ main = do
     where
         wsApp pool pc = do
             conn <- acceptRequest pc
-            eval Client { pool } (ClientState False) $ fix $ \ f -> do
+            eval Client { pool } (ClientState False) $ fix (\ f -> do
                 bs <- liftIO $ receiveData conn
-                let Right val = decode bs
+                let val = either (error . show) id $ decode bs
                 res <- respondTo val
-                forM_ res $ \ r ->
-                    liftIO $ sendBinaryData conn $ encode r
-                f
+                forM_ res $ \ r -> liftIO $ sendBinaryData conn $ encode r
+                f) `catch` \ (c :: ConnectionException) ->
+                    liftIO $ putStrLn $ "Closing connection: " ++ show c
         backupApp = staticApp $(mkSettings mkEmbedded)
         eval r s m = do
             (_, ()) <- evalRWST m r s
@@ -81,10 +80,27 @@ respondTo (RSingle t) = do
     Just (Entity _ post) <- runDB $ getBy $ UniqueEssay t
     return [PageR $ SingleR (post { essayContent = toStrict $ renderHtml $ renderMd (essayContent post) })]
 
-respondTo (RCreate t s) = return [PageR $ NewR
-    $ Just (FieldResult t (Just "Not a good title"), FieldResult s Nothing)]
+respondTo (RNew fdata) = withAuth $ case fdata of
+    Nothing -> return [PageR $ NewR Nothing]
+    Just fd -> do
+        (view', res) <- postFormWith "essay" essayForm fd
+        case res of
+            Just _  -> error "Not handled"
+            Nothing -> return [PageR $ NewR $ Just (viewErrors view', fd)]
 
-respondTo RNew = withAuth $ return [PageR $ NewR Nothing]
+respondTo (REdit sl fdata) = withAuth $ do
+    Just (Entity k post) <- runDB $ getBy $ UniqueEssay sl
+    case fdata of
+        Nothing -> return [PageR $ EditR (essayTitle post) sl $ Just ([], essayData post)]
+        Just fd -> do
+            (view', res) <- postFormWith "essay" essayForm fd
+            case res of
+                Just p -> do
+                    runDB $ replace k p
+                    return [RedirectR $ RSingle $ essaySlug p]
+                Nothing -> return [PageR $ EditR (essayTitle post) sl $ Just (viewErrors view', fd)]
+    where
+        essayData (Essay t _ c _) = fromList [(["title"],t),(["content"],c)]
 
 respondTo (RAuth t) = case decode64 (encodeUtf8 t) of
     Right t' | verifyPassword (decrypt t') storedPw -> do
@@ -93,22 +109,18 @@ respondTo (RAuth t) = case decode64 (encodeUtf8 t) of
     _ -> return [AuthR Nothing]
 
 respondTo (RLogin Nothing) = return [PageR $ LoginR Nothing]
-respondTo (RLogin (Just t)) = if verifyPassword (encodeUtf8 t) storedPw
-    then do
-        setMessage "Logged in"
-        authed .= True
-        return [AuthR $ Just $ decodeUtf8 $ encode64 $ decrypt $ encodeUtf8 t, RedirectR RHome]
-    else return [PageR $ LoginR $ Just $ FieldResult t (Just "Invalid password")]
-    where
-        setMessage ~(_:_) = return ()
+respondTo (RLogin (Just fdata)) = do
+    (v, res) <- postFormWith "login" loginForm fdata
+    case res of
+        Just r' -> do
+            authed .= True
+            return [AuthR $ Just $ decodeUtf8 $ encode64 $ decrypt $ encodeUtf8 r', RedirectR RHome]
+        Nothing -> return [PageR $ LoginR $ Just (viewErrors v, fdata)]
 
 decode64 :: ByteString -> Either String ByteString
 decode64 = convertFromBase Base64
 encode64 :: ByteString -> ByteString
 encode64 = convertToBase Base64
-
-storedPw :: ByteString
-storedPw = $(getenv "PASSWORD")
 
 decrypt :: ByteString -> ByteString
 decrypt = encrypt secret where
@@ -119,10 +131,6 @@ encrypt :: ByteString -> ByteString -> ByteString
 encrypt secret = ctrCombine ctx nullIV where
     ctx :: AES256
     CryptoPassed ctx = cipherInit secret
-
-runDB :: (MonadReader (Client SqlBackend) m, MonadIO m)
-      => SqlPersistM b -> m b
-runDB m = liftIO . runSqlPersistMPool m =<< asks pool
 
 withAuth :: MonadState ClientState m => m [API.Response] -> m [API.Response]
 withAuth f = do

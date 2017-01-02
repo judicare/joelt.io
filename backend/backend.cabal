@@ -26,7 +26,10 @@ executable backend
                , bytestring
                , cereal
                , cereal-text
+               , containers
                , cryptonite
+               , digestive-functors
+               , exceptions
                , file-embed
                , highlighter
                , lens
@@ -35,6 +38,7 @@ executable backend
                , mime-types
                , monad-logger
                , mtl
+               , network
                , pcre-light
                , persistent
                , persistent-postgresql
