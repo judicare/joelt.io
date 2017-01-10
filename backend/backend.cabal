@@ -29,6 +29,7 @@ executable backend
                , containers
                , cryptonite
                , digestive-functors
+               , directory
                , exceptions
                , file-embed
                , highlighter
@@ -49,6 +50,7 @@ executable backend
                , template-haskell
                , text
                , time
+               , wai
                , wai-app-static
                , wai-websockets
                , warp
@@ -63,3 +65,4 @@ executable backend
     cpp-options:       -DPRODUCTION
   else
     ghc-options:       -Wall -O0
+    build-depends:     wai-cors

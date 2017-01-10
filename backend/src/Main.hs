@@ -1,8 +1,10 @@
+{-# LANGUAGE CPP                 #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell     #-}
 
@@ -38,6 +40,13 @@ import StaticFiles
 import Text.Blaze.Html.Renderer.Text  (renderHtml)
 import Text.Digestive                 (viewErrors)
 import WaiAppStatic.Storage.Embedded
+#ifndef PRODUCTION
+import Control.Concurrent             (forkIO, killThread)
+import Control.Monad.Catch            (finally)
+import Network.Wai                    (pathInfo, rawPathInfo)
+import Network.Wai.Middleware.Cors
+import System.Directory               (getCurrentDirectory)
+#endif
 
 data ClientState = ClientState
                  { _authed :: Bool }
@@ -52,13 +61,33 @@ main = do
         runSqlPool (runMigration migrateAll) pool
         return pool
 
-    run 8000 $ websocketsOr defaultConnectionOptions (wsApp db) backupApp
+#ifndef PRODUCTION
+    serverThread <- forkIO $ do
+        s <- getCurrentDirectory
+        let set_ = defaultFileServerSettings (s <> "/../frontend/dist/build/frontend/frontend.jsexe")
+            app = staticApp (set_ { ss404Handler = Just $ \ req resp ->
+                                      app (req { rawPathInfo = "/", pathInfo = [] }) resp
+                                  })
+        run 8080 app
+
+    let corsWrap = simpleCors
+#else
+    let corsWrap = id
+#endif
+
+    run 8000 (corsWrap . websocketsOr defaultConnectionOptions (wsApp db) $ backupApp)
+#ifndef PRODUCTION
+        `finally` killThread serverThread
+#endif
     where
         wsApp pool pc = do
             conn <- acceptRequest pc
             eval Client { pool } (ClientState False) $ fix (\ f -> do
                 bs <- liftIO $ receiveData conn
-                let val = either (error . show) id $ decode bs
+                bs' <- do
+                    liftIO $ print bs
+                    return bs
+                let val = either (error . show) id $ decode bs'
                 res <- respondTo val
                 forM_ res $ \ r -> liftIO $ sendBinaryData conn $ encode r
                 f) `catch` \ (c :: ConnectionException) ->
@@ -83,9 +112,11 @@ respondTo (RSingle t) = do
 respondTo (RNew fdata) = withAuth $ case fdata of
     Nothing -> return [PageR $ NewR Nothing]
     Just fd -> do
-        (view', res) <- postFormWith "essay" essayForm fd
+        (view', res) <- postFormWith "essay" (essayForm True) fd
         case res of
-            Just _  -> error "Not handled"
+            Just e  -> do
+                _ <- runDB $ insert e
+                return [RedirectR $ RSingle (essaySlug e)]
             Nothing -> return [PageR $ NewR $ Just (viewErrors view', fd)]
 
 respondTo (REdit sl fdata) = withAuth $ do
@@ -93,7 +124,7 @@ respondTo (REdit sl fdata) = withAuth $ do
     case fdata of
         Nothing -> return [PageR $ EditR (essayTitle post) sl $ Just ([], essayData post)]
         Just fd -> do
-            (view', res) <- postFormWith "essay" essayForm fd
+            (view', res) <- postFormWith "essay" (essayForm False) fd
             case res of
                 Just p -> do
                     runDB $ replace k p
@@ -117,6 +148,10 @@ respondTo (RLogin (Just fdata)) = do
             return [AuthR $ Just $ decodeUtf8 $ encode64 $ decrypt $ encodeUtf8 r', RedirectR RHome]
         Nothing -> return [PageR $ LoginR $ Just (viewErrors v, fdata)]
 
+respondTo (RDel t) = withAuth $ do
+    runDB $ deleteBy $ UniqueEssay t
+    return [RedirectR RHome]
+
 decode64 :: ByteString -> Either String ByteString
 decode64 = convertFromBase Base64
 encode64 :: ByteString -> ByteString
@@ -132,7 +167,7 @@ encrypt secret = ctrCombine ctx nullIV where
     ctx :: AES256
     CryptoPassed ctx = cipherInit secret
 
-withAuth :: MonadState ClientState m => m [API.Response] -> m [API.Response]
+withAuth :: (MonadIO m, MonadState ClientState m) => m [API.Response] -> m [API.Response]
 withAuth f = do
     a <- use authed
     if a then f else return [PageR $ ErrorR "Auth required"]

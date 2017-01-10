@@ -1,9 +1,11 @@
 {-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports    #-}
 
 module StaticFiles.Delegated where
 
-import           Crypto.Hash                    (Digest, MD5, hashlazy)
+import           "cryptonite" Crypto.Hash                    (Digest, MD5,
+                                                              hashlazy)
 import           Data.ByteString.Lazy
 import qualified Data.ByteString.Lazy           as BL
 import           Data.Monoid

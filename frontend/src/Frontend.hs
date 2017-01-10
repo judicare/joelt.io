@@ -41,6 +41,7 @@ instance PathInfo API.Request where
     toPathSegments (RPage n)   = ["page", pack $ show n]
     toPathSegments (RSingle t) = ["r", t]
     toPathSegments (REdit t _) = ["e", t]
+    toPathSegments (RDel t)    = ["d", t]
     toPathSegments RNew{}      = ["n"]
     toPathSegments RLogin{}    = ["login"]
     toPathSegments RAuth{}     = Prelude.error "toPathSegments RAuth"
@@ -65,7 +66,7 @@ main = mainWidgetWithHead' (wHead, \ () -> do
         getItem s ("authKey" :: Text)
 
     wrapPage $ do
-        rec routText <- partialPathRoute "" (toPathInfo <$> leftmost [pageEv, redirectEv])
+        rec routText <- partialPathRoute "" (toPathInfo <$> leftmost [redirectEv, pageEv])
             let rout = fmap (parseSegments fromPathSegments) routText
 
                 socketHost :: Text
@@ -76,7 +77,11 @@ main = mainWidgetWithHead' (wHead, \ () -> do
 #endif
 
             ws <- webSocket socketHost (def { _webSocketConfig_send = map encode
-                                          <$> leftmost [return <$> pageEv, return <$> redirectEv, getInitial] })
+                                          <$> leftmost [ return <$> fmapMaybe (^? _Right) (updated rout)
+                                                       , return <$> pageEv
+                                                       , return <$> redirectEv
+                                                       , getInitial
+                                                       ] })
             let getInitial = ffor (fmap (^? _Right) initialPageEv) $ \ r -> maybeToList (RAuth <$> authKey) ++ maybeToList r
                 pageEv = leftmost [switch $ current pageDyn, headerEv]
                 initialPageEv = tag (current rout) pb
@@ -198,7 +203,8 @@ page authDyn (SingleR post) = elClass "article" "bubble blog-post" $ do
             edit <- _link_clicked <$> linkClass "" "inline-link fa fa-pencil"
             text " "
             del <- _link_clicked <$> linkClass "" "inline-link fa fa-trash-o"
-            confirmation <- performEvent $ ffor del $ \ _ -> liftIO $ do
+            confirmation <- performEvent $ ffor (traceEvent "thing clicked" del) $ \ _ -> liftIO $ do
+                putStrLn "Testing"
                 Just wv <- currentWindow
                 confirm wv ("Are you sure you want to delete this?" :: Text)
             return $ leftmost [ REdit (essaySlug post) Nothing <$ edit

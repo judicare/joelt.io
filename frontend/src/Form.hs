@@ -13,9 +13,9 @@ import Text.Digestive hiding (bool, text)
 
 form m = do
     formResult <- case m of
-        Nothing -> getFormWith "essay" essayForm mempty
+        Nothing -> getFormWith "essay" (essayForm False) mempty
         Just (es, d) -> do
-            (view', _) <- postFormWith "essay" essayForm d
+            (view', _) <- postFormWith "essay" (essayForm False) d
             return (view' { viewErrors = es })
 
     elClass "h2" "form-title" $ text "Write something"

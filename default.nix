@@ -42,21 +42,14 @@ let
 
   filterHsSource = builtins.filterSource (path: type: !(
     baseNameOf path == ".git" ||
-    baseNameOf path == "dist" ||
-    baseNameOf path == "bower_components"
+    baseNameOf path == "dist"
   ));
 
   nodePkgs = pkgs.callPackage ./backend/generated/node-composition.nix {};
 
-  bowerPkgs = pkgs.buildBowerComponents {
-    name = "jude.bio";
-    src = pkgs.writeTextDir "bower.json" (builtins.readFile ./backend/bower.json);
-    generated = ./backend/generated/bower.nix;
-  };
-
   backendBase = haskellPackages.callPackage (
     pkgs.stdenv.lib.overrideDerivation (reflex-platform.cabal2nixResult backendSrc) (drv: {
-      buildCommand = ''
+      ${if inNixShell then null else "buildCommand"} = ''
         cabal2nix file://"${backendSrc}" -fproduction >"$out"
       '';
     })
@@ -78,23 +71,26 @@ let
     configureFlags = (drv.configureFlags or []) ++ [ "-fproduction" ];
     buildTools = (drv.buildTools or [])
       ++ [ pkgs.sass nodePkgs.cssnano-cli ]
-      ++ lib.optional inNixShell pkgs.nodePackages.bower;
+      ++ lib.optionals inNixShell [
+        pkgs.nodePackages.bower haskellPackages.cabal-install
+      ];
     preBuild = (drv.preBuild or "") + ''
-      ln -sfv ${bowerPkgs}/bower_components .
       export PASSWORD=${builtins.toJSON password}
     '';
     version = "${drv.version}-${versionTag}";
-    shellHook = preBuild;
+    shellHook = preBuild + ''
+      export SECRET=abcdefghijklmnopqrstuvwxyzabcdef
+    '';
   });
 
   frontend = pkgs.haskell.lib.overrideCabal frontendBase (drv: rec {
+    configureFlags = (drv.configureFlags or []) ++ [ "-fproduction" ];
     preConfigure = (drv.preConfigure or "") + ''
       rm -f backend-src
       ln -sfv ${backendSrc}/src backend-src
     '';
     buildTools = (drv.buildTools or []) ++ [ pkgs.openjdk ];
     postInstall = ''
-      cp ${./support/index.override.html} $out/bin/frontend.jsexe/index.override.html;
       cd $out/bin/frontend.jsexe
       for file in $(find . -name '*.js'); do
         echo >&2 "Minifying $file"

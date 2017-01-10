@@ -9,6 +9,11 @@ build-type:          Simple
 extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
+flag production
+  default: False
+  manual: True
+  description: Enable production build
+
 executable frontend
   main-is:             Frontend.hs
   build-depends:       base >=4.9 && <4.10
@@ -31,4 +36,9 @@ executable frontend
   hs-source-dirs:      src
                      , backend-src
   default-language:    Haskell2010
-  ghc-options:         -Wall
+
+  if flag(production)
+    ghc-options:       -Wall -O2
+    cpp-options:       -DPRODUCTION
+  else
+    ghc-options:       -Wall -O0

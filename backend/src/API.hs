@@ -13,7 +13,6 @@ module API where
 
 import           Control.Lens
 import           Control.Monad.Reader
-import           Data.ByteString      (ByteString)
 import           Data.Char
 import           Data.Map             (Map)
 import qualified Data.Map             as M
@@ -23,14 +22,15 @@ import           Data.Serialize.Text  ()
 import           Data.String          (IsString)
 import           Data.Text            (Text)
 import qualified Data.Text            as T
-import           Data.Text.Encoding
 import           Data.Time
 import           Database
 import           GHC.Generics         (Generic)
 import           Text.Digestive
 #if !ghcjs_HOST_OS
 import           Crypto.PasswordStore
+import           Data.ByteString      (ByteString)
 import           Data.Pool            (Pool)
+import           Data.Text.Encoding
 import           Database.Persist.Sql hiding (get)
 import           Getenv
 #endif
@@ -59,8 +59,8 @@ data Request = RHome
              | RAuth Text
              | RNew (Maybe FormData)
              | REdit Text (Maybe FormData)
-             | RDel Text
              | RLogin (Maybe FormData)
+             | RDel Text
              deriving (Show, Generic)
 
 data Preview = Preview
@@ -115,14 +115,28 @@ storedPw :: ByteString
 storedPw = $(getenv "PASSWORD")
 #endif
 
-essayForm :: (Monad m, Monoid v, IsString v, MonadIO m)
-          => FormData -> Form v m Essay
-essayForm fdata = (\ t c time -> Essay t (mkSlug t) c time)
-    <$> "title" .: required (text (fdata ^? ix ["title"]))
+essayForm :: (Monad m, Monoid v, IsString v, MonadIO m
+#if !ghcjs_HOST_OS
+             , MonadReader (Client SqlBackend) m
+#endif
+             )
+          => Bool -> FormData -> Form v m Essay
+essayForm checkDup fdata = (\ t c time -> Essay t (mkSlug t) c time)
+    <$> "title" .: validateSlug (required (text (fdata ^? ix ["title"])))
     <*> "content" .: required (text (fdata ^? ix ["content"]))
     <*> monadic (pure <$> liftIO getCurrentTime)
     where
         required = check "Can't be empty" $ not . T.null
+        validateSlug
+#if !ghcjs_HOST_OS
+            | checkDup = validateM $ \ t -> do
+                let slug = mkSlug t
+                existing <- runDB $ getBy (UniqueEssay slug)
+                case existing of
+                    Nothing -> return (return t)
+                    Just{} -> return $ Error "This title conflicts with an existing title"
+#endif
+            | otherwise = id
 
 mkSlug :: Text -> Text
 mkSlug = T.foldr (\ e m -> if (T.take 1 m, e) == ("-", '-') then m else T.cons e m) mempty
