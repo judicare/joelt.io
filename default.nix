@@ -6,15 +6,16 @@
 let
   reflex-unpatched = pkgs.fetchgit {
     url = "https://github.com/reflex-frp/reflex-platform";
-    rev = "cb37f01ff479306b60544a6af6f6f6e7cf3746e6";
+    rev = "0de88ce3a17fc47353111150ba86a91159fe2cb6";
     fetchSubmodules = true;
-    sha256 = "1gkpifiywi1adad9d6v7a178zhs8slq6gq2sqryqnisc93glvww2";
+    sha256 = "1l87svhfhkhyhb27qig927d5g4ddc1x3q7whr40r2y894wsaw5vr";
   };
 
   reflex = pkgs.runCommand "reflex" {} ''
     mkdir -p $out
     cp -R ${reflex-unpatched}/* $out
     sed -i '/doHaddock/d' "$out/default.nix"
+    substituteInPlace "$out/default.nix" --replace "compilers/ghcjs\"" "compilers/ghcjs/base.nix\""
   '';
 
   inherit (nixpkgs) pkgs;
