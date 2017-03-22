@@ -1,1 +1,1 @@
-{ compiler ? "ghc801" }: (import <nixpkgs> {}).callPackage ./. { inherit compiler; }
+{ compiler ? "ghc802" }: (import <nixpkgs> {}).callPackage ./. { inherit compiler; }

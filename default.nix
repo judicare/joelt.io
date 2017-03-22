@@ -1,5 +1,5 @@
 { lib, haskell, buildBowerComponents, callPackage, writeTextDir, nodePackages, sass
-, compiler ? "ghc801", secret ? "fake secret" }:
+, compiler ? "ghc802", secret ? "fake secret" }:
 
 let
   bowerPkgs = buildBowerComponents {
