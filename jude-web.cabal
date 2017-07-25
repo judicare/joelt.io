@@ -8,7 +8,7 @@ version:             0.1.0.0
 license:             MIT
 license-file:        LICENSE
 author:              Jude Taylor
-maintainer:          me@jude.bio
+maintainer:          me@jude.xyz
 -- copyright:           
 category:            Web
 build-type:          Simple
@@ -71,7 +71,7 @@ executable jude-web
   ghc-options:         -threaded -with-rtsopts=-T
 
   if flag(production)
-    ghc-options:       -Wall -Werror -O2 -rtsopts -with-rtsopts=-N
+    ghc-options:       -Wall -O2 -rtsopts -with-rtsopts=-N
     cpp-options:       -DPRODUCTION
     build-depends:     process-extras
   else

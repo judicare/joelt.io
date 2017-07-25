@@ -1,0 +1,16 @@
+{
+  "enabled": 1,
+  "hidden": false,
+  "description": "Jobsets",
+  "nixexprinput": "src",
+  "nixexprpath": "spec.nix",
+  "checkinterval": 300,
+  "schedulingshares": 8,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 5,
+  "inputs": {
+    "src": { "type": "git", "value": "git@github.com:pikajude/jude-web.git", "emailresponsible": false },
+    "nixpkgs": { "type": "git", "value": "https://github.com/NixOS/nixpkgs.git", "emailresponsible": false }
+  }
+}

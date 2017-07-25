@@ -2,7 +2,7 @@
   "name": "jude-web",
   "version": "0.0.0",
   "authors": [
-    "Jude Taylor <me@jude.bio>"
+    "Jude Taylor <me@jude.xyz>"
   ],
   "main": "src/Main.hs",
   "keywords": [

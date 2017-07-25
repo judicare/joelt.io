@@ -3,14 +3,14 @@
 
 let
   bowerPkgs = buildBowerComponents {
-    name = "jude.bio";
+    name = "jude.xyz";
     src = writeTextDir "bower.json" (builtins.readFile ./bower.json);
     generated = ./generated/bower.nix;
   };
 
   nodePkgs = callPackage ./generated/node-composition.nix {};
 
-  pkg = haskell.packages."${compiler}".callPackage ./pkg.nix {};
+  pkg = haskell.packages."${compiler}".callCabal2nix "jude-web" ./. {};
 
   inShell = lib.inNixShell;
 

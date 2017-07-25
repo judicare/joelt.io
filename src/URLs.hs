@@ -22,7 +22,7 @@ $(derivePathInfo' (\ x -> case x of "Home" -> ""; y -> standard y) ''SiteMap)
 
 staticPrefix :: IsString s => s
 #ifdef PRODUCTION
-staticPrefix = "https://static.jude.bio/"
+staticPrefix = "https://static.jude.xyz/"
 #else
 staticPrefix = "/s/"
 #endif

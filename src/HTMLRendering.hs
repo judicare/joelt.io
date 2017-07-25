@@ -64,7 +64,7 @@ defaultLayout ham = htmlRender [hamlet|
 
         <link rel="shortcut icon" href=@{S "favicon.ico"}>
 
-        <title>jude.bio
+        <title>jude.xyz
           $maybe t <- getLast pageTitle
             \ » #{t}
 
@@ -78,7 +78,7 @@ defaultLayout ham = htmlRender [hamlet|
         <div .row role=main>
           <div .speech .large-12 .columns>
             <header>
-              <a #head href=/>jude.bio
+              <a #head href=/>jude.xyz
               <span .arrow>
               <div #dots>
                 <span .up-arrow>
@@ -88,7 +88,7 @@ defaultLayout ham = htmlRender [hamlet|
                   <a href="/n" .dot #new-post title="Make a new post">New post
             ^{pageHtml}
             <footer>
-              Talk to me: <a href="mailto:me@jude.bio">me@jude.bio</a>.
+              Talk to me: <a href="mailto:me@jude.xyz">me@jude.xyz</a>.
 
         <script src=@{S "js/all.js"}>
     |]
