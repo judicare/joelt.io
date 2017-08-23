@@ -1,5 +1,0 @@
-<article .bubble>
-  <h2 .form-title>Write something
-  <form role=form method=post action=@{E (essaySlug e)}>
-    <input type=hidden name=_method value=PATCH>
-    ^{form}

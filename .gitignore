@@ -2,5 +2,6 @@ client_session_key.aes
 bower_components
 db
 dist
+distjs
 important-secret
 .sass-cache

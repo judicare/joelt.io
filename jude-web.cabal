@@ -5,74 +5,25 @@ name:                jude-web
 version:             0.1.0.0
 -- synopsis:            
 -- description:         
-license:             MIT
+license:             BSD3
 license-file:        LICENSE
 author:              Jude Taylor
-maintainer:          me@jude.xyz
+maintainer:          me@jude.bio
 -- copyright:           
 category:            Web
 build-type:          Simple
--- extra-source-files:  
+extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
-
-flag production
-  default: False
-  manual: True
-  description: Enable production build
 
 executable jude-web
   main-is:             Main.hs
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >= 4.9
-                     , base64-bytestring
-                     , blaze-html
-                     , blaze-markup
-                     , bytestring
-                     , cereal
-                     , clientsession
-                     , containers
-                     , cookie
-                     , cryptohash
-                     , digestive-functors
-                     , digestive-functors-blaze
-                     , file-embed
-                     , highlighter
-                     , http-types
-                     , markdown
-                     , mime-types
-                     , monad-control
-                     , monad-logger
-                     , mtl
-                     , network
-                     , pcre-light
-                     , persistent
-                     , persistent-postgresql
-                     , persistent-template
-                     , process-extras
-                     , pwstore-fast
-                     , resource-pool
-                     , shakespeare
-                     , template-haskell
-                     , text
-                     , time
-                     , transformers
-                     , vault
-                     , wai
-                     , wai-app-static
-                     , wai-extra
-                     , wai-session
-                     , wai-session-clientsession
-                     , warp
-                     , web-routes
-                     , web-routes-th
+  build-depends:       base
   hs-source-dirs:      src
   default-language:    Haskell2010
-  ghc-options:         -threaded -with-rtsopts=-T
 
-  if flag(production)
-    ghc-options:       -Wall -O2 -rtsopts -with-rtsopts=-N
-    cpp-options:       -DPRODUCTION
-    build-depends:     process-extras
+  if impl(ghcjs)
+    build-depends:     lens, reflex-dom, reflex-dom-contrib, reflex-jsx, text, uri-bytestring, web-routes
   else
-    ghc-options:       -Wall -O0
+    build-depends:     directory, filepath, http-types, text, wai, warp
