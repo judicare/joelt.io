@@ -53,10 +53,12 @@ pkgs.stdenv.mkDerivation rec {
     (pkgs.writeScriptBin "frebuild" ''
       #!${pkgs.stdenv.shell}
       if [ ! -d distjs ]; then
-        cabal configure --builddir=distjs --ghcjs
+        runhaskell Setup.hs configure --builddir=distjs --ghcjs
       fi
-      cabal build --builddir=distjs
+      runhaskell Setup.hs build --builddir=distjs
     '')
+    pkgs.nodePackages.bower
+    pkgs.sass
   ];
   passthru = {
     frontend = ghcjsPackages.callCabal2nix "jude-web" ./. {};
