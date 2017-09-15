@@ -1,30 +1,42 @@
+{-# Language ExplicitForAll #-}
+{-# Language ScopedTypeVariables #-}
+{-# Language DataKinds #-}
 {-# Language CPP                       #-}
 {-# Language FlexibleContexts          #-}
+{-# Language GADTs                     #-}
 {-# Language NoMonomorphismRestriction #-}
 {-# Language OverloadedStrings         #-}
 {-# Language PartialTypeSignatures     #-}
 {-# Language QuasiQuotes               #-}
 {-# Language RecursiveDo               #-}
 
-module Frontend.Main (main) where
+module Frontend.Main where
 
-import Control.Lens
+import Control.Lens              hiding (element)
+import Control.Monad
 import Control.Monad.IO.Class
+import Control.Monad.Trans
 import Data.Foldable             (toList)
+import qualified Reflex.Dom.Builder.Class
 import Data.Map                  (fromList)
 import Data.Monoid
+import Data.Proxy
 import Data.Serialize            (decode, encode)
-import Data.Text                 (Text)
+import Data.Text                 (Text, pack)
 import Data.Text.Encoding
 import GHCJS.DOM                 (currentWindow)
+import GHCJS.DOM.Document
+import GHCJS.DOM.Element
+import GHCJS.DOM.Node
 import GHCJS.DOM.Storage         (getItem)
 import GHCJS.DOM.Window          (getLocalStorage)
-import Reflex.Dom                hiding (Home, Response)
+import Reflex.Dom                hiding (Home, Response, Element)
 import Reflex.Dom.Contrib.Router
 import ReflexJsx
 import URI.ByteString
 import Web.Routes                hiding (Site)
 
+import Database
 import Frontend.Connection
 import Frontend.Router
 import Routes
@@ -70,16 +82,16 @@ main = mainWidgetWithHead' $ (,) wHead $ \ () -> wrapPage $ do
                 $ return ()
             elAttr "meta" ("name" =: "viewport" <> "content" =: "width=device-width,initial-scale=1")
                 $ return ()
-            el "title" $ dynText $ ffor titleDyn $ maybe "jude.bio" ("jude.bio » " <>)
+            el "title" $ dynText $ ffor titleDyn $ maybe "jude.xyz" ("jude.xyz » " <>)
 #ifdef PRODUCTION
-        staticHost p = "https://static.jude.bio/" <> p
+        staticHost p = "https://static.jude.xyz/" <> p
 #else
         staticHost p = "http://localhost:8000/s/" <> p
 #endif
 
 header :: (DomBuilder t m, Reflex t, PostBuild t m) => Dynamic t Bool -> m (Event t Site)
 header showLoading = el "header" $ do
-    (link', _) <- elDynAttr' "a" (headAttrs showLoading) $ text "jude.bio"
+    (link', _) <- elDynAttr' "a" (headAttrs showLoading) $ text "jude.xyz"
     elClass "span" "arrow" $ return ()
     elAttr "div" ("id" =: "dots") $ do
         elClass "span" "up-arrow" $ return ()
@@ -93,17 +105,43 @@ header showLoading = el "header" $ do
             $ text "I'm on LinkedIn!"
     return $ Home <$ domEvent Click link'
     where
-        headAttrs loading = ffor loading $ \ l -> "id" =: "head" <> if l then "class" =: "loading" else mempty
+        headAttrs loading = ffor loading $ \ l ->
+            "id" =: "head" <> if l then "class" =: "loading" else mempty
 
 title :: Response -> Maybe Text
 title ResHome{}     = Nothing
--- title NotFound = Just "Not found"
+title ResNotFound{} = Just "Not Found"
+title (ResSingle e) = Just (essayTitle e)
 
-page (ResHome _) = elClass "article" "bubble" $ do
-    el "h4" $ text "Home"
-    l <- link "Go to 404"
-    return $ NotFound <$ _link_clicked l
+page :: forall t t1 t2 t3 m.
+        (RawElement (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m))) ~ Element,
+         MonadTrans t2, Monad m, (MonadIO (t2 (ImmediateDomBuilderT t1 m))),
+         HasDomEvent t3 (Reflex.Dom.Builder.Class.Element EventResult (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m))) t) 'ClickTag,
+         DomBuilder t (t2 (ImmediateDomBuilderT t1 m)), Reflex t3)
+     => Response -> t2 (ImmediateDomBuilderT t1 m) (Event t3 Site)
+page (ResHome posts) = do
+    postLinks <- forM posts $ \ (title, slug) -> elClass "article" "bubble preview-bubble" $
+        elClass "h3" "post-preview" $ do
+            let spec = (def :: ElementConfig EventResult t (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m))))
+                    & elementConfig_eventSpec
+                        %~ addEventSpecFlags (Proxy :: Proxy (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m)))) Click (const preventDefault)
+                    & initialAttributes
+                        .~ ("class" =: "post-title" <> "href" =: ("/r/" <> slug))
+            (e, _) <- element "a" spec (text title)
+            return $ Read slug <$ domEvent Click e
 
--- page NotFound = elClass "article" "bubble" $ do
---     el "h4" $ text "Not found"
---     return never
+    return $ leftmost postLinks
+
+page (ResSingle e) = elClass "article" "bubble blog-post" $ do
+    elClass "h1" "post-title" $ do
+        text (essayTitle e)
+    parent <- lift askParent
+    Just doc <- getOwnerDocument parent
+    el <- createElement doc ("div" :: Text)
+    setInnerHTML el $ essayContent e
+    placeRawElement el
+    return never
+
+page ResNotFound = elClass "article" "bubble" $ do
+    el "h4" $ text "Not found"
+    return never

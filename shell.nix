@@ -49,6 +49,7 @@ pkgs.stdenv.mkDerivation rec {
     passthru.backend.env passthru.frontend.env
   ] ++ pkgs.lib.optional pkgs.lib.inNixShell [
     haskellPackages.cabal-install
+    haskellPackages.hscolour
     haskellPackages.halive
     (pkgs.writeScriptBin "frebuild" ''
       #!${pkgs.stdenv.shell}
