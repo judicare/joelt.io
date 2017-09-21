@@ -17,14 +17,16 @@ executable jude-web
   hs-source-dirs:     src
   default-language:   Haskell2010
   default-extensions: NoMonomorphismRestriction
-  build-depends:      base, bytestring, cereal, cereal-text, lens, mtl,
-                      persistent-template, text, time, web-routes
+  build-depends:      base, bytestring, cereal, cereal-text, containers,
+                      digestive-functors, lens, mtl, persistent-template, text, time,
+                      web-routes
+  ghc-options:        -Wall -Werror
 
   if impl(ghcjs)
     other-modules: Frontend.Connection
                    Frontend.Main
                    Frontend.Router
-    build-depends: containers, ghcjs-dom-jsffi, reflex-dom, reflex-dom-contrib,
+    build-depends: ghcjs-dom-jsffi, ref-tf, reflex, reflex-dom, reflex-dom-contrib,
                    reflex-jsx, uri-bytestring
   else
     other-modules: Backend.Main
@@ -32,6 +34,7 @@ executable jude-web
                    Backend.StaticFiles
                    Backend.StaticFiles.Delegated
     build-depends: blaze-html, cryptonite, directory, file-embed, filepath, highlighter,
-                   http-types, markdown, mime-types, monad-logger, pcre-light,
-                   persistent-postgresql, process-extras, resource-pool, text, wai,
+                   http-types, markdown, mime-types, monad-control, monad-logger,
+                   pcre-light, persistent, persistent-postgresql, process-extras,
+                   pwstore-fast, resource-pool, template-haskell, text, wai,
                    wai-app-static, wai-websockets, warp, websockets

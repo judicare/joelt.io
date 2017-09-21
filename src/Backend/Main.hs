@@ -7,37 +7,35 @@
 
 module Backend.Main where
 
-import           Control.Arrow
-import           Control.Concurrent
-import           Control.Exception
-import           Control.Monad
-import           Control.Monad.IO.Class
-import           Control.Monad.Logger
-import           Control.Monad.Reader
-import           Data.Pool                      (Pool)
-import           Data.Serialize                 (decode, encode)
-import           Data.Text                      (unpack)
-import qualified Data.Text                      as T
-import           Data.Text.Lazy                 (toStrict)
-import           Database.Persist.Postgresql
-import           Network.HTTP.Types
-import           Network.Wai
-import           Network.Wai.Application.Static
-import           Network.Wai.Handler.Warp
-import           Network.Wai.Handler.WebSockets
-import           Network.WebSockets
-import           System.Directory
-import           System.Environment
-import           System.FilePath                ((</>))
-import           Text.Blaze.Html.Renderer.Text
-import           WaiAppStatic.Storage.Embedded
+import Control.Arrow                  ((&&&))
+import Control.Concurrent
+import Control.Exception
+import Control.Monad
+import Control.Monad.IO.Class
+import Control.Monad.Logger
+import Control.Monad.Reader
+import Control.Monad.Trans.Control    (MonadBaseControl)
+import Data.Pool                      (Pool)
+import Data.Serialize                 (decode, encode)
+import Data.Text                      (Text)
+import Data.Text.Lazy                 (toStrict)
+import Database.Persist.Postgresql
+import Network.Wai                    hiding (Request, Response)
+import Network.Wai.Application.Static
+import Network.Wai.Handler.Warp
+import Network.Wai.Handler.WebSockets
+import Network.WebSockets             hiding (Request, Response)
+import System.FilePath                ((</>))
+import Text.Blaze.Html.Renderer.Text
+import WaiAppStatic.Storage.Embedded
 
-import           Backend.Render
-import           Backend.StaticFiles
-import           Database
-import           Routes
-import           Server
+import Backend.Render
+import Backend.StaticFiles
+import Database
+import Routes
+import Server
 
+main :: IO ()
 main = do
     let e = "/Users/judet/.code/Haskell/jude-web"
         basedir = e </> "distjs/build/jude-web/jude-web.jsexe"
@@ -66,19 +64,24 @@ main = do
                 threadDelay 500000
                 sendBinaryData conn $ encode response
 
-runDB x = do
-    pool <- ask
-    runSqlPool x pool
-
+respond :: (MonadReader (Pool SqlBackend) m, MonadIO m, MonadBaseControl IO m)
+        => Request -> m Response
 respond (ReqRoute Home) = do
     posts <- runDB $ selectList [] []
     return $ ResHome $ map ((essayTitle &&& essaySlug) . entityVal) posts
 
 respond (ReqRoute (Read t)) = do
-    post <- runDB $ getBy $ UniqueEssay t
-    return $ case post of
+    p' <- runDB $ getBy $ UniqueEssay t
+    return $ case p' of
         Nothing -> ResNotFound
         Just p  -> let post = entityVal p
                     in ResSingle (post { essayContent = renderText (essayContent post) })
 
+respond (ReqRoute (Login Nothing)) = pure $ ResLogin Nothing
+
+respond (ReqRoute NotFound) = pure ResNotFound
+
+respond x = error $ show x
+
+renderText :: Text -> Text
 renderText = toStrict . renderHtml . renderMd

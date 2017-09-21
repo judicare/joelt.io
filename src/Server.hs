@@ -5,12 +5,11 @@ module Server where
 
 import Data.Serialize
 import Data.Text
-import Data.Text.Encoding
-import Data.Time
 import GHC.Generics
 
 import Database
-import Routes             (Site)
+import Forms
+import Routes         (Site)
 
 data Request = ReqRoute Site
              | ReqAuth Text
@@ -18,6 +17,7 @@ data Request = ReqRoute Site
 
 data Response = ResHome [(Text, Text)]
               | ResSingle Essay
+              | ResLogin FormPayload
               | ResNotFound
               deriving (Show, Generic)
 

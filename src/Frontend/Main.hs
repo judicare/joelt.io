@@ -12,31 +12,28 @@
 
 module Frontend.Main where
 
-import           Control.Lens              hiding (element)
+import           Control.Lens             hiding (element)
 import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans
-import           Data.Foldable             (toList)
-import           Data.Map                  (fromList)
+import           Data.Bool
+import           Data.Foldable            (toList)
 import           Data.Monoid
 import           Data.Proxy
-import           Data.Serialize            (decode, encode)
-import           Data.Text                 (Text, pack)
-import           Data.Text.Encoding
-import           GHCJS.DOM                 (currentWindow)
+import           Data.Text                (Text)
+import           GHCJS.DOM                (currentWindow)
 import           GHCJS.DOM.Document
 import           GHCJS.DOM.Element
 import           GHCJS.DOM.Node
-import           GHCJS.DOM.Storage         (getItem)
-import           GHCJS.DOM.Window          (getLocalStorage)
-import           Reflex.Dom                hiding (Element, Home, Response)
+import           GHCJS.DOM.Storage        (getItem)
+import           GHCJS.DOM.Window         (getLocalStorage)
+import           Reflex.Dom               hiding (Element, Home, Response)
 import qualified Reflex.Dom.Builder.Class
-import           Reflex.Dom.Contrib.Router
 import           ReflexJsx
-import           URI.ByteString
-import           Web.Routes                hiding (Site)
+import           Text.Digestive.View
 
 import           Database
+import           Forms
 import           Frontend.Connection
 import           Frontend.Router
 import           Routes
@@ -56,9 +53,10 @@ main = mainWidgetWithHead' $ (,) wHead $ \ () -> wrapPage $ do
 
         let requestPage = leftmost
                 [ ffor (tag (current rout) pb) $ \ r -> routeToRequest r : authKey
-                , return . routeToRequest <$> traceEventWith show (updated rout)]
+                , return . routeToRequest <$> traceEvent "Updated page" newPage
+                ]
 
-        (e500, msgEv') <- connection $ traceEvent "Request page" requestPage
+        (_e500, msgEv') <- connection $ traceEvent "Request page" requestPage
         let msgEv = traceEvent "Message event" msgEv'
 
         hEv <- header showLoading
@@ -112,24 +110,28 @@ title :: Response -> Maybe Text
 title ResHome{}     = Nothing
 title ResNotFound{} = Just "Not Found"
 title (ResSingle e) = Just (essayTitle e)
+title ResLogin{}    = Just "Log in"
 
 page :: forall t t1 t2 t3 m.
         (RawElement (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m))) ~ Element,
          MonadTrans t2, Monad m, (MonadIO (t2 (ImmediateDomBuilderT t1 m))),
          HasDomEvent t3 (Reflex.Dom.Builder.Class.Element EventResult (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m))) t) 'ClickTag,
-         DomBuilder t (t2 (ImmediateDomBuilderT t1 m)), Reflex t3)
+         DomBuilder t (t2 (ImmediateDomBuilderT t1 m)), Reflex t3,
+         DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m)) ~ GhcjsDomSpace,
+         DomBuilder t3 (t2 (ImmediateDomBuilderT t1 m)),
+         PostBuild t3 (t2 (ImmediateDomBuilderT t1 m)))
      => Response -> t2 (ImmediateDomBuilderT t1 m) (Event t3 Site)
 page (ResHome posts) = do
     elClass "article" "bubble last-bubble" $
         elClass "h5" "site-title" $ text "I\8217m Jude, a functional programmer with a colorful head. \129300"
-    postLinks <- forM posts $ \ (title, slug) -> elClass "article" "bubble preview-bubble" $
+    postLinks <- forM posts $ \ (t', slug) -> elClass "article" "bubble preview-bubble" $
         elClass "h3" "post-preview" $ do
             let spec = (def :: ElementConfig EventResult t (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m))))
                     & elementConfig_eventSpec
                         %~ addEventSpecFlags (Proxy :: Proxy (DomBuilderSpace (t2 (ImmediateDomBuilderT t1 m)))) Click (const preventDefault)
                     & initialAttributes
                         .~ ("class" =: "post-title" <> "href" =: ("/r/" <> slug))
-            (e, _) <- element "a" spec (text title)
+            (e, _) <- element "a" spec (text t')
             return $ Read slug <$ domEvent Click e
 
     return $ leftmost postLinks
@@ -139,10 +141,43 @@ page (ResSingle e) = elClass "article" "bubble blog-post" $ do
         text (essayTitle e)
     parent <- lift askParent
     Just doc <- getOwnerDocument parent
-    el <- createElement doc ("div" :: Text)
-    setInnerHTML el $ essayContent e
-    placeRawElement el
+    body <- createElement doc ("div" :: Text)
+    setInnerHTML body $ essayContent e
+    placeRawElement body
     return never
+
+page (ResLogin m) = elClass "article" "bubble" $ do
+    formResult <- case m of
+        Nothing -> getFormWith "login" loginForm mempty
+        Just (es, d) -> do
+            (view', _) <- postFormWith "login" loginForm d
+            return (view' { viewErrors = es })
+    let isValid = null $ errors "password" formResult
+
+    [jsx|<h3 class="form-title">Log in</h3>|]
+
+    v <- el "form" $ do
+        v <- elClass "div" "row" $ do
+            elClass "div" "large-6 columns" $ elClass "div" "form-group" $
+                elAttr "label" ("for" =: "login.username") $ do
+                    text "Username"
+                    [jsx|<input type="text" id="login.username" class="form-control" />|]
+
+            let cls = "form-control" <> bool " is-invalid-input" "" isValid
+            elClass "div" "large-6 columns" $ elClass "div" "form-group" $
+                elAttr "label" ("for" =: "login.password") $ do
+                    text "Password"
+                    textInput (def & attributes .~ constDyn ("class" =: cls <> "autofocus" =: "true")
+                                   & textInputConfig_initialValue .~ fieldInputText "password" formResult
+                                   & textInputConfig_inputType .~ "password")
+
+        (a, _) <- elClass' "a" "button tiny" $ text "Log\160in"
+        return $ tag (current $ value v) (leftmost [domEvent Click a, keypress Enter v])
+
+    forM_ (errors "password" formResult) $ \ e ->
+        elClass "span" "form-error is-visible" $ text e
+
+    return $ Login . Just . (["password"] =:) <$> v
 
 page ResNotFound = elClass "article" "bubble" $ do
     el "h4" $ text "Not found"
