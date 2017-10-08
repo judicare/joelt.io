@@ -1,4 +1,6 @@
-{ nixpkgs ? import <nixpkgs> {} }:
+{ nixpkgs ? import <nixpkgs> {}
+, secret ? "fake secret"
+}:
 
 let
 
@@ -9,6 +11,7 @@ let
       mkDerivation = args: super.mkDerivation (args // {
         enableSeparateDocOutput = false;
       });
+      aeson = self.callHackage "aeson" "1.1.2.0" {};
       hlint = overrideCabal super.hlint (drv: { enableSeparateDataOutput = false; });
       halive = dontCheck super.halive;
     };
@@ -21,6 +24,9 @@ let
       mkDerivation = args: super.mkDerivation (args // { enableSeparateDocOutput = false; });
       # Cabal = self.Cabal_1_24_2_0;
       hscolour = pkgs.haskellPackages.hscolour;
+      fail = dontHaddock super.fail;
+      nats = dontHaddock super.nats;
+      aeson = self.callHackage "aeson" "1.1.2.0" {};
       jsaddle = addBuildDepend
         (callGit_ "jsaddle" (x: "${x}/jsaddle") "https://github.com/ghcjs/jsaddle.git" {})
         self.ghcjs-base;
@@ -41,13 +47,24 @@ let
       } {};
     };
   };
+
+  bowerPackages = pkgs.buildBowerComponents {
+    name = "jude.xyz";
+    src = pkgs.writeTextDir "bower.json" (builtins.readFile ./bower.json);
+    generated = ./generated/bower.nix;
+  };
+
+  nodePackages = pkgs.callPackage ./generated/node-composition.nix {};
 in rec {
   frontend = ghcjsPackages.callCabal2nix "jude-web" ./. {};
   backend = pkgs.haskell.lib.overrideCabal
     (haskellPackages.callCabal2nix "jude-web" ./. {})
     (drv: {
+      configureFlags = [ "-fproduction" ];
+      buildTools = [ pkgs.sass nodePackages.cssnano-cli ];
       preBuild = ''
-        export PASSWORD=foo
+        ln -sfv ${bowerPackages}/bower_components .
+        export PASSWORD=${builtins.toJSON secret}
       '';
     });
   shellEnv = pkgs.stdenv.mkDerivation rec {
