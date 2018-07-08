@@ -1,6 +1,6 @@
 OUT = dist
 STATIC_PREFIX = "https://jude.xyz/"
-FOUNDATION_SRC = .
+FOUNDATION_SRC ?= .
 SRC = .
 
 all: $(OUT) $(OUT)/index.html $(OUT)/robots.txt $(OUT)/favicon.ico $(OUT)/style.css $(OUT)/img

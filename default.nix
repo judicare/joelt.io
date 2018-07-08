@@ -1,17 +1,21 @@
-{ runCommand, lib, sass, optipng, callPackage }:
+{ runCommand, lib, sass, optipng, callPackage, nodejs-8_x }:
 
 let
   cleanedSource = lib.cleanSourceWith {
     filter = name: type: !(lib.elem (baseNameOf (toString name)) ["dist" "node_modules"]);
-    src = lib.sourceFilesBySuffices ./. [ "Makefile" ".png" ".ico" ".html" "robots.txt" ".scss" ];
+    src = lib.sourceFilesBySuffices ./. [ "Makefile" ".png" ".ico" ".html" "robots.txt" ".scss" ".js" ];
   };
-  foundation = (callPackage ./generated/node-composition.nix {}).foundation-sites;
+  nodePkgs = callPackage ./generated/node-composition.nix {};
+  inherit (nodePkgs) foundation-sites jsdom;
 in
 
 runCommand "jude-web" {
-  buildInputs = [ sass optipng ];
+  buildInputs = [ sass optipng jsdom nodejs-8_x ];
+  FOUNDATION_SRC = "${foundation-sites}/lib";
 } ''
   echo cd ${cleanedSource}
   cd ${cleanedSource}
-  make OUT=$out FOUNDATION_SRC=${foundation}/lib
+  make OUT=$out
+  node scripts/css.js $out > $TMPDIR/style.css
+  mv $TMPDIR/style.css $out
 ''
