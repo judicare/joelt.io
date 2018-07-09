@@ -3,20 +3,27 @@ STATIC_PREFIX = "https://jude.xyz/"
 FOUNDATION_SRC ?= .
 SRC = .
 
-all: $(OUT) $(OUT)/index.html $(OUT)/robots.txt $(OUT)/favicon.ico $(OUT)/style.css $(OUT)/img
+ARTIFACTS := $(addprefix $(OUT)/,index.html robots.txt favicon.ico style.css $(wildcard img/*))
 
-$(OUT):
-	mkdir -p $@
+all: $(ARTIFACTS)
 
 $(OUT)/%: %
-	cp $< $@ --no-preserve=all
+	install $< $@
 
-$(OUT)/style.css: css/style.scss
-	(echo '$$static_prefix: $(STATIC_PREFIX);'; cat $<) | sass --scss -I $(FOUNDATION_SRC)/node_modules/foundation-sites/scss -I css --sourcemap=none /dev/stdin $(OUT)/style.css
+$(OUT)/%.css: css/%.scss
+	(echo '$$static_prefix: $(STATIC_PREFIX);'; cat $<) \
+		| sass --scss -I $(FOUNDATION_SRC)/node_modules/foundation-sites/scss -I css \
+			--sourcemap=none /dev/stdin $@
 
-$(OUT)/img: $(wildcard img/*.png)
-	mkdir -p $@
-	$(foreach img,$^,optipng $(img) -out $(OUT)/img/$(notdir $(img));)
+$(OUT)/img/%.png: img/%.png
+	optipng $^ -o7 -out $@
+
+$(ARTIFACTS): | $(OUT)
+
+$(OUT):
+	mkdir -p $@ $@/img
+
+.PHONY: clean
 
 clean:
 	rm -rf $(OUT)
