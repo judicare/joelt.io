@@ -4,4 +4,4 @@ node2nix -i node-packages.json \
   -o generated/node-packages.nix \
   -c generated/node-composition.nix \
   -e generated/node-env.nix \
-  --nodejs-10
+  --nodejs-14
